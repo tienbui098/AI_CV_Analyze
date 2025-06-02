@@ -1,0 +1,14 @@
+.vs
+AI_CV_Analyze\bin
+/AI_CV_Analyze/bin/*
+/AI_CV_Analyze/bin/
+/AI_CV_Analyze/bin
+
+/AI_CV_Analyze/obj/*
+/AI_CV_Analyze/obj/
+/AI_CV_Analyze/obj
+
+AI_CV_Analyze/appsettings.json
+/AI_CV_Analyze/appsettings.json/*
+/AI_CV_Analyze/appsettings.json/
+/AI_CV_Analyze/appsettings.json
