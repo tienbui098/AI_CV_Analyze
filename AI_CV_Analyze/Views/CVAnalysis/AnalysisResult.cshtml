@@ -1,0 +1,60 @@
+@model AI_CV_Analyze.Models.ResumeAnalysisResult
+
+@{
+    ViewData["Title"] = "CV Analysis Results";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Analysis Results</h2>
+                    <p class="text-muted">File: @Model.FileName</p>
+                    <p class="text-muted">Analyzed on: @Model.AnalysisDate.ToString("g")</p>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h3>Content Analysis</h3>
+                        <div class="p-3 bg-light rounded">
+                            <pre class="mb-0">@Model.Content</pre>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Skills))
+                    {
+                        <div class="mb-4">
+                            <h3>Skills</h3>
+                            <div class="p-3 bg-light rounded">
+                                @Model.Skills
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Experience))
+                    {
+                        <div class="mb-4">
+                            <h3>Experience</h3>
+                            <div class="p-3 bg-light rounded">
+                                @Model.Experience
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Education))
+                    {
+                        <div class="mb-4">
+                            <h3>Education</h3>
+                            <div class="p-3 bg-light rounded">
+                                @Model.Education
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Index" class="btn btn-primary">Analyze Another CV</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

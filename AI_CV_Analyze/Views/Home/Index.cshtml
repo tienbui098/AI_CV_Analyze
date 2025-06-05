@@ -3,6 +3,39 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to CV Analysis System</h1>
+    <p class="lead">Upload and analyze your CV using advanced AI technology</p>
+    
+    <div class="mt-4">
+        <a asp-controller="CVAnalysis" asp-action="Index" class="btn btn-primary btn-lg">
+            <i class="fas fa-file-upload"></i> Analyze CV
+        </a>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">AI-Powered Analysis</h5>
+                <p class="card-text">Our system uses advanced AI to analyze your CV and extract key information.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Multiple Format Support</h5>
+                <p class="card-text">Upload your CV in various formats including PDF, DOCX, and images.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Detailed Insights</h5>
+                <p class="card-text">Get comprehensive analysis of your skills, experience, and education.</p>
+            </div>
+        </div>
+    </div>
 </div>

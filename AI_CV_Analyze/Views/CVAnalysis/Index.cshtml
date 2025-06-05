@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "CV Analysis";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">CV Analysis</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" asp-action="AnalyzeCV">
+                        <div class="mb-3">
+                            <label for="cvFile" class="form-label">Upload your CV (PDF, DOCX, or image)</label>
+                            <input type="file" class="form-control" id="cvFile" name="cvFile" accept=".pdf,.docx,.jpg,.jpeg,.png" required>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Analyze CV</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
