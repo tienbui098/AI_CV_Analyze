@@ -3,15 +3,30 @@
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="text-center mt-5">
+    <h1 class="text-danger">Error.</h1>
+    <h2 class="text-danger">An error occurred while processing your request.</h2>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-danger mt-4">
+            <h4>Error Details:</h4>
+            <p>@Model.Message</p>
+        </div>
+    }
+
+    @if (Model.ShowRequestId)
+    {
+        <p>
+            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+
+    <div class="mt-4">
+        <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
+        <a href="/" class="btn btn-secondary">Go to Home</a>
+    </div>
+</div>
 
 <h3>Development Mode</h3>
 <p>
