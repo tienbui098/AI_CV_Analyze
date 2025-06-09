@@ -117,3 +117,4 @@ AI_CV_Analyze/
    - Đánh giá kỹ năng và kinh nghiệm
    - Đề xuất vị trí phù hợp
 
+

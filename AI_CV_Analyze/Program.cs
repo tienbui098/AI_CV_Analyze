@@ -1,6 +1,7 @@
 using AI_CV_Analyze.Data;
 using AI_CV_Analyze.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IResumeAnalysisService, ResumeAnalysisService>();
+
+// Thêm vào sau builder.Services.AddControllersWithViews();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+    });
 
 var app = builder.Build();
 
@@ -33,6 +42,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Thêm vào trước app.MapControllerRoute
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",
