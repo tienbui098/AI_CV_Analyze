@@ -1,0 +1,48 @@
+@model AI_CV_Analyze.Models.ViewModels.RegisterViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Đăng ký</h2>
+            </div>
+            <div class="card-body">
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="Email">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Password">Mật khẩu</label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="FullName">Họ và tên</label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
