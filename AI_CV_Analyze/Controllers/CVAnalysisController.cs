@@ -25,13 +25,16 @@ namespace AI_CV_Analyze.Controllers
         public async Task<IActionResult> AnalyzeCV(IFormFile cvFile)
         {
             if (cvFile == null || cvFile.Length == 0)
-            {
+            {  
                 return BadRequest("No file uploaded");
             }
 
             try
             {
                 var result = await _resumeAnalysisService.AnalyzeResume(cvFile);
+                // Gửi nội dung CV cho OpenAI để lấy đề xuất chỉnh sửa
+                var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(result.Content);
+                ViewBag.Suggestions = suggestions;
                 return View("AnalysisResult", result);
             }
             catch (Exception ex)

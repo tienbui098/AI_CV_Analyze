@@ -6,8 +6,8 @@
 
 <div class="container mt-5">
     <div class="row">
-        <div class="col-12">
-            <div class="card">
+        <div class="col-lg-7 mb-4">
+            <div class="card h-100">
                 <div class="card-header">
                     <h2>Analysis Results</h2>
                     <p class="text-muted">File: @Model.FileName</p>
@@ -55,6 +55,19 @@
                     <a asp-action="Index" class="btn btn-primary">Analyze Another CV</a>
                 </div>
             </div>
+        </div>
+        <div class="col-lg-5 mb-4">
+            @if (ViewBag.Suggestions != null)
+            {
+                <div class="card h-100 border-info">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">Đề xuất chỉnh sửa CV từ AI</h4>
+                    </div>
+                    <div class="card-body">
+                        <pre>@ViewBag.Suggestions</pre>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div> 

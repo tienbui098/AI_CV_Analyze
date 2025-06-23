@@ -7,5 +7,6 @@ namespace AI_CV_Analyze.Services
     public interface IResumeAnalysisService
     {
         Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile);
+        Task<string> GetCVEditSuggestions(string cvContent);
     }
 } 
