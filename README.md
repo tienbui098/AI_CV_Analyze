@@ -71,6 +71,59 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
+## Thiết lập chức năng Quên mật khẩu & Gửi OTP qua Gmail
+
+### 1. Cài đặt MailKit
+
+Ứng dụng đã sử dụng thư viện [MailKit](https://www.nuget.org/packages/MailKit) để gửi email OTP. Nếu chưa có, cài đặt bằng lệnh:
+```bash
+dotnet add package MailKit
+```
+
+### 2. Cấu hình SMTP Gmail trong `appsettings.Development.json`
+
+Thêm hoặc cập nhật phần cấu hình sau:
+```json
+"Smtp": {
+  "Host": "smtp.gmail.com",
+  "Port": "587",
+  "Username": "your_gmail@gmail.com",
+  "Password": "your_app_password_16_ky_tu",
+  "From": "your_gmail@gmail.com"
+}
+```
+- **Username**: Địa chỉ Gmail của bạn
+- **Password**: App Password 16 ký tự (KHÔNG phải mật khẩu Gmail thông thường)
+- **From**: Địa chỉ Gmail gửi mail
+
+#### Cách lấy App Password Gmail:
+1. Bật xác thực 2 bước cho tài khoản Gmail ([Hướng dẫn](https://myaccount.google.com/security))
+2. Truy cập [App Passwords](https://myaccount.google.com/apppasswords)
+3. Tạo mật khẩu ứng dụng cho "Mail" và "Windows Computer"
+4. Copy 16 ký tự mật khẩu ứng dụng vào trường `Password` ở trên
+
+### 3. Đăng ký Service và Session trong `Program.cs`
+
+Đảm bảo đã có các dòng sau:
+```csharp
+builder.Services.AddScoped<AI_CV_Analyze.Services.Interfaces.IEmailSender, AI_CV_Analyze.Services.Implementation.EmailSender>();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+...
+app.UseSession();
+```
+
+### 4. Sử dụng chức năng quên mật khẩu
+- Tại trang đăng nhập, nhấn "Quên mật khẩu?"
+- Nhập email, nhận OTP qua Gmail
+- Nhập OTP và mật khẩu mới để đặt lại mật khẩu
+
+Nếu gặp lỗi xác thực Gmail, hãy kiểm tra lại App Password và cấu hình như hướng dẫn trên.
+
 ## Chạy ứng dụng
 
 1. Chạy ứng dụng trong Visual Studio:
