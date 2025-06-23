@@ -50,7 +50,7 @@ namespace AI_CV_Analyze.Controllers
 
                 return RedirectToAction("Login");
             }
-
+        // 
             return View(model);
         }
 
@@ -93,7 +93,7 @@ namespace AI_CV_Analyze.Controllers
 
                 ModelState.AddModelError("", "Email hoặc mật khẩu không chính xác");
             }
-
+            
             return View(model);
         }
 
