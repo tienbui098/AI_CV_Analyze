@@ -126,6 +126,11 @@ namespace AI_CV_Analyze.Migrations
                     AnalysisResultId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ResumeId = table.Column<int>(type: "int", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AnalysisDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AnalysisStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DetectedText = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImageAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FormFields = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -135,11 +140,11 @@ namespace AI_CV_Analyze.Migrations
                     Entities = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SentimentScore = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Language = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Skills = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SkillsAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExperienceAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EducationAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OverallAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AnalysisDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Experience = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Education = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OverallAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

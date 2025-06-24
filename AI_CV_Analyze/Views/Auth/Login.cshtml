@@ -1,46 +1,91 @@
 @model AI_CV_Analyze.Models.ViewModels.LoginViewModel
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="text-center">Đăng nhập</h2>
-            </div>
-            <div class="card-body">
-                <form asp-action="Login" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    
-                    <div class="form-group mb-3">
-                        <label asp-for="Email">Email</label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true">
+    <title>Login</title>
+</head>
+<body>
+    <div class="full-width-container">
+        <div class="login-container">
+            <div class="login-container">
+                <div class="login-image">
+                    <div class="login-image-content">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to continue to your account</p>
+                    </div>
+                </div>
+                <div class="login-form">
+                    <div class="login-header">
+                        <h1>Sign In</h1>
+                        <p>Please enter your credentials to continue</p>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="Password">Mật khẩu</label>
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
-                    <div class="form-group mb-3">
-                        <div class="form-check">
-                            <input asp-for="RememberMe" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label">Ghi nhớ đăng nhập</label>
+                        <div class="input-group">
+                            <label asp-for="Email">Email</label>
+                            <div class="input-field">
+                                <i class="fas fa-envelope"></i>
+                                <input asp-for="Email" placeholder="Enter your email">
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
-                    </div>
 
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
-                    </div>
-                    <div class="form-group text-center mt-2">
-                        <a href="/Auth/ForgotPassword">Quên mật khẩu?</a>
-                    </div>
-                </form>
+                        <div class="input-group">
+                            <label asp-for="Password">Password</label>
+                            <div class="input-field">
+                                <i class="fas fa-lock"></i>
+                                <input asp-for="Password" placeholder="Enter your password">
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="remember-forgot">
+                            <div class="remember">
+                                <input asp-for="RememberMe" class="form-check-input">
+                                <label asp-for="RememberMe">Remember me</label>
+                            </div>
+                            <a href="/Auth/ForgotPassword" class="forgot-password">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="login-button">Sign In</button>
+
+                        <div class="register-link">
+                            <p>Don't have an account? <a asp-action="Register">Register here</a></p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</body>
+</html>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var validationSummary = document.querySelector('.validation-summary-errors');
+            if (validationSummary) {
+                var errorList = validationSummary.querySelector('ul');
+                if (!errorList || errorList.children.length === 0) {
+                    validationSummary.style.display = 'none';
+                }
+            }
+        });
+    </script>
 }

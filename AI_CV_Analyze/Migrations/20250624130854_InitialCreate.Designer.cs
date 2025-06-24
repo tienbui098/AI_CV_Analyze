@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AI_CV_Analyze.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250602072454_InitialCreate")]
+    [Migration("20250624130854_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -168,7 +168,15 @@ namespace AI_CV_Analyze.Migrations
                     b.Property<DateTime>("AnalysisDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("AnalysisStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConfidenceScore")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -180,7 +188,7 @@ namespace AI_CV_Analyze.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EducationAnalysis")
+                    b.Property<string>("Education")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -188,7 +196,15 @@ namespace AI_CV_Analyze.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExperienceAnalysis")
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Experience")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -216,6 +232,10 @@ namespace AI_CV_Analyze.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SentimentScore")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Skills")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
