@@ -1,48 +1,98 @@
 @model AI_CV_Analyze.Models.ViewModels.RegisterViewModel
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="text-center">Đăng ký</h2>
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Register.css" asp-append-version="true">
+    <title>Register</title>
+</head>
+<body>
+    <div class="full-width-container">
+        <div class="register-container">
+            <div class="register-image">
+                <div class="register-image-content">
+                    <h2>Join Us</h2>
+                    <p>Create an account to get started</p>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="register-form">
+                <div class="register-header">
+                    <h1>Sign Up</h1>
+                    <p>Fill in the details to create your account</p>
+                </div>
                 <form asp-action="Register" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    
-                    <div class="form-group mb-3">
+                    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+                    <div class="input-group">
                         <label asp-for="Email">Email</label>
-                        <input asp-for="Email" class="form-control" />
+                        <div class="input-field">
+                            <i class="fas fa-envelope"></i>
+                            <input asp-for="Email" placeholder="Enter your email">
+                        </div>
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="Password">Mật khẩu</label>
-                        <input asp-for="Password" class="form-control" />
+                    <div class="input-group">
+                        <label asp-for="Password">Password</label>
+                        <div class="input-field">
+                            <i class="fas fa-lock"></i>
+                            <input asp-for="Password" placeholder="Enter your password">
+                        </div>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
-                        <input asp-for="ConfirmPassword" class="form-control" />
+                    <div class="input-group">
+                        <label asp-for="ConfirmPassword">Confirm Password</label>
+                        <div class="input-field">
+                            <i class="fas fa-lock"></i>
+                            <input asp-for="ConfirmPassword" placeholder="Confirm your password">
+                        </div>
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="FullName">Họ và tên</label>
-                        <input asp-for="FullName" class="form-control" />
+                    <div class="input-group">
+                        <label asp-for="FullName">Full Name</label>
+                        <div class="input-field">
+                            <i class="fas fa-user-circle"></i>
+                            <input asp-for="FullName" placeholder="Enter your full name">
+                        </div>
                         <span asp-validation-for="FullName" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    <button type="submit" class="register-button">Sign Up</button>
+
+                    <div class="login-link">
+                        <p>Already have an account? <a asp-action="Login">Sign in</a></p>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</body>
+</html>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var validationSummary = document.querySelector('.validation-summary-errors');
+            if (validationSummary) {
+                var errorList = validationSummary.querySelector('ul');
+                if (!errorList || errorList.children.length === 0) {
+                    validationSummary.style.display = 'none';
+                }
+            }
+        });
+    </script>
 }
