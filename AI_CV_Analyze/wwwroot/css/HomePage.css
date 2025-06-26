@@ -1,0 +1,103 @@
+﻿:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4895ef;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+.hero-bg {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
+}
+
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-radius: 12px;
+}
+
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    }
+
+.nav-link {
+    position: relative;
+    padding-bottom: 4px;
+}
+
+    .nav-link:after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-color);
+        transition: width 0.3s ease, left 0.3s ease;
+    }
+
+    .nav-link:hover:after {
+        width: 100%;
+        left: 0;
+        transform: translateX(0);
+    }
+
+.btn-primary {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
+    background-color: var(--primary-color);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        background-color: var(--secondary-color);
+    }
+
+.btn-secondary {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+    .btn-secondary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        background-color: #f1f3f5;
+    }
+
+.section-spacing {
+    padding: 6rem 0;
+}
+
+.max-content-width {
+    max-width: 1280px;
+}
+
+.feature-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.input-focus:focus {
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    border-color: var(--primary-color);
+}
+
+@@media (max-width: 768px) {
+    .section-spacing {
+        padding: 4rem 0;
+    }
+}
