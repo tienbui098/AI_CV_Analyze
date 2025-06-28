@@ -43,6 +43,88 @@
         transform: translateX(0);
     }
 
+/* Navigation Bar Styles for Home Layout */
+.navbar {
+    background: var(--primary-color) !important;
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.08);
+    padding: 0.5rem 0;
+}
+
+    .navbar .navbar-brand {
+        color: #fff !important;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    .navbar .nav-link {
+        color: #f8f9fa !important;
+        font-weight: 500;
+        margin-right: 0.5rem;
+        transition: color 0.2s;
+    }
+
+        .navbar .nav-link.active, .navbar .nav-link:hover {
+            color: #ffd700 !important;
+        }
+
+    .navbar .dropdown-menu {
+        background: #fff;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 16px rgba(67, 97, 238, 0.10);
+        min-width: 180px;
+    }
+
+    .navbar .dropdown-item {
+        color: var(--dark-color);
+        transition: background 0.2s, color 0.2s;
+    }
+
+        .navbar .dropdown-item:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+.navbar-toggler {
+    border: none;
+}
+
+@media (max-width: 991px) {
+    .navbar .navbar-collapse {
+        background: var(--primary-color);
+        border-radius: 0 0 1rem 1rem;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Enhanced Navigation Styles for Tailwind Integration */
+.bg-blue-600 {
+    background-color: var(--primary-color) !important;
+}
+
+.nav-link.text-white:hover {
+    color: #ffd700 !important;
+}
+
+/* Dropdown animation */
+.origin-top-right {
+    transform-origin: top right;
+}
+
+/* Mobile menu transitions */
+#mobile-menu {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Ensure proper z-index for dropdowns */
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+/* Enhanced button styles */
 .btn-primary {
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
@@ -101,7 +183,7 @@
     color: white;
 }
 
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
     .section-spacing {
         padding: 4rem 0;
     }
