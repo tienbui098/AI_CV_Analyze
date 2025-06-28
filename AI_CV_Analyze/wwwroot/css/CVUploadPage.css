@@ -1,0 +1,198 @@
+﻿:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4895ef;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+.dropzone {
+    border: 2px dashed var(--primary-color);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-color: rgba(67, 97, 238, 0.03);
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .dropzone.active {
+        border-color: var(--accent-color);
+        background-color: rgba(67, 97, 238, 0.05);
+        transform: translateY(-2px);
+    }
+
+    .dropzone:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(67, 97, 238, 0.15);
+        border-color: var(--accent-color);
+    }
+
+/* Enhanced button styles matching HomePage */
+.btn-primary {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
+    background-color: var(--primary-color);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        background-color: var(--secondary-color);
+    }
+
+.btn-secondary {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+    .btn-secondary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        background-color: #f1f3f5;
+    }
+
+.file-input-label {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+    .file-input-label:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+.upload-icon {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(72, 149, 239, 0.1) 100%);
+    transition: all 0.3s ease;
+}
+
+    .upload-icon:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.15) 0%, rgba(72, 149, 239, 0.15) 100%);
+    }
+
+.file-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 12px;
+}
+
+    .file-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+/* Card hover effect matching HomePage */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-radius: 12px;
+}
+
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    }
+
+#analyze-section {
+    display: none;
+}
+
+/* Navigation Bar Styles for Home Layout */
+.navbar {
+    background: var(--primary-color) !important;
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.08);
+    padding: 0.5rem 0;
+}
+
+    .navbar .navbar-brand {
+        color: #fff !important;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    .navbar .nav-link {
+        color: #f8f9fa !important;
+        font-weight: 500;
+        margin-right: 0.5rem;
+        transition: color 0.2s;
+    }
+
+        .navbar .nav-link.active, .navbar .nav-link:hover {
+            color: #ffd700 !important;
+        }
+
+    .navbar .dropdown-menu {
+        background: #fff;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 16px rgba(67, 97, 238, 0.10);
+        min-width: 180px;
+    }
+
+    .navbar .dropdown-item {
+        color: var(--dark-color);
+        transition: background 0.2s, color 0.2s;
+    }
+
+        .navbar .dropdown-item:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+.navbar-toggler {
+    border: none;
+}
+
+@media (max-width: 991px) {
+    .navbar .navbar-collapse {
+        background: var(--primary-color);
+        border-radius: 0 0 1rem 1rem;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Enhanced Navigation Styles for Tailwind Integration */
+.bg-blue-600 {
+    background-color: var(--primary-color) !important;
+}
+
+.nav-link.text-white:hover {
+    color: #ffd700 !important;
+}
+
+/* Dropdown animation */
+.origin-top-right {
+    transform-origin: top right;
+}
+
+/* Mobile menu transitions */
+#mobile-menu {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Ensure proper z-index for dropdowns */
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+/* Additional hover effects for form elements */
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    border-color: var(--primary-color);
+}
+
+.input-focus:focus {
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    border-color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .section-spacing {
+        padding: 4rem 0;
+    }
+}
