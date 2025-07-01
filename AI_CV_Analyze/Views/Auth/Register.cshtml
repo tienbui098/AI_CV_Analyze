@@ -1,4 +1,4 @@
-@model AI_CV_Analyze.Models.ViewModels.RegisterViewModel
+﻿@model AI_CV_Analyze.Models.ViewModels.RegisterViewModel
 
 @{
     ViewData["Title"] = "Register";
@@ -71,6 +71,17 @@
 
                     <div class="login-link">
                         <p>Already have an account? <a asp-action="Login">Sign in</a></p>
+                    </div>
+                    <div class="external-login">
+                        <p>Hoặc đăng ký bằng:</p>
+                        <a class="btn btn-outline-danger" asp-controller="Auth" asp-action="ExternalLogin" asp-route-provider="Google">
+                            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" style="width:20px;vertical-align:middle;margin-right:8px;">
+                            Google
+                        </a>
+                        <a class="btn btn-outline-primary" asp-controller="Auth" asp-action="ExternalLogin" asp-route-provider="Facebook">
+                            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook" style="width:20px;vertical-align:middle;margin-right:8px;">
+                            Facebook
+                        </a>
                     </div>
                 </form>
             </div>
