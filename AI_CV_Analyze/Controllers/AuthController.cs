@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Mvc;
 using AI_CV_Analyze.Models;
 using AI_CV_Analyze.Models.ViewModels;
@@ -183,6 +185,67 @@ namespace AI_CV_Analyze.Controllers
             HttpContext.Session.Remove("ResetEmail");
             TempData["Success"] = "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập với mật khẩu mới.";
             return RedirectToAction("Login");
+        }
+
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { ReturnUrl = returnUrl });
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            return Challenge(properties, provider);
+        }
+
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                // Xử lý lỗi
+                return RedirectToAction("Login");
+            }
+
+            var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            // Lấy thông tin từ provider
+            var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = authenticateResult.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                // Không lấy được email, không cho đăng nhập
+                return RedirectToAction("Login");
+            }
+
+            // Kiểm tra user trong database
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                // Nếu chưa có, tạo mới user
+                user = new User
+                {
+                    Email = email,
+                    FullName = name,
+                    CreatedAt = DateTime.UtcNow,
+                    PasswordHash = Guid.NewGuid().ToString()
+                };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+            }
+
+            // Đăng nhập user (tạo claims, cookie, ...)
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim("FullName", user.FullName ?? "")
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }
