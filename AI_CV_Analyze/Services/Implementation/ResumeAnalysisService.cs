@@ -50,6 +50,83 @@ namespace AI_CV_Analyze.Services
                 FileName = cvFile.FileName
             };
 
+            // --- Section Extraction Logic ---
+            if (!string.IsNullOrEmpty(result.Content))
+            {
+                string[] lines = result.Content.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                string currentSection = "";
+                var skills = new StringBuilder();
+                var education = new StringBuilder();
+                var experience = new StringBuilder();
+                var profile = new StringBuilder();
+                var objective = new StringBuilder();
+                var languages = new StringBuilder();
+                var project = new StringBuilder();
+                // Optionally: add more sections (profile, languages, etc.)
+
+                foreach (var line in lines)
+                {
+                    var trimmed = line.Trim();
+                    if (trimmed.ToUpper().StartsWith("SKILLS")) { currentSection = "skills"; continue; }
+                    if (trimmed.ToUpper().StartsWith("EDUCATION")) { currentSection = "education"; continue; }
+                    if (trimmed.ToUpper().StartsWith("EXPERIENCE") || trimmed.ToUpper().StartsWith("WORK EXPERIENCE")) { currentSection = "experience"; continue; }
+                    if (trimmed.ToUpper().StartsWith("PROFILE")) { currentSection = "profile"; continue; }
+                    if (trimmed.ToUpper().StartsWith("OBJECTIVE")) { currentSection = "objective"; continue; }
+                    if (trimmed.ToUpper().StartsWith("LANGUAGES")) { currentSection = "languages"; continue; }
+                    if (trimmed.ToUpper().StartsWith("PROJECT")) { currentSection = "project"; continue; }
+                    // Optionally: add more section headers
+
+                    switch (currentSection)
+                    {
+                        case "skills": skills.AppendLine(trimmed); break;
+                        case "education": education.AppendLine(trimmed); break;
+                        case "experience": experience.AppendLine(trimmed); break;
+                        case "profile": profile.AppendLine(trimmed); break;
+                        case "objective": objective.AppendLine(trimmed); break;
+                        case "languages": languages.AppendLine(trimmed); break;
+                        case "project": project.AppendLine(trimmed); break;
+                    }
+                }
+                
+                // Add proper spacing between sections
+                analysisResult.Skills = skills.ToString().Trim();
+                analysisResult.Education = education.ToString().Trim();
+                analysisResult.Experience = experience.ToString().Trim();
+                
+                // Store additional sections in available fields or create new ones
+                if (!string.IsNullOrEmpty(profile.ToString().Trim()))
+                {
+                    analysisResult.OverallAnalysis = profile.ToString().Trim();
+                }
+                
+                if (!string.IsNullOrEmpty(objective.ToString().Trim()))
+                {
+                    // You might want to add a new property for Objective in the model
+                    // For now, we'll append it to OverallAnalysis
+                    if (!string.IsNullOrEmpty(analysisResult.OverallAnalysis))
+                    {
+                        analysisResult.OverallAnalysis += "\n\nOBJECTIVE\n" + objective.ToString().Trim();
+                    }
+                    else
+                    {
+                        analysisResult.OverallAnalysis = "OBJECTIVE\n" + objective.ToString().Trim();
+                    }
+                }
+                
+                if (!string.IsNullOrEmpty(languages.ToString().Trim()))
+                {
+                    // Store languages in KeyPhrases for now
+                    analysisResult.KeyPhrases = languages.ToString().Trim();
+                }
+                
+                if (!string.IsNullOrEmpty(project.ToString().Trim()))
+                {
+                    // Store projects in FormFields for now
+                    analysisResult.FormFields = project.ToString().Trim();
+                }
+            }
+            // --- End Section Extraction ---
+
             // TODO: Save to database
             // TODO: Add more detailed analysis using other Azure AI services
 
