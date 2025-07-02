@@ -41,44 +41,14 @@
                     <!-- User Menu -->
                     <div class="hidden md:block">
                         <div class="ml-4 flex items-center md:ml-6">
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <div class="relative">
-                                    <div>
-                                        <button type="button" class="flex items-center text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                            <i class="fas fa-user mr-1"></i>@User.FindFirst("FullName")?.Value
-                                            <i class="fas fa-chevron-down ml-1"></i>
-                                        </button>
-                                    </div>
-                                    <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" id="user-menu-dropdown">
-                                        <div class="py-1" role="none">
-                                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition duration-200" role="menuitem">
-                                                <i class="fas fa-history mr-2"></i>Lịch sử phân tích
-                                            </a>
-                                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition duration-200" role="menuitem">
-                                                <i class="fas fa-cog mr-2"></i>Cài đặt
-                                            </a>
-                                            <div class="border-t border-gray-100"></div>
-                                            <form asp-controller="Auth" asp-action="Logout" method="post" class="block">
-                                                <button type="submit" class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition duration-200" role="menuitem">
-                                                    <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="flex items-center space-x-4">
-                                    <a asp-controller="Auth" asp-action="Login" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-                                        <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
-                                    </a>
-                                    <a asp-controller="Auth" asp-action="Register" class="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition duration-200">
-                                        <i class="fas fa-user-plus mr-1"></i>Đăng ký
-                                    </a>
-                                </div>
-                            }
+                            <div class="flex items-center space-x-4">
+                                <a asp-controller="Auth" asp-action="Login" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                                    <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
+                                </a>
+                                <a asp-controller="Auth" asp-action="Register" class="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition duration-200">
+                                    <i class="fas fa-user-plus mr-1"></i>Đăng ký
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -102,36 +72,14 @@
                     </a>
                 </div>
                 <div class="pt-4 pb-3 border-t border-blue-500">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <div class="px-2 space-y-1">
-                            <div class="text-white px-3 py-2 text-base font-medium">
-                                <i class="fas fa-user mr-1"></i>@User.FindFirst("FullName")?.Value
-                            </div>
-                            <a href="#" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-history mr-2"></i>Lịch sử phân tích
-                            </a>
-                            <a href="#" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-cog mr-2"></i>Cài đặt
-                            </a>
-                            <form asp-controller="Auth" asp-action="Logout" method="post" class="block">
-                                <button type="submit" class="text-white hover:text-yellow-300 block w-full text-left px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
-                                </button>
-                            </form>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="px-2 space-y-1">
-                            <a asp-controller="Auth" asp-action="Login" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
-                            </a>
-                            <a asp-controller="Auth" asp-action="Register" class="bg-white text-blue-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-user-plus mr-1"></i>Đăng ký
-                            </a>
-                        </div>
-                    }
+                    <div class="px-2 space-y-1">
+                        <a asp-controller="Auth" asp-action="Login" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                            <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
+                        </a>
+                        <a asp-controller="Auth" asp-action="Register" class="bg-white text-blue-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                            <i class="fas fa-user-plus mr-1"></i>Đăng ký
+                        </a>
+                    </div>
                 </div>
             </div>
         </nav>
