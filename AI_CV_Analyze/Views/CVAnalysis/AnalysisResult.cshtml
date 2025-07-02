@@ -21,22 +21,22 @@
                         </div>
                     </div>
 
+                    @if (!string.IsNullOrEmpty(Model.OverallAnalysis))
+                    {
+                        <div class="mb-4">
+                            <h3>Profile & Objective</h3>
+                            <div class="p-3 bg-light rounded">
+                                <pre class="mb-0">@Model.OverallAnalysis</pre>
+                            </div>
+                        </div>
+                    }
+
                     @if (!string.IsNullOrEmpty(Model.Skills))
                     {
                         <div class="mb-4">
                             <h3>Skills</h3>
                             <div class="p-3 bg-light rounded">
-                                @Model.Skills
-                            </div>
-                        </div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(Model.Experience))
-                    {
-                        <div class="mb-4">
-                            <h3>Experience</h3>
-                            <div class="p-3 bg-light rounded">
-                                @Model.Experience
+                                <pre class="mb-0">@Model.Skills</pre>
                             </div>
                         </div>
                     }
@@ -46,7 +46,37 @@
                         <div class="mb-4">
                             <h3>Education</h3>
                             <div class="p-3 bg-light rounded">
-                                @Model.Education
+                                <pre class="mb-0">@Model.Education</pre>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Experience))
+                    {
+                        <div class="mb-4">
+                            <h3>Experience</h3>
+                            <div class="p-3 bg-light rounded">
+                                <pre class="mb-0">@Model.Experience</pre>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.KeyPhrases))
+                    {
+                        <div class="mb-4">
+                            <h3>Languages</h3>
+                            <div class="p-3 bg-light rounded">
+                                <pre class="mb-0">@Model.KeyPhrases</pre>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.FormFields))
+                    {
+                        <div class="mb-4">
+                            <h3>Projects</h3>
+                            <div class="p-3 bg-light rounded">
+                                <pre class="mb-0">@Model.FormFields</pre>
                             </div>
                         </div>
                     }
