@@ -2,102 +2,112 @@
 
 @{
     ViewData["Title"] = "Login";
-    Layout = "_Layout";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true">
-    <title>Login</title>
-</head>
-<body>
-    <div class="full-width-container">
-        <div class="login-container">
-            <div class="login-container">
-                <div class="login-image">
-                    <div class="login-image-content">
-                        <h2>Welcome Back</h2>
-                        <p>Sign in to continue to your account</p>
+
+<!-- Main Login Content with animation -->
+<div class="auth-container animate__animated animate__fadeIn">
+    <div class="auth-card animate__animated animate__zoomIn">
+        <!-- Left Side - Image -->
+        <div class="auth-image hidden md:block">
+            <div class="auth-image-content">
+                <h2 class="text-3xl font-bold mb-6">Chào mừng trở lại với AI CV Analyze</h2>
+                <p class="text-lg opacity-90 mb-10">Đăng nhập để tiếp tục hành trình sự nghiệp của bạn với công nghệ AI tiên tiến</p>
+                <div class="flex space-x-4">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line text-xl"></i>
                     </div>
-                </div>
-                <div class="login-form">
-                    <div class="login-header">
-                        <h1>Sign In</h1>
-                        <p>Please enter your credentials to continue</p>
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-briefcase text-xl"></i>
                     </div>
-
-                    <form asp-action="Login" method="post">
-                        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
-
-                        <div class="input-group">
-                            <label asp-for="Email">Email</label>
-                            <div class="input-field">
-                                <i class="fas fa-envelope"></i>
-                                <input asp-for="Email" placeholder="Enter your email">
-                            </div>
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="input-group">
-                            <label asp-for="Password">Password</label>
-                            <div class="input-field">
-                                <i class="fas fa-lock"></i>
-                                <input asp-for="Password" placeholder="Enter your password">
-                            </div>
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-
-                        <div class="remember-forgot">
-                            <div class="remember">
-                                <input asp-for="RememberMe" class="form-check-input">
-                                <label asp-for="RememberMe">Remember me</label>
-                            </div>
-                            <a href="/Auth/ForgotPassword" class="forgot-password">Forgot Password?</a>
-                        </div>
-
-                        <button type="submit" class="login-button">Sign In</button>
-
-                        <div class="register-link">
-                            <p>Don't have an account? <a asp-action="Register">Register here</a></p>
-                        </div>
-
-                        <div class="external-login">
-                            <p>Hoặc đăng nhập bằng:</p>
-                            <a class="btn btn-outline-danger" asp-controller="Auth" asp-action="ExternalLogin" asp-route-provider="Google">
-                                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" style="width:20px;vertical-align:middle;margin-right:8px;">
-                                Google
-                            </a>
-                            <a class="btn btn-outline-primary" asp-controller="Auth" asp-action="ExternalLogin" asp-route-provider="Facebook">
-                                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook" style="width:20px;vertical-align:middle;margin-right:8px;">
-                                Facebook
-                            </a>
-                        </div>
-                    </form>
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-tie text-xl"></i>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Right Side - Form -->
+        <div class="auth-form">
+            <div class="form-header animate__animated animate__fadeInDown">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Đăng nhập</h1>
+                <p class="text-gray-600 text-sm md:text-base">Nhập thông tin để đăng nhập vào hệ thống</p>
+            </div>
+
+            <form asp-action="Login" method="post" id="loginForm">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+                <!-- Email -->
+                <div class="input-group animate__animated animate__fadeInUp">
+                    <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input asp-for="Email" class="auth-input" placeholder="example@email.com">
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="input-group animate__animated animate__fadeInUp">
+                    <label asp-for="Password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                    <div class="relative">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input asp-for="Password" type="password" class="auth-input" placeholder="Nhập mật khẩu">
+                        <span class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-400 hover:text-blue-500 toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <input asp-for="RememberMe" type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out">
+                        <label asp-for="RememberMe" class="ml-2 block text-sm text-gray-900">Ghi nhớ đăng nhập</label>
+                    </div>
+                    <a asp-action="ForgotPassword" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn-primary animate__animated animate__pulse animate__infinite">
+                    Đăng nhập
+                </button>
+
+                <div class="divider">hoặc</div>
+
+                <!-- Social Login -->
+                <div class="grid grid-cols-2 gap-3 social-buttons animate__animated animate__fadeInUp">
+                    <a asp-controller="Auth" asp-action="ExternalLogin" asp-route-provider="Google" class="social-btn google-btn">
+                        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google">
+                        Google
+                    </a>
+                    <a asp-controller="Auth" asp-action="ExternalLogin" asp-route-provider="Facebook" class="social-btn facebook-btn">
+                        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook">
+                        Facebook
+                    </a>
+                </div>
+
+                <div class="footer-link animate__animated animate__fadeInUp">
+                    Chưa có tài khoản? <a asp-action="Register" class="text-blue-600 hover:text-blue-800 font-medium">Đăng ký ngay</a>
+                </div>
+            </form>
+        </div>
     </div>
-</body>
-</html>
+</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var validationSummary = document.querySelector('.validation-summary-errors');
-            if (validationSummary) {
-                var errorList = validationSummary.querySelector('ul');
-                if (!errorList || errorList.children.length === 0) {
-                    validationSummary.style.display = 'none';
-                }
-            }
-        });
-    </script>
-}
+<!-- Loading Modal -->
+<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
+        <div id="loadingSpinner" class="mb-4">
+            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        </div>
+        <div id="loadingText" class="font-semibold text-lg text-center">
+            Hệ thống đang xử lý đăng nhập của bạn, vui lòng chờ một chút nhé...
+        </div>
+        <div class="mt-4">
+            <button type="button" id="cancelLoginBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Hủy</button>
+        </div>
+    </div>
+</div>
