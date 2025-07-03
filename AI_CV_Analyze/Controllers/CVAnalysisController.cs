@@ -43,6 +43,26 @@ namespace AI_CV_Analyze.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetEditSuggestions(string Content)
+        {
+            if (string.IsNullOrEmpty(Content))
+            {
+                return BadRequest("Không có nội dung CV để đề xuất chỉnh sửa.");
+            }
+            try
+            {
+                var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(Content);
+                ViewBag.Suggestions = suggestions;
+                ViewBag.CVContent = Content;
+                return View("EditSuggestions");
+            }
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorViewModel { Message = ex.Message });
+            }
+        }
+
         public IActionResult AnalysisResult(ResumeAnalysisResult result)
         {
             return View(result);
