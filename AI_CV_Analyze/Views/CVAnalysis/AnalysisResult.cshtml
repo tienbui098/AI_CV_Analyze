@@ -14,13 +14,6 @@
                     <p class="text-muted">Analyzed on: @Model.AnalysisDate.ToString("g")</p>
                 </div>
                 <div class="card-body">
-                    <div class="mb-4">
-                        <h3>Content Analysis</h3>
-                        <div class="p-3 bg-light rounded">
-                            <pre class="mb-0">@Model.Content</pre>
-                        </div>
-                    </div>
-
                     @if (!string.IsNullOrEmpty(Model.OverallAnalysis))
                     {
                         <div class="mb-4">
@@ -83,21 +76,15 @@
                 </div>
                 <div class="card-footer">
                     <a asp-action="Index" class="btn btn-primary">Analyze Another CV</a>
+                    <form asp-action="GetEditSuggestions" method="post" class="d-inline">
+                        <input type="hidden" name="Content" value="@Model.Content" />
+                        <button type="submit" class="btn btn-info ml-2">Lấy đề xuất chỉnh sửa CV từ AI</button>
+                    </form>
                 </div>
             </div>
         </div>
         <div class="col-lg-5 mb-4">
-            @if (ViewBag.Suggestions != null)
-            {
-                <div class="card h-100 border-info">
-                    <div class="card-header bg-info text-white">
-                        <h4 class="mb-0">Đề xuất chỉnh sửa CV từ AI</h4>
-                    </div>
-                    <div class="card-body">
-                        <pre>@ViewBag.Suggestions</pre>
-                    </div>
-                </div>
-            }
+            @* Đã loại bỏ phần hiển thị đề xuất chỉnh sửa CV từ AI *@
         </div>
     </div>
 </div> 

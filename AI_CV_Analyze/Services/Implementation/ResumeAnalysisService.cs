@@ -136,20 +136,35 @@ namespace AI_CV_Analyze.Services
         public async Task<string> GetCVEditSuggestions(string cvContent)
         {
             var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _openAIKey);
-            client.DefaultRequestHeaders.Add("api-key", _openAIKey);
+
             var requestBody = new
             {
+                model = "gpt-3.5-turbo", // hoặc model bạn được cấp phép
                 messages = new[]
                 {
-                    new { role = "system", content = "Bạn là chuyên gia nhân sự, hãy đề xuất chỉnh sửa CV chuyên nghiệp, ngắn gọn, rõ ràng, tập trung vào điểm mạnh và loại bỏ điểm yếu.Hãy nhận xét một cách rõ ràng nhất." },
+                    new { role = "system", content = "Bạn là chuyên gia nhân sự, hãy đề xuất chỉnh sửa CV chuyên nghiệp, ngắn gọn, rõ ràng, tập trung vào điểm mạnh và loại bỏ điểm yếu. Hãy nhận xét một cách rõ ràng nhất." },
                     new { role = "user", content = cvContent }
                 }
             };
             var json = JsonSerializer.Serialize(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(_openAIEndpoint, content);
-            response.EnsureSuccessStatusCode();
+
+            // Đảm bảo endpoint đúng chuẩn OpenAI Chat API
+            var endpoint = string.IsNullOrEmpty(_openAIEndpoint) ? "https://api.openai.com/v1/chat/completions" : _openAIEndpoint;
+            var response = await client.PostAsync(endpoint, content);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            {
+                return "Bạn đang gửi quá nhiều yêu cầu tới AI. Vui lòng thử lại sau vài phút.";
+            }
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return $"Lỗi OpenAI: {response.StatusCode} - {error}";
+            }
+
             var responseString = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(responseString);
             var suggestion = doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();

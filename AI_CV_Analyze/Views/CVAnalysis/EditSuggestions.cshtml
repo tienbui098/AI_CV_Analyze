@@ -1,0 +1,10 @@
+@{
+    ViewBag.Title = "Đề xuất chỉnh sửa CV từ AI";
+}
+<h2>Đề xuất chỉnh sửa CV từ AI</h2>
+<div class="card mt-3">
+    <div class="card-body">
+        <pre style="white-space: pre-wrap;">@ViewBag.Suggestions</pre>
+    </div>
+</div>
+<a href="@Url.Action("Index", "Home")" class="btn btn-secondary mt-3">Về trang chủ</a> 
