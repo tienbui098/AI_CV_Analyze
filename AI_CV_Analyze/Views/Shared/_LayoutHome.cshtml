@@ -32,6 +32,9 @@
                             <a asp-controller="CVAnalysis" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
                                 <i class="fas fa-file-alt mr-1"></i>Phân tích CV
                             </a>
+                            <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                                <i class="fas fa-file-alt mr-1"></i>Kết quả phân tích
+                            </a>
                         </div>
                     </div>
 
@@ -96,6 +99,9 @@
                     </a>
                     <a asp-controller="CVAnalysis" asp-action="Index" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
                         <i class="fas fa-file-alt mr-1"></i>Phân tích CV
+                    </a>
+                    <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
+						<i class="fas fa-file-alt mr-1"></i>Kết quả phân tích
                     </a>
                 </div>
                 <div class="pt-4 pb-3 border-t border-blue-500">
@@ -216,7 +222,7 @@
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/Home.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html> 
