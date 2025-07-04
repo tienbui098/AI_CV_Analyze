@@ -76,7 +76,7 @@
                 </div>
                 <div class="card-footer">
                     <a asp-action="Index" class="btn btn-primary">Analyze Another CV</a>
-                    <form asp-action="GetEditSuggestions" method="post" class="d-inline">
+                    <form asp-action="GetEditSuggestions" method="post" class="d-inline" id="editSuggestionsForm">
                         <input type="hidden" name="Content" value="@Model.Content" />
                         <button type="submit" class="btn btn-info ml-2">Lấy đề xuất chỉnh sửa CV từ AI</button>
                     </form>
@@ -87,4 +87,78 @@
             @* Đã loại bỏ phần hiển thị đề xuất chỉnh sửa CV từ AI *@
         </div>
     </div>
-</div> 
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div id="loadingModalLabel" class="fw-bold fs-5">Hệ thống AI đang xử lý đề xuất chỉnh sửa CV của bạn, Hãy chờ một chút nhé</div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-danger" id="cancelAnalyzeBtn">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var form = document.getElementById("editSuggestionsForm");
+            var cancelBtn = document.getElementById("cancelAnalyzeBtn");
+            var loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            var controller = null;
+
+            if (form) {
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault(); // Ngăn submit mặc định
+                    // Hiện modal loading
+                    loadingModal.show();
+
+                    // Tạo AbortController mới cho mỗi lần gửi
+                    controller = new AbortController();
+
+                    // Lấy dữ liệu form
+                    var formData = new FormData(form);
+
+                    fetch(form.action, {
+                        method: "POST",
+                        body: formData,
+                        signal: controller.signal
+                    })
+                    .then(response => {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            return response.text().then(html => {
+                                document.body.innerHTML = html;
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        if (error.name !== 'AbortError') {
+                            alert("Có lỗi xảy ra khi gửi yêu cầu.");
+                        }
+                    })
+                    .finally(() => {
+                        loadingModal.hide();
+                    });
+                });
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener("click", function () {
+                    if (controller) {
+                        controller.abort(); // Hủy request
+                    }
+                    loadingModal.hide();
+                });
+            }
+        });
+    </script>
+}

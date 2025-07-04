@@ -25,7 +25,7 @@ namespace AI_CV_Analyze.Controllers
         public async Task<IActionResult> AnalyzeCV(IFormFile cvFile)
         {
             if (cvFile == null || cvFile.Length == 0)
-            {  
+            {
                 return BadRequest("No file uploaded");
             }
 
@@ -68,4 +68,4 @@ namespace AI_CV_Analyze.Controllers
             return View(result);
         }
     }
-} 
+}
