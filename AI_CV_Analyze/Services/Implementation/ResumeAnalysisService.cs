@@ -87,18 +87,18 @@ namespace AI_CV_Analyze.Services
                         case "project": project.AppendLine(trimmed); break;
                     }
                 }
-                
+
                 // Add proper spacing between sections
                 analysisResult.Skills = skills.ToString().Trim();
                 analysisResult.Education = education.ToString().Trim();
                 analysisResult.Experience = experience.ToString().Trim();
-                
+
                 // Store additional sections in available fields or create new ones
                 if (!string.IsNullOrEmpty(profile.ToString().Trim()))
                 {
                     analysisResult.OverallAnalysis = profile.ToString().Trim();
                 }
-                
+
                 if (!string.IsNullOrEmpty(objective.ToString().Trim()))
                 {
                     // You might want to add a new property for Objective in the model
@@ -112,13 +112,13 @@ namespace AI_CV_Analyze.Services
                         analysisResult.OverallAnalysis = "OBJECTIVE\n" + objective.ToString().Trim();
                     }
                 }
-                
+
                 if (!string.IsNullOrEmpty(languages.ToString().Trim()))
                 {
                     // Store languages in KeyPhrases for now
                     analysisResult.KeyPhrases = languages.ToString().Trim();
                 }
-                
+
                 if (!string.IsNullOrEmpty(project.ToString().Trim()))
                 {
                     // Store projects in FormFields for now
@@ -151,13 +151,14 @@ namespace AI_CV_Analyze.Services
             var json = JsonSerializer.Serialize(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // Đảm bảo endpoint đúng chuẩn OpenAI Chat API
-            var endpoint = string.IsNullOrEmpty(_openAIEndpoint) ? "https://api.openai.com/v1/chat/completions" : _openAIEndpoint;
-            var response = await client.PostAsync(endpoint, content);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+            var endpoint = string.IsNullOrEmpty(_openAIEndpoint) ? "https://api.openai.com/v1/chat/completions" : _openAIEndpoint;
+
+            var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
+
+            if (response == null)
             {
-                return "Bạn đang gửi quá nhiều yêu cầu tới AI. Vui lòng thử lại sau vài phút.";
+                return "Bạn đang gửi quá nhiều yêu cầu tới AI hoặc có lỗi mạng. Vui lòng thử lại sau vài phút.";
             }
             if (!response.IsSuccessStatusCode)
             {
@@ -170,5 +171,26 @@ namespace AI_CV_Analyze.Services
             var suggestion = doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
             return suggestion;
         }
+
+        // Hàm retry request vô hạn
+        private async Task<HttpResponseMessage?> SendWithRetryAsync(Func<Task<HttpResponseMessage>> sendRequest, int delayMs = 2000)
+        {
+            while (true)
+            {
+                try
+                {
+                    var response = await sendRequest();
+                    if (response.IsSuccessStatusCode || response.StatusCode != System.Net.HttpStatusCode.TooManyRequests)
+                    {
+                        return response;
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    // Có thể log lỗi nếu cần
+                }
+                await Task.Delay(delayMs);
+            }
+        }
     }
-} 
+}
