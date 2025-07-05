@@ -25,8 +25,8 @@ namespace AI_CV_Analyze.Services
         private readonly string _openAIKey;
         private readonly string _openAIDeploymentName;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string _jobRecommendationEndpoint = "http://132.196.164.224:80/api/v1/service/jobrecommend/score";
-        private readonly string _jobRecommendationApiKey = "0EWvsyDnaZseHFcXefyS3w09aF9AQHCJ";
+        private readonly string _jobRecommendationEndpoint;
+        private readonly string _jobRecommendationApiKey;
 
         public ResumeAnalysisService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
@@ -38,6 +38,10 @@ namespace AI_CV_Analyze.Services
             _openAIKey = _configuration["AzureAI:OpenAIKey"];
             _openAIDeploymentName = _configuration["AzureAI:OpenAIDeploymentName"];
             _httpClientFactory = httpClientFactory;
+            
+            // Read job recommendation settings from configuration
+            _jobRecommendationEndpoint = _configuration["JobRecommendation:Endpoint"];
+            _jobRecommendationApiKey = _configuration["JobRecommendation:ApiKey"];
         }
 
         public async Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile)
