@@ -9,7 +9,9 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace AI_CV_Analyze.Services
 {
@@ -23,6 +25,8 @@ namespace AI_CV_Analyze.Services
         private readonly string _openAIKey;
         private readonly string _openAIDeploymentName;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _jobRecommendationEndpoint = "http://132.196.164.224:80/api/v1/service/jobrecommend/score";
+        private readonly string _jobRecommendationApiKey = "0EWvsyDnaZseHFcXefyS3w09aF9AQHCJ";
 
         public ResumeAnalysisService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
@@ -133,6 +137,74 @@ namespace AI_CV_Analyze.Services
             return analysisResult;
         }
 
+        public async Task<JobSuggestionResult> GetJobSuggestionsAsync(string skills)
+        {
+            string extractedSkills = SkillExtractor.ExtractSkillsFromText(skills); // 'skills' is raw CV text
+
+            var requestData = new
+            {
+                Inputs = new
+                {
+                    input1 = new[]
+                    {
+                        new { Skills = extractedSkills, JobCategory = "unknown" }
+                    }
+                }
+            };
+
+            var json = JsonConvert.SerializeObject(requestData);
+            Console.WriteLine("==== Job Recommendation Request JSON ====");
+            Console.WriteLine(json);
+            var client = new HttpClient();
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _jobRecommendationApiKey);
+
+            var response = await client.PostAsync(_jobRecommendationEndpoint, content);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"==== Job Recommendation Response Status: {response.StatusCode} ====");
+            Console.WriteLine(responseBody);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException($"AzureML Error: {response.StatusCode}\n\n{responseBody}");
+
+            var result = new JobSuggestionResult();
+            var parsed = JObject.Parse(responseBody);
+
+            // Compatibility: map WebServiceOutput0 to output1 if needed
+            var results = parsed["Results"] as JObject;
+            if (results != null && results["output1"] == null && results["WebServiceOutput0"] != null)
+            {
+                results["output1"] = results["WebServiceOutput0"];
+            }
+
+            // Parse response safely
+            var output = parsed["Results"]?["output1"] as JArray;
+            if (output == null || output.Count == 0)
+                throw new Exception("❌ Missing or invalid 'output1' in Azure ML response.");
+
+            var scores = output[0] as JObject;
+            if (scores == null)
+                throw new Exception("❌ Unexpected format: first item in 'output1' is not a JSON object.");
+
+            foreach (var prop in scores.Properties())
+            {
+                if (prop.Name.StartsWith("Scored Probabilities_"))
+                {
+                    string jobTitle = prop.Name.Replace("Scored Probabilities_", "");
+                    double probability = prop.Value.Value<double>();
+
+                    if (probability >= 0.1)
+                        result.Suggestions[jobTitle] = probability;
+                }
+            }
+
+            return result;
+        }
+
         public async Task<string> GetCVEditSuggestions(string cvContent)
         {
             var client = _httpClientFactory.CreateClient();
@@ -148,7 +220,7 @@ namespace AI_CV_Analyze.Services
                     new { role = "user", content = cvContent }
                 }
             };
-            var json = JsonSerializer.Serialize(requestBody);
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
 
@@ -167,8 +239,8 @@ namespace AI_CV_Analyze.Services
             }
 
             var responseString = await response.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(responseString);
-            var suggestion = doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
+            var doc = JObject.Parse(responseString);
+            var suggestion = doc["choices"][0]["message"]["content"].ToString();
             return suggestion;
         }
 

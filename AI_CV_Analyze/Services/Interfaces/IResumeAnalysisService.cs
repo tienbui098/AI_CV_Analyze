@@ -8,5 +8,6 @@ namespace AI_CV_Analyze.Services
     {
         Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile);
         Task<string> GetCVEditSuggestions(string cvContent);
+        Task<JobSuggestionResult> GetJobSuggestionsAsync(string skills);
     }
 } 
