@@ -35,6 +35,21 @@ namespace AI_CV_Analyze.Controllers
                 // Gửi nội dung CV cho OpenAI để lấy đề xuất chỉnh sửa
                 var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(result.Content);
                 ViewBag.Suggestions = suggestions;
+                
+                // Get job recommendations based on CV skills section
+                try
+                {
+                    // Use the extracted skills section instead of full content
+                    var skillsContent = !string.IsNullOrEmpty(result.Skills) ? result.Skills : result.Content;
+                    var jobRecommendations = await _resumeAnalysisService.GetJobSuggestionsAsync(skillsContent);
+                    ViewBag.JobRecommendations = jobRecommendations.Suggestions;
+                }
+                catch (Exception jobEx)
+                {
+                    // Log the error but don't fail the entire analysis
+                    ViewBag.JobRecommendationsError = jobEx.Message;
+                }
+                
                 return View("AnalysisResult", result);
             }
             catch (Exception ex)
@@ -66,6 +81,58 @@ namespace AI_CV_Analyze.Controllers
         public IActionResult AnalysisResult(ResumeAnalysisResult result)
         {
             return View(result);
+        }
+
+        // New method to get job recommendations from CV content via AJAX
+        [HttpPost]
+        public async Task<IActionResult> GetJobRecommendationsFromCV(string cvContent, string skillsContent = null)
+        {
+            if (string.IsNullOrWhiteSpace(cvContent))
+            {
+                return BadRequest("No CV content provided");
+            }
+
+            try
+            {
+                // Use skills section if available, otherwise use full content
+                var contentToAnalyze = !string.IsNullOrEmpty(skillsContent) ? skillsContent : cvContent;
+                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(contentToAnalyze);
+                return Json(new { success = true, suggestions = result.Suggestions });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        // Job prediction methods
+        [HttpGet]
+        public IActionResult JobPrediction()
+        {
+            ViewBag.ErrorMessage = null;
+            return View(new JobSuggestionRequest());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> JobPrediction(JobSuggestionRequest model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Skills))
+            {
+                ViewBag.ErrorMessage = "Please enter your skills.";
+                return View(model);
+            }
+
+            try
+            {
+                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(model.Skills);
+                ViewBag.Results = result.Suggestions;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = $"Error getting job suggestions: {ex.Message}";
+                return View(model);
+            }
         }
     }
 }
