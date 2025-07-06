@@ -42,6 +42,12 @@ namespace AI_CV_Analyze.Services
             // Read job recommendation settings from configuration
             _jobRecommendationEndpoint = _configuration["JobRecommendation:Endpoint"];
             _jobRecommendationApiKey = _configuration["JobRecommendation:ApiKey"];
+            
+            // Validate OpenAI configuration
+            if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
+            {
+                Console.WriteLine("Warning: OpenAI configuration is incomplete. Please check your appsettings.json");
+            }
         }
 
         public async Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile)
@@ -211,40 +217,87 @@ namespace AI_CV_Analyze.Services
 
         public async Task<string> GetCVEditSuggestions(string cvContent)
         {
+            // Chỉ sử dụng Azure OpenAI
+            if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
+            {
+                return "Lỗi cấu hình: Thiếu thông tin Azure OpenAI. Vui lòng kiểm tra cấu hình AzureAI trong appsettings.json";
+            }
+            
+            string endpoint = _openAIEndpoint;
+            string apiKey = _openAIKey;
+            string modelName = _openAIDeploymentName;
+            
             var client = _httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(2); // Set timeout to 2 minutes
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _openAIKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
             var requestBody = new
             {
-                model = "gpt-3.5-turbo", // hoặc model bạn được cấp phép
+                model = modelName, // Sử dụng model name đã xác định
                 messages = new[]
                 {
-                    new { role = "system", content = "Bạn là chuyên gia nhân sự, hãy đề xuất chỉnh sửa CV chuyên nghiệp, ngắn gọn, rõ ràng, tập trung vào điểm mạnh và loại bỏ điểm yếu. Hãy nhận xét một cách rõ ràng nhất." },
+                    new { role = "system", content = "Bạn là chuyên gia nhân sự có kinh nghiệm 10+ năm trong lĩnh vực tuyển dụng và đánh giá CV. Hãy phân tích CV một cách chi tiết và đưa ra các đề xuất chỉnh sửa cụ thể, chuyên nghiệp. Tập trung vào:\r\n\r\n1. Cấu trúc và bố cục CV\r\n2. Nội dung và cách trình bày\r\n3. Điểm mạnh cần nhấn mạnh\r\n4. Điểm yếu cần cải thiện\r\n5. Từ khóa và kỹ năng quan trọng\r\n6. Cách viết mô tả công việc\r\n7. Định dạng và trình bày\r\n\r\nHãy đưa ra nhận xét rõ ràng, cụ thể và có thể thực hiện được. " },
+
                     new { role = "user", content = cvContent }
-                }
+                },
+                max_tokens = 2000,
+                temperature = 0.7
             };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            // Sử dụng endpoint đã xác định
 
-            var endpoint = string.IsNullOrEmpty(_openAIEndpoint) ? "https://api.openai.com/v1/chat/completions" : _openAIEndpoint;
-
+            Console.WriteLine($"==== OpenAI Request ====");
+            Console.WriteLine($"Endpoint: {endpoint}");
+            Console.WriteLine($"Model: {modelName}");
+            Console.WriteLine($"Request JSON: {json}");
+            
             var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
 
             if (response == null)
             {
                 return "Bạn đang gửi quá nhiều yêu cầu tới AI hoặc có lỗi mạng. Vui lòng thử lại sau vài phút.";
             }
+            
+            Console.WriteLine($"==== OpenAI Response Status: {response.StatusCode} ====");
+            
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                return $"Lỗi OpenAI: {response.StatusCode} - {error}";
+                Console.WriteLine($"==== OpenAI Error Response: {error} ====");
+                
+                // Provide more specific error messages
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    return "Lỗi xác thực: API key không hợp lệ hoặc endpoint không đúng. Vui lòng kiểm tra cấu hình OpenAI trong appsettings.json";
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return "Lỗi: Model hoặc deployment không tìm thấy. Vui lòng kiểm tra tên model/deployment trong cấu hình";
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                {
+                    return "Lỗi: Quá nhiều yêu cầu. Vui lòng thử lại sau vài phút";
+                }
+                else
+                {
+                    return $"Lỗi OpenAI: {response.StatusCode} - {error}";
+                }
             }
 
             var responseString = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"==== OpenAI Success Response: {responseString} ====");
+            
             var doc = JObject.Parse(responseString);
-            var suggestion = doc["choices"][0]["message"]["content"].ToString();
+            var suggestion = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+            
+            if (string.IsNullOrEmpty(suggestion))
+            {
+                return "Không thể nhận được đề xuất từ AI. Vui lòng thử lại.";
+            }
+            
             return suggestion;
         }
 
