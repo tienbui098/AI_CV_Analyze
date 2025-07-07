@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using AI_CV_Analyze.Models;
 using AI_CV_Analyze.Services;
 using System;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace AI_CV_Analyze.Controllers
 {
@@ -35,7 +37,9 @@ namespace AI_CV_Analyze.Controllers
                 // Gửi nội dung CV cho OpenAI để lấy đề xuất chỉnh sửa
                 var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(result.Content);
                 ViewBag.Suggestions = suggestions;
-                
+                // Lưu kết quả phân tích vào Session
+                HttpContext.Session.SetString("ResumeAnalysisResult", JsonConvert.SerializeObject(result));
+                HttpContext.Session.SetString("CVContent", result.Content);
                 // Get job recommendations based on CV skills section
                 try
                 {
@@ -43,13 +47,14 @@ namespace AI_CV_Analyze.Controllers
                     var skillsContent = !string.IsNullOrEmpty(result.Skills) ? result.Skills : result.Content;
                     var jobRecommendations = await _resumeAnalysisService.GetJobSuggestionsAsync(skillsContent);
                     ViewBag.JobRecommendations = jobRecommendations.Suggestions;
+                    // Lưu gợi ý công việc vào Session
+                    HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(jobRecommendations.Suggestions));
                 }
                 catch (Exception jobEx)
                 {
                     // Log the error but don't fail the entire analysis
                     ViewBag.JobRecommendationsError = jobEx.Message;
                 }
-                
                 return View("AnalysisResult", result);
             }
             catch (Exception ex)
@@ -70,6 +75,9 @@ namespace AI_CV_Analyze.Controllers
                 var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(Content);
                 ViewBag.Suggestions = suggestions;
                 ViewBag.CVContent = Content;
+                // Lưu đề xuất chỉnh sửa vào Session
+                HttpContext.Session.SetString("EditSuggestions", JsonConvert.SerializeObject(suggestions));
+                HttpContext.Session.SetString("EditSuggestionsContent", Content);
                 return View("EditSuggestions");
             }
             catch (Exception ex)
@@ -80,6 +88,21 @@ namespace AI_CV_Analyze.Controllers
 
         public IActionResult AnalysisResult(ResumeAnalysisResult result)
         {
+            // Nếu không có model truyền vào, lấy từ Session
+            if (result == null || string.IsNullOrEmpty(result.Content))
+            {
+                var resultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
+                if (!string.IsNullOrEmpty(resultJson))
+                {
+                    result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
+                }
+            }
+            // Lấy lại gợi ý công việc nếu có
+            var jobRecsJson = HttpContext.Session.GetString("JobRecommendations");
+            if (!string.IsNullOrEmpty(jobRecsJson))
+            {
+                ViewBag.JobRecommendations = JsonConvert.DeserializeObject<Dictionary<string, double>>(jobRecsJson);
+            }
             return View(result);
         }
 
@@ -110,7 +133,15 @@ namespace AI_CV_Analyze.Controllers
         public IActionResult JobPrediction()
         {
             ViewBag.ErrorMessage = null;
-            return View(new JobSuggestionRequest());
+            var skills = HttpContext.Session.GetString("JobSuggestionSkills");
+            var resultsJson = HttpContext.Session.GetString("JobSuggestionResult");
+            var model = new JobSuggestionRequest { Skills = skills };
+            if (!string.IsNullOrEmpty(resultsJson))
+            {
+                var results = JsonConvert.DeserializeObject<Dictionary<string, double>>(resultsJson);
+                ViewBag.Results = results;
+            }
+            return View(model);
         }
 
         [HttpPost]
@@ -126,6 +157,9 @@ namespace AI_CV_Analyze.Controllers
             {
                 var result = await _resumeAnalysisService.GetJobSuggestionsAsync(model.Skills);
                 ViewBag.Results = result.Suggestions;
+                // Lưu kết quả gợi ý công việc vào Session
+                HttpContext.Session.SetString("JobSuggestionResult", JsonConvert.SerializeObject(result.Suggestions));
+                HttpContext.Session.SetString("JobSuggestionSkills", model.Skills);
                 return View(model);
             }
             catch (Exception ex)
@@ -133,6 +167,25 @@ namespace AI_CV_Analyze.Controllers
                 ViewBag.ErrorMessage = $"Error getting job suggestions: {ex.Message}";
                 return View(model);
             }
+        }
+
+        [HttpGet]
+        public IActionResult EditSuggestions()
+        {
+            var suggestionsJson = HttpContext.Session.GetString("EditSuggestions");
+            var content = HttpContext.Session.GetString("EditSuggestionsContent");
+            if (!string.IsNullOrEmpty(suggestionsJson))
+            {
+                ViewBag.Suggestions = JsonConvert.DeserializeObject<string>(suggestionsJson);
+                ViewBag.CVContent = content;
+            }
+            else
+            {
+                ViewBag.Suggestions = null;
+                ViewBag.CVContent = null;
+                ViewBag.ErrorMessage = "Bạn chưa dùng chức năng đề xuất chỉnh sửa CV.";
+            }
+            return View();
         }
     }
 }
