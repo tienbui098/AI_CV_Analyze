@@ -5,6 +5,28 @@
 }
 
 <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại Gợi ý công việc
+        </a>
+        <button id="btnBackEditSuggestions" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Quay lại Đề xuất chỉnh sửa CV
+        </button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('btnBackEditSuggestions');
+            btn.addEventListener('click', function(e) {
+                // Kiểm tra biến ViewBag hoặc tạo endpoint kiểm tra session
+                var hasEditSuggestions = '@(Context.Session.GetString("EditSuggestions") != null ? "1" : "0")';
+                if (hasEditSuggestions === '1') {
+                    window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
+                } else {
+                    alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV');
+                }
+            });
+        });
+    </script>
     <!-- Header Section -->
     <div class="row mb-4">
         <div class="col-12">
