@@ -139,4 +139,52 @@ pre {
 .sticky-sidebar {
     position: sticky;
     top: 1.5rem;
+    align-self: flex-start;
+    z-index: 10;
+}
+
+@media (max-width: 1023px) {
+    .sticky-sidebar {
+        position: static;
+    }
+}
+
+.job-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+    .job-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-color: var(--accent-color);
+    }
+
+.circular-chart {
+    width: 60px;
+    height: 60px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #e5e7eb;
+    stroke-width: 3.8;
+}
+
+.circle {
+    fill: none;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.6s ease 0s;
+}
+
+.percentage {
+    font-family: 'Inter', sans-serif;
+    fill: var(--dark-color);
+    font-weight: bold;
+    font-size: 8px;
+}
+
+.loading-modal {
+    background: rgba(255, 255, 255, 0.9);
 }
