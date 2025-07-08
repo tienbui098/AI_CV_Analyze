@@ -1,347 +1,281 @@
 @model AI_CV_Analyze.Models.ResumeAnalysisResult
 
 @{
-    ViewData["Title"] = "CV Analysis Results";
+    ViewData["Title"] = "Kết Quả Phân Tích CV";
+    Layout = "~/Views/Shared/_LayoutAnalysisResult.cshtml";
 }
 
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Quay lại Gợi ý công việc
-        </a>
-        <button id="btnBackEditSuggestions" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Quay lại Đề xuất chỉnh sửa CV
-        </button>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var btn = document.getElementById('btnBackEditSuggestions');
-            btn.addEventListener('click', function(e) {
-                // Kiểm tra biến ViewBag hoặc tạo endpoint kiểm tra session
-                var hasEditSuggestions = '@(Context.Session.GetString("EditSuggestions") != null ? "1" : "0")';
-                if (hasEditSuggestions === '1') {
-                    window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
-                } else {
-                    alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV');
-                }
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Quay lại Gợi ý công việc
+            </a>
+            <button id="btnBackEditSuggestions" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Quay lại Đề xuất chỉnh sửa CV
+            </button>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var btn = document.getElementById('btnBackEditSuggestions');
+                btn.addEventListener('click', function (e) {
+                    // Kiểm tra biến ViewBag hoặc tạo endpoint kiểm tra session
+                    var hasEditSuggestions = '@(Context.Session.GetString("EditSuggestions") != null ? "1" : "0")';
+                    if (hasEditSuggestions === '1') {
+                        window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
+                    } else {
+                        alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV');
+                    }
+                });
             });
-        });
-    </script>
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card bg-primary text-white">
-                <div class="card-body text-center">
-                    <h1 class="mb-2"><i class="fas fa-file-alt me-2"></i>CV Analysis Complete</h1>
-                    <p class="mb-1"><strong>File:</strong> @Model.FileName</p>
-                    <p class="mb-0"><strong>Analyzed on:</strong> @Model.AnalysisDate.ToString("g")</p>
-                </div>
+        </script>
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <div
+                class="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full mb-6">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span>Phân tích hoàn tất</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Kết Quả Phân Tích CV</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Đánh giá chi tiết và đề xuất từ hệ thống AI</p>
+
+            <div class="flex flex-wrap justify-center gap-3 mt-6">
+                <span class="file-info-badge px-4 py-2 rounded-full text-sm font-medium inline-flex items-center">
+                    <i class="fas fa-file-alt mr-2"></i> @Model.FileName
+                </span>
+                <span class="file-info-badge px-4 py-2 rounded-full text-sm font-medium inline-flex items-center">
+                    <i class="fas fa-calendar-alt mr-2"></i> @Model.AnalysisDate.ToString("dd/MM/yyyy HH:mm")
+                </span>
+                <span class="file-info-badge px-4 py-2 rounded-full text-sm font-medium inline-flex items-center">
+                    <i class="fas fa-robot mr-2"></i> Phiên bản AI 2.0
+                </span>
             </div>
         </div>
-    </div>
-
-    <div class="row">
-        <!-- CV Analysis Results -->
-        <div class="col-lg-8 mb-4">
-            <div class="card h-100 shadow">
-                <div class="card-header bg-info text-white">
-                    <h2><i class="fas fa-chart-line me-2"></i>CV Analysis Results</h2>
+        <!-- Content Analysis -->
+        @if (!string.IsNullOrEmpty(Model.OverallAnalysis))
+        {
+            <div class="analysis-card bg-white p-6">
+                <h2 class="section-header text-2xl font-bold text-gray-800">Tổng quan hồ sơ</h2>
+                <div class="content-box">
+                    <pre class="text-gray-700">@Model.OverallAnalysis</pre>
                 </div>
-                <div class="card-body">
-                    @if (!string.IsNullOrEmpty(Model.OverallAnalysis))
-                    {
-                        <div class="mb-4">
-                            <h3>Profile & Objective</h3>
-                            <div class="p-3 bg-light rounded">
-                                <pre class="mb-0">@Model.OverallAnalysis</pre>
-                            </div>
-                        </div>
-                    }
+            </div>
+        }
 
-                    @if (!string.IsNullOrEmpty(Model.Skills))
-                    {
-                        <div class="mb-4">
-                            <h3>Skills</h3>
-                            <div class="p-3 bg-light rounded">
-                                <pre class="mb-0">@Model.Skills</pre>
-                            </div>
-                        </div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(Model.Education))
-                    {
-                        <div class="mb-4">
-                            <h3>Education</h3>
-                            <div class="p-3 bg-light rounded">
-                                <pre class="mb-0">@Model.Education</pre>
-                            </div>
-                        </div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(Model.Experience))
-                    {
-                        <div class="mb-4">
-                            <h3>Experience</h3>
-                            <div class="p-3 bg-light rounded">
-                                <pre class="mb-0">@Model.Experience</pre>
-                            </div>
-                        </div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(Model.KeyPhrases))
-                    {
-                        <div class="mb-4">
-                            <h3>Languages</h3>
-                            <div class="p-3 bg-light rounded">
-                                <pre class="mb-0">@Model.KeyPhrases</pre>
-                            </div>
-                        </div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(Model.FormFields))
-                    {
-                        <div class="mb-4">
-                            <h3>Projects</h3>
-                            <div class="p-3 bg-light rounded">
-                                <pre class="mb-0">@Model.FormFields</pre>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="card-footer bg-light">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <a asp-action="Index" class="btn btn-primary">
-                                <i class="fas fa-plus me-1"></i>Analyze Another CV
-                            </a>
-                        </div>
-                        <div>
-                            <form asp-action="GetEditSuggestions" method="post" class="d-inline" id="editSuggestionsForm">
-                                <input type="hidden" name="Content" value="@Model.Content" />
-                                <button type="submit" class="btn btn-info">
-                                    <i class="fas fa-magic me-1"></i>Get CV Edit Suggestions
-                                </button>
-                            </form>
-                        </div>
+        <!-- Skills Section -->
+        @if (!string.IsNullOrEmpty(Model.Skills))
+        {
+            <div class="analysis-card bg-white p-6">
+                <h2 class="section-header text-2xl font-bold text-gray-800">Kỹ năng chuyên môn</h2>
+                <div class="content-box">
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (var skill in Model.Skills.Split(','))
+                        {
+                            <span class="skill-tag bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                                @skill.Trim()
+                            </span>
+                        }
                     </div>
                 </div>
             </div>
-        </div>
+        }
 
-        <!-- Job Recommendations Sidebar -->
-        <div class="col-lg-4 mb-4">
-            <!-- Job Recommendations Section -->
-            <div class="card h-100 shadow">
-                <div class="card-header bg-success text-white">
-                    <h3><i class="fas fa-briefcase me-2"></i>Job Recommendations</h3>
-                    <small>Based on your CV skills</small>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.JobRecommendations is Dictionary<string, double> jobRecs && jobRecs.Any())
-                    {
-                        <div class="mb-3">
-                            <p class="text-muted small">AI-powered job suggestions based on your skills:</p>
-                        </div>
-                        @foreach (var job in jobRecs.OrderByDescending(x => x.Value).Take(3))
+        <!-- Education Section -->
+        @if (!string.IsNullOrEmpty(Model.Education))
+        {
+            <div class="analysis-card bg-white p-6">
+                <h2 class="section-header text-2xl font-bold text-gray-800">Học vấn & Bằng cấp</h2>
+                <div class="content-box">
+                    <div class="space-y-6">
+                        @foreach (var edu in Model.Education.Split(new[] { "\n", "\r\n" },
+                                            StringSplitOptions.RemoveEmptyEntries))
                         {
-                            <div class="job-recommendation-item mb-3">
-                                <div class="card border-success job-recommendation-card">
-                                    <div class="card-body p-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-grow-1">
-                                                <h6 class="card-title text-primary mb-1 fw-bold">@job.Key</h6>
-                                                <div class="progress mb-2" style="height: 6px;">
-                                                    <div class="progress-bar bg-success" 
-                                                         style="width: @((job.Value * 100).ToString("F0"))%"></div>
-                                                </div>
-                                                <small class="text-muted">
-                                                    <i class="fas fa-percentage me-1"></i>@((job.Value * 100).ToString("F1"))% Match
-                                                </small>
-                                            </div>
-                                            <div class="ms-2">
-                                                <div class="circular-chart">
-                                                    <svg viewBox="0 0 36 36" class="circular-chart-svg">
-                                                        <path class="circle-bg"
-                                                              d="M18 2.0845
-                                                                 a 15.9155 15.9155 0 0 1 0 31.831
-                                                                 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                                        <path class="circle"
-                                                              stroke-dasharray="@((job.Value * 100).ToString("0")), 100"
-                                                              d="M18 2.0845
-                                                                 a 15.9155 15.9155 0 0 1 0 31.831
-                                                                 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                                        <text x="18" y="20.35" class="percentage" text-anchor="middle" font-size="6">@((job.Value * 100).ToString("0"))%</text>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="pl-4">
+                                    <pre class="text-gray-700">@edu</pre>
                                 </div>
                             </div>
                         }
-                        <div class="mt-3 text-center">
-                            <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-search me-1"></i>Get More Suggestions
-                            </a>
-                        </div>
-                    }
-                    else if (!string.IsNullOrEmpty(ViewBag.JobRecommendationsError))
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Experience Section -->
+        @if (!string.IsNullOrEmpty(Model.Experience))
+        {
+            <div class="analysis-card bg-white p-6">
+                <h2 class="section-header text-2xl font-bold text-gray-800">Kinh nghiệm làm việc</h2>
+                <div class="content-box">
+                    <div class="space-y-6">
+                        @foreach (var exp in Model.Experience.Split(new[] { "\n", "\r\n" },
+                                            StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="pl-4">
+                                    <pre class="text-gray-700">@exp</pre>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Projects Section -->
+        @if (!string.IsNullOrEmpty(Model.FormFields))
+        {
+            <div class="analysis-card bg-white p-6">
+                <h2 class="section-header text-2xl font-bold text-gray-800">Dự án tiêu biểu</h2>
+                <div class="content-box">
+                    <pre class="text-gray-700">@Model.FormFields</pre>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="space-y-8 sticky-sidebar" style="top: 1.5rem;">
+        <!-- AI Suggestions -->
+        <div class="analysis-card bg-white p-6">
+            <div class="flex items-center mb-6">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 rounded-xl mr-4">
+                    <i class="fas fa-robot text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Đề xuất từ AI</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="highlight-box p-5">
+                    <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-3"></i> Click để xem đề xuất chỉnh sửa chi tiết
+                        hơn từ AI
+                    </h3>
+                </div>
+            </div>
+
+            <form asp-action="GetEditSuggestions" method="post" id="editSuggestionsForm" class="mt-8 space-y-4">
+                <input type="hidden" name="Content" value="@Model.Content" />
+                <button type="submit"
+                    class="btn-primary text-white font-medium py-3 px-6 rounded-xl w-full flex items-center justify-center">
+                    <i class="fas fa-magic mr-3"></i> Đề xuất chỉnh sửa CV
+                </button>
+            </form>
+        </div>
+
+        <!-- Job Recommendations -->
+        <div class="analysis-card bg-white p-6">
+            <div class="flex items-center mb-6">
+                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-3 rounded-xl mr-4">
+                    <i class="fas fa-briefcase text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Công việc phù hợp</h2>
+            </div>
+
+            @if (ViewBag.JobRecommendations is Dictionary<string, double> jobRecs && jobRecs.Any())
+            {
+                <div class="space-y-4">
+                    <p class="text-gray-600 text-sm">Các vị trí được đề xuất dựa trên kỹ năng của bạn:</p>
+
+                    @foreach (var job in jobRecs.OrderByDescending(x => x.Value).Take(3))
                     {
-                        <div class="alert alert-warning small">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Job recommendations temporarily unavailable:</strong><br />
-                            <small>@ViewBag.JobRecommendationsError</small>
-                        </div>
-                        <div class="text-center">
-                            <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-search me-1"></i>Try Manual Job Search
-                            </a>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center text-muted">
-                            <i class="fas fa-briefcase fa-2x mb-3 text-muted"></i>
-                            <p class="small">No job recommendations available yet.</p>
-                            <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-search me-1"></i>Get Job Suggestions
-                            </a>
+                        <div class="job-card p-4 rounded-xl">
+                            <div class="flex items-start">
+                                <div class="flex-grow">
+                                    <h3 class="font-bold text-gray-900">@job.Key</h3>
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
+                                            <div class="bg-green-500 h-2 rounded-full"
+                                                style="width: @((job.Value * 100).ToString("F0"))%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-600">@((job.Value * 100).ToString("F1"))% phù hợp</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="circular-chart">
+                                        <svg viewBox="0 0 36 36">
+                                            <path class="circle-bg" d="M18 2.0845
+                                                                                     a 15.9155 15.9155 0 0 1 0 31.831
+                                                                                     a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path class="circle" stroke="#10b981"
+                                                stroke-dasharray="@((job.Value * 100).ToString("0")), 100" d="M18 2.0845
+                                                                                     a 15.9155 15.9155 0 0 1 0 31.831
+                                                                                     a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <text x="18" y="20.35" class="percentage">@((job.Value * 100).ToString("0"))%</text>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     }
                 </div>
-            </div>
+
+                <a href="@Url.Action("JobPrediction", "CVAnalysis")"
+                    class="btn-outline border border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl w-full mt-6 flex items-center justify-center hover:bg-gray-50">
+                    <i class="fas fa-search mr-3"></i> Xem thêm công việc
+                </a>
+            }
+            else if (!string.IsNullOrEmpty(ViewBag.JobRecommendationsError))
+            {
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Không thể tải đề xuất công việc:</strong> @ViewBag.JobRecommendationsError
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="@Url.Action("JobPrediction", "CVAnalysis")"
+                    class="btn-outline border border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl w-full mt-6 flex items-center justify-center hover:bg-gray-50">
+                    <i class="fas fa-search mr-3"></i> Tìm kiếm công việc thủ công
+                </a>
+            }
+            else
+            {
+                <div class="text-center py-8">
+                    <i class="fas fa-briefcase text-gray-300 text-4xl mb-4"></i>
+                    <p class="text-gray-500">Chưa có đề xuất công việc nào</p>
+                    <a href="@Url.Action("JobPrediction", "CVAnalysis")"
+                        class="btn-outline border border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl w-full mt-6 flex items-center justify-center hover:bg-gray-50">
+                        <i class="fas fa-search mr-3"></i> Tìm kiếm công việc
+                    </a>
+                </div>
+            }
         </div>
     </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+    <a asp-action="Index"
+        class="btn-primary text-white font-medium py-3 px-8 rounded-xl inline-flex items-center justify-center">
+        <i class="fas fa-redo mr-3"></i> Phân tích CV khác
+    </a>
+    <a href="#"
+        class="btn-outline border border-gray-300 text-gray-700 font-medium py-3 px-8 rounded-xl inline-flex items-center justify-center hover:bg-gray-50">
+        <i class="fas fa-share-alt mr-3"></i> Chia sẻ kết quả
+    </a>
+</div>
 </div>
 
 <!-- Loading Modal -->
-<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center p-4">
-                <div class="spinner-border text-primary mb-3" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <div id="loadingModalLabel" class="fw-bold fs-5">Hệ thống AI đang xử lý đề xuất chỉnh sửa CV của bạn, Hãy chờ một chút nhé</div>
-                <div class="mt-3">
-                    <button type="button" class="btn btn-danger" id="cancelAnalyzeBtn">Hủy</button>
-                </div>
-            </div>
+<div id="loadingModal" class="fixed inset-0 z-50 hidden items-center justify-center loading-modal">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto mb-6"></div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Hệ thống AI đang xử lý</h3>
+            <p class="text-gray-600 mb-6">Đang tạo đề xuất chỉnh sửa CV, vui lòng chờ trong giây lát...</p>
+            <button id="cancelAnalyzeBtn"
+                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg transition">
+                Hủy bỏ
+            </button>
         </div>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        .job-recommendation-card {
-            transition: all 0.3s ease;
-            border: 1px solid #e9ecef;
-        }
-        
-        .job-recommendation-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-color: #28a745;
-        }
-        
-        .circular-chart-svg {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .circle-bg {
-            fill: none;
-            stroke: #e9ecef;
-            stroke-width: 3.8;
-        }
-        
-        .circle {
-            fill: none;
-            stroke-width: 2.8;
-            stroke: #28a745;
-            stroke-linecap: round;
-            transition: stroke-dasharray 0.6s ease 0s;
-        }
-        
-        .percentage {
-            font-family: Arial, Helvetica, sans-serif;
-            fill: #333;
-            font-weight: bold;
-        }
-        
-        .job-recommendation-item {
-            transition: all 0.2s ease;
-        }
-        
-        .card-header h3 {
-            margin-bottom: 0;
-        }
-        
-        .card-header small {
-            opacity: 0.9;
-        }
-        
-        @@media (max-width: 768px) {
-            .col-lg-8, .col-lg-4 {
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
-}
-
-@section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var form = document.getElementById("editSuggestionsForm");
-            var cancelBtn = document.getElementById("cancelAnalyzeBtn");
-            var loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-            var controller = null;
-
-            if (form) {
-                form.addEventListener("submit", function (e) {
-                    e.preventDefault(); // Ngăn submit mặc định
-                    // Hiện modal loading
-                    loadingModal.show();
-
-                    // Tạo AbortController mới cho mỗi lần gửi
-                    controller = new AbortController();
-
-                    // Lấy dữ liệu form
-                    var formData = new FormData(form);
-
-                    fetch(form.action, {
-                        method: "POST",
-                        body: formData,
-                        signal: controller.signal
-                    })
-                    .then(response => {
-                        if (response.redirected) {
-                            window.location.href = response.url;
-                        } else {
-                            return response.text().then(html => {
-                                document.body.innerHTML = html;
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        if (error.name !== 'AbortError') {
-                            alert("Có lỗi xảy ra khi gửi yêu cầu.");
-                        }
-                    })
-                    .finally(() => {
-                        loadingModal.hide();
-                    });
-                });
-            }
-
-            if (cancelBtn) {
-                cancelBtn.addEventListener("click", function () {
-                    if (controller) {
-                        controller.abort(); // Hủy request
-                    }
-                    loadingModal.hide();
-                });
-            }
-        });
-    </script>
-}
