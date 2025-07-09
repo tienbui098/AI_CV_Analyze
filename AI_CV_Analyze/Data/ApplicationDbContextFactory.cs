@@ -9,7 +9,7 @@ namespace AI_CV_Analyze.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Server=QUANGGTIENN\\SQLEXPRESS;Database=AI_CV_Analyze;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("Server=LAPTOP-MICLPHKA;Database=AI_CV_Analyze;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }
