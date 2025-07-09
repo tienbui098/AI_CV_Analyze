@@ -78,7 +78,7 @@ namespace AI_CV_Analyze.Controllers
                 // Lưu đề xuất chỉnh sửa vào Session
                 HttpContext.Session.SetString("EditSuggestions", JsonConvert.SerializeObject(suggestions));
                 HttpContext.Session.SetString("EditSuggestionsContent", Content);
-                return View("EditSuggestions");
+                return RedirectToAction("EditSuggestions");
             }
             catch (Exception ex)
             {
