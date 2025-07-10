@@ -2,7 +2,7 @@
     // ================ LOADING MODAL ================
     const loadingModal = {
         element: document.getElementById('loadingModal'),
-        modalContent: document.querySelector('#loadingModal .modal-content'),
+        modalContent: document.querySelector('#loadingModal > div'), // Updated selector to match new markup
         controller: null,
 
         show: function () {
@@ -11,15 +11,14 @@
                 return;
             }
 
-            // Reset animation state
+            this.element.classList.remove('hidden');
             this.element.style.display = 'flex';
             this.element.classList.remove('show');
-            this.modalContent.classList.remove('show');
+            if (this.modalContent) this.modalContent.classList.remove('show');
 
-            // Trigger animation
             setTimeout(() => {
                 this.element.classList.add('show');
-                this.modalContent.classList.add('show');
+                if (this.modalContent) this.modalContent.classList.add('show');
             }, 50);
         },
 
@@ -27,10 +26,11 @@
             if (!this.element) return;
 
             this.element.classList.remove('show');
-            this.modalContent.classList.remove('show');
+            if (this.modalContent) this.modalContent.classList.remove('show');
 
             setTimeout(() => {
                 this.element.style.display = 'none';
+                this.element.classList.add('hidden');
             }, 300);
         },
 
@@ -44,6 +44,13 @@
             }
         }
     };
+
+    // Hide modal on initial load (in case it was left open)
+    loadingModal.hide();
+    // Hide modal when navigating back/forward (bfcache)
+    window.addEventListener('pageshow', function() {
+        loadingModal.hide();
+    });
 
     // ================ STICKY SIDEBAR ================
     const stickySidebar = {
@@ -86,11 +93,11 @@
 
     // ================ FORM HANDLING ================
     const formHandler = {
-        form: document.getElementById('editSuggestionsForm'),
+        form: null,
 
         submit: async function (e) {
             e.preventDefault();
-
+            console.log('Form submit intercepted!');
             loadingModal.show();
             loadingModal.controller = new AbortController();
 
@@ -100,7 +107,7 @@
                     body: new FormData(this.form),
                     signal: loadingModal.controller.signal,
                     headers: {
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        'X-RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                     }
                 });
 
@@ -119,8 +126,11 @@
         },
 
         init: function () {
+            this.form = document.getElementById('editSuggestionsForm');
             if (this.form) {
                 this.form.addEventListener('submit', (e) => this.submit(e));
+            } else {
+                console.error('Form #editSuggestionsForm not found!');
             }
         }
     };
