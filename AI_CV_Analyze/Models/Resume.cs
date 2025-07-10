@@ -1,47 +1,3 @@
-//using System;
-//using System.ComponentModel.DataAnnotations;
-//using System.ComponentModel.DataAnnotations.Schema;
-
-//namespace AI_CV_Analyze.Models
-//{
-//    public class Resume
-//    {
-//        [Key]
-//        public int ResumeId { get; set; }
-
-//        [Required]
-//        public int UserId { get; set; }
-
-//        [Required]
-//        [StringLength(255)]
-//        public string FileName { get; set; }
-
-//        [Required]
-//        [StringLength(10)]
-//        public string FileType { get; set; }
-
-//        [Required]
-//        public byte[] FileData { get; set; }
-
-//        public DateTime UploadDate { get; set; } = DateTime.UtcNow;
-
-//        public int Version { get; set; } = 1;
-
-//        // Analysis Status
-//        [StringLength(20)]
-//        public string AnalysisStatus { get; set; } = "Pending"; // Pending, Processing, Completed, Failed
-
-//        // Navigation properties
-//        [ForeignKey("UserId")]
-//        public virtual User User { get; set; }
-//        public virtual ResumeData ResumeData { get; set; }
-//        public virtual ResumeAnalysis ResumeAnalysis { get; set; }
-//        public virtual ResumeAnalysisResult ResumeAnalysisResult { get; set; }
-//        public virtual ICollection<JobCategoryRecommendation> JobCategoryRecommendations { get; set; }
-//        public virtual ICollection<ResumeHistory> ResumeHistories { get; set; }
-//    }
-//} 
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -57,27 +13,31 @@ namespace AI_CV_Analyze.Models
         public int UserId { get; set; }
 
         [Required]
-        public required string FileName { get; set; }
+        [StringLength(255)]
+        public string FileName { get; set; }
 
         [Required]
-        public required string FileType { get; set; }
+        [StringLength(10)]
+        public string FileType { get; set; }
 
         [Required]
-        public required byte[] FileData { get; set; }
+        public byte[] FileData { get; set; }
 
         public DateTime UploadDate { get; set; } = DateTime.UtcNow;
 
         public int Version { get; set; } = 1;
 
+        // Analysis Status
         [StringLength(20)]
-        public string? AnalysisStatus { get; set; } = "Pending";
+        public string AnalysisStatus { get; set; } = "Pending"; // Pending, Processing, Completed, Failed
 
+        // Navigation properties
         [ForeignKey("UserId")]
-        public User? User { get; set; }
-        public ResumeData? ResumeData { get; set; }
-        public ResumeAnalysis? ResumeAnalysis { get; set; }
-        public ResumeAnalysisResult? ResumeAnalysisResult { get; set; }
-        public ICollection<JobCategoryRecommendation>? JobCategoryRecommendations { get; set; }
-        public ICollection<ResumeHistory>? ResumeHistories { get; set; }
+        public virtual User User { get; set; }
+        public virtual ResumeData ResumeData { get; set; }
+        public virtual ResumeAnalysis ResumeAnalysis { get; set; }
+        public virtual ResumeAnalysisResult ResumeAnalysisResult { get; set; }
+        public virtual ICollection<JobCategoryRecommendation> JobCategoryRecommendations { get; set; }
+        public virtual ICollection<ResumeHistory> ResumeHistories { get; set; }
     }
 }

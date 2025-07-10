@@ -18,9 +18,7 @@
 //        Task<Dictionary<string, object>> GetAnalysisSummaryAsync(int analysisResultId);
 //    }
 //} 
-
 using AI_CV_Analyze.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -36,7 +34,5 @@ namespace AI_CV_Analyze.Services.Interfaces
         Task<IEnumerable<ResumeAnalysisResult>> GetAnalysisResultsByResumeIdAsync(int resumeId);
         Task<ResumeAnalysisResult> AnalyzeResumeAsync(int resumeId);
         Task<Dictionary<string, object>> GetAnalysisSummaryAsync(int analysisResultId);
-        Task<IEnumerable<ResumeAnalysisResult>> SearchAnalysisResultsAsync(string? searchTerm, DateTime? startDate, DateTime? endDate);
-        Task<JobSuggestionResult> GetJobSuggestionsForAnalysisAsync(int analysisResultId);
     }
 }
