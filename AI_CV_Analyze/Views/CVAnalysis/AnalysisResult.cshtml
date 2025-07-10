@@ -178,7 +178,7 @@
 
                         <form asp-action="GetEditSuggestions" method="post" id="editSuggestionsForm" class="space-y-4">
                             @Html.AntiForgeryToken()
-                            <input type="hidden" name="Content" value="@Model.Content" />
+                            <input type="hidden" name="Content" value="@(Model.Content ?? (ViewBag.CVContent ?? ""))" />
                             <button type="submit" class="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
                                 <i class="fas fa-magic mr-2"></i> Đề xuất chỉnh sửa CV
                             </button>
@@ -277,15 +277,19 @@
 </div>
 
 <!-- Loading Modal -->
-<div id="loadingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity">
-    <div class="modal-content bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
-        <div class="text-center">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto mb-6"></div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Hệ thống AI đang xử lý</h3>
-            <p class="text-gray-600 mb-6">Đang tạo đề xuất chỉnh sửa CV, vui lòng chờ trong giây lát...</p>
-            <button id="cancelAnalyzeBtn" class="px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
-                Hủy bỏ
-            </button>
+<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
+        <div id="loadingSpinner" class="mb-4">
+            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        </div>
+        <div id="loadingText" class="font-semibold text-lg text-center">
+            Hệ thống AI đang xử lý và đưa ra gợi ý chỉnh sửa, vui lòng chờ một chút nhé...
+        </div>
+        <div class="mt-4">
+            <button type="button" id="cancelAnalyzeBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Hủy</button>
         </div>
     </div>
 </div>

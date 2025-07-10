@@ -177,7 +177,7 @@ body {
     }
 
 /* Loading Modal */
-.loading-modal {
+#loadingModal {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -185,20 +185,20 @@ body {
     transition: opacity 0.3s ease;
 }
 
-    .loading-modal.show {
-        opacity: 1;
-    }
+#loadingModal.show {
+    opacity: 1;
+}
 
-    .loading-modal .modal-content {
-        transform: scale(0.95);
-        opacity: 0;
-        transition: all 0.3s ease;
-    }
+#loadingModal > div {
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
 
-    .loading-modal.show .modal-content {
-        transform: scale(1);
-        opacity: 1;
-    }
+#loadingModal.show > div {
+    transform: scale(1);
+    opacity: 1;
+}
 
 /* Animations */
 @keyframes fadeIn {
@@ -262,4 +262,38 @@ body {
     .grid-container {
         grid-template-columns: 2fr 1fr;
     }
+}
+
+/* NavBar Hover Effects - Match HomePage & Auth */
+.nav-link {
+    position: relative;
+    padding-bottom: 4px;
+}
+
+.nav-link:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffd700;
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-link:hover:after {
+    width: 100%;
+    left: 0;
+    transform: translateX(0);
+}
+
+.nav-link.text-white:hover,
+.text-white.hover\:text-yellow-300:hover {
+    color: #ffd700 !important;
+}
+
+.instagram-hover:hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    color: white;
 }
