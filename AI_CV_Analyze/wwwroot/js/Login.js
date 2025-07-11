@@ -22,6 +22,11 @@
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function (e) {
+            // Kiểm tra hợp lệ phía client
+            if (!$(loginForm).valid()) {
+                isSubmitting = false;
+                return; // Không show modal nếu form không hợp lệ
+            }
             if (isSubmitting) return;
             isSubmitting = true;
             if (loadingModal) loadingModal.classList.remove('hidden');
