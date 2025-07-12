@@ -27,13 +27,13 @@
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
                             <a asp-controller="Home" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-                                <i class="fas fa-home mr-1"></i>Trang chủ
+                                <i class="fas fa-home mr-1"></i>Home
                             </a>
                             <a asp-controller="CVAnalysis" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-                                <i class="fas fa-file-alt mr-1"></i>Phân tích CV
+                                <i class="fas fa-file-alt mr-1"></i>CV Analysis
                             </a>
                             <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-file-alt mr-1"></i>Kết quả phân tích
+                                <i class="fas fa-file-alt mr-1"></i>Analysis Result
                             </a>
                         </div>
                     </div>
@@ -53,15 +53,15 @@
                                     <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" id="user-menu-dropdown">
                                         <div class="py-1" role="none">
                                             <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition duration-200" role="menuitem">
-                                                <i class="fas fa-history mr-2"></i>Lịch sử phân tích
+                                                <i class="fas fa-history mr-2"></i>Analysis History
                                             </a>
                                             <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition duration-200" role="menuitem">
-                                                <i class="fas fa-cog mr-2"></i>Cài đặt
+                                                <i class="fas fa-cog mr-2"></i>Setting
                                             </a>
                                             <div class="border-t border-gray-100"></div>
                                             <form asp-controller="Auth" asp-action="Logout" method="post" class="block">
                                                 <button type="submit" class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-600 hover:text-white transition duration-200" role="menuitem">
-                                                    <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                                 </button>
                                             </form>
                                         </div>
@@ -72,10 +72,10 @@
                             {
                                 <div class="flex items-center space-x-4">
                                     <a asp-controller="Auth" asp-action="Login" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-                                        <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
+                                        <i class="fas fa-sign-in-alt mr-1"></i>Login
                                     </a>
                                     <a asp-controller="Auth" asp-action="Register" class="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition duration-200">
-                                        <i class="fas fa-user-plus mr-1"></i>Đăng ký
+                                        <i class="fas fa-user-plus mr-1"></i>Register
                                     </a>
                                 </div>
                             }
@@ -95,13 +95,13 @@
             <div class="hidden md:hidden bg-blue-600" id="mobile-menu">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     <a asp-controller="Home" asp-action="Index" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                        <i class="fas fa-home mr-1"></i>Trang chủ
+                        <i class="fas fa-home mr-1"></i>Home
                     </a>
                     <a asp-controller="CVAnalysis" asp-action="Index" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                        <i class="fas fa-file-alt mr-1"></i>Phân tích CV
+                        <i class="fas fa-file-alt mr-1"></i>CV Analysis
                     </a>
                     <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-						<i class="fas fa-file-alt mr-1"></i>Kết quả phân tích
+						<i class="fas fa-file-alt mr-1"></i>Analysis Result
                     </a>
                 </div>
                 <div class="pt-4 pb-3 border-t border-blue-500">
@@ -112,14 +112,14 @@
                                 <i class="fas fa-user mr-1"></i>@User.FindFirst("FullName")?.Value
                             </div>
                             <a href="#" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-history mr-2"></i>Lịch sử phân tích
+                                <i class="fas fa-history mr-2"></i>Analysis History
                             </a>
                             <a href="#" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-cog mr-2"></i>Cài đặt
+                                <i class="fas fa-cog mr-2"></i>Setting
                             </a>
                             <form asp-controller="Auth" asp-action="Logout" method="post" class="block">
                                 <button type="submit" class="text-white hover:text-yellow-300 block w-full text-left px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                 </button>
                             </form>
                         </div>
@@ -128,10 +128,10 @@
                     {
                         <div class="px-2 space-y-1">
                             <a asp-controller="Auth" asp-action="Login" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
+                                <i class="fas fa-sign-in-alt mr-1"></i>Login
                             </a>
                             <a asp-controller="Auth" asp-action="Register" class="bg-white text-blue-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                                <i class="fas fa-user-plus mr-1"></i>Đăng ký
+                                <i class="fas fa-user-plus mr-1"></i>Register
                             </a>
                         </div>
                     }

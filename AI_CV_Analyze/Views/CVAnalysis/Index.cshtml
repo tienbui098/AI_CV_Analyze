@@ -15,14 +15,14 @@
                             <i class="fas fa-cloud-upload-alt text-blue-600 text-3xl"></i>
                         </div>
                         <div class="space-y-2">
-                            <h3 class="text-xl sm:text-2xl font-semibold text-gray-900">Kéo và thả CV vào đây</h3>
-                            <p class="text-gray-500">hoặc</p>
+                            <h3 class="text-xl sm:text-2xl font-semibold text-gray-900">Drop your CV here</h3>
+                            <p class="text-gray-500">or</p>
                         </div>
                         <label for="cvFile" class="file-input-label bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg cursor-pointer inline-block">
-                            <i class="fas fa-folder-open mr-2"></i> Chọn file từ máy tính
+                            <i class="fas fa-folder-open mr-2"></i>Select files
                         </label>
                         <input id="cvFile" name="cvFile" type="file" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
-                        <p class="text-gray-500 text-sm">Hỗ trợ định dạng: PDF, DOC, DOCX, JPG, PNG (tối đa 5MB)</p>
+                        <p class="text-gray-500 text-sm">Supported formats: PDF, DOC, DOCX, JPG, PNG (max. 5MB)</p>
                     </div>
 
                     <!-- File Info & Analyze Button (hidden by default) -->
@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <button type="submit" class="btn-primary text-white font-medium py-3 px-8 rounded-lg mx-auto">
-                            <i class="fas fa-magic mr-2"></i> Phân tích CV ngay
+                            <i class="fas fa-magic mr-2"></i> Analyze CV now 
                         </button>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
         <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-xl">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <i class="fas fa-lightbulb text-blue-600 mr-3 text-xl"></i>
-                Mẹo để có CV hoàn hảo
+                Tips for a Perfect CV
             </h3>
             <ul class="space-y-3">
                 <li class="flex items-start">
@@ -76,7 +76,7 @@
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Sử dụng định dạng PDF để đảm bảo hiển thị chính xác trên mọi thiết bị</p>
+                    <p class="text-gray-700">Use PDF format to ensure accurate display across all devices</p>
                 </li>
                 <li class="flex items-start">
                     <div class="flex-shrink-0 mt-1 mr-3">
@@ -84,7 +84,7 @@
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Kiểm tra kỹ chính tả, ngữ pháp và định dạng trước khi tải lên</p>
+                    <p class="text-gray-700">Carefully check spelling, grammar, and formatting before uploading</p>
                 </li>
                 <li class="flex items-start">
                     <div class="flex-shrink-0 mt-1 mr-3">
@@ -92,7 +92,7 @@
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Đặt tên file rõ ràng, ví dụ: "NguyenVanA_CV_Developer.pdf"</p>
+                    <p class="text-gray-700">Name the file clearly, e.g.: 'NguyenVanA_CV_Developer.pdf'</p>
                 </li>
                 <li class="flex items-start">
                     <div class="flex-shrink-0 mt-1 mr-3">
@@ -100,7 +100,7 @@
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Giữ kích thước file dưới 5MB để tải lên nhanh hơn</p>
+                    <p class="text-gray-700">Keep the file size under 5MB for faster uploading</p>
                 </li>
                 <li class="flex items-start">
                     <div class="flex-shrink-0 mt-1 mr-3">
@@ -108,7 +108,7 @@
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Để đảm bảo chất lượng phân tích đạt kết quả tốt nhất, khuyến nghị người dùng sử dụng tiếng anh khi viết CV</p>
+                    <p class="text-gray-700">To ensure the best analysis quality, users are recommended to write their CV in English</p>
                 </li>
             </ul>
         </div>
@@ -123,7 +123,7 @@
                 <div class="spinner-border text-primary mb-3" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <div id="loadingModalLabel" class="fw-bold fs-5">Hệ thống đang xử lý CV của bạn, Hãy chờ một chút nhé</div>
+                <div id="loadingModalLabel" class="fw-bold fs-5">The system is processing your CV. Please wait a moment</div>
                 <div class="mt-3">
                     <button type="button" class="btn btn-danger" id="cancelAnalyzeBtn">Hủy</button>
                 </div>
