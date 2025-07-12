@@ -12,7 +12,7 @@
             <a asp-controller="CVAnalysis" asp-action="JobPrediction" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                 <i class="fas fa-arrow-left mr-2"></i> Job suggestions
             </a>
-            <button id="btnBackEditSuggestions" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+            <button id="btnBackEditSuggestions" type="button" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                 <i class="fas fa-edit mr-2"></i> Edit suggestions
             </button>
         </div>
@@ -377,3 +377,19 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('btnBackEditSuggestions').addEventListener('click', function() {
+        fetch('@Url.Action("HasEditSuggestions", "CVAnalysis")', { method: 'GET' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.hasSuggestions) {
+                    window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
+                } else {
+                    alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV!');
+                }
+            });
+    });
+</script>
+}

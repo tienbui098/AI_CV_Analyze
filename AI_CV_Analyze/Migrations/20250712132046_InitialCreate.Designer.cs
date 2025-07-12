@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AI_CV_Analyze.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250624130854_InitialCreate")]
+    [Migration("20250712132046_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -192,6 +192,10 @@ namespace AI_CV_Analyze.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Entities")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -221,6 +225,10 @@ namespace AI_CV_Analyze.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AI_CV_Analyze.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class FixSeedData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -141,6 +141,8 @@ namespace AI_CV_Analyze.Migrations
                     SentimentScore = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Language = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Skills = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SkillsAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Experience = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Education = table.Column<string>(type: "nvarchar(max)", nullable: false),
