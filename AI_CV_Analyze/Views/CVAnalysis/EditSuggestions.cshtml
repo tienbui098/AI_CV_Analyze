@@ -1,17 +1,89 @@
 @{
+    Layout = "~/Views/Shared/_LayoutEditSuggestions.cshtml";
     ViewBag.Title = "Đề xuất chỉnh sửa CV từ AI";
 }
-<h2>Đề xuất chỉnh sửa CV từ AI</h2>
-<a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn btn-secondary mb-3">
-    <i class="fas fa-arrow-left me-1"></i>Quay lại Kết quả phân tích CV
-</a>
-@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-{
-    <div class="alert alert-warning">@ViewBag.ErrorMessage</div>
-}
-<div class="card mt-3">
-    <div class="card-body">
-        <pre style="white-space: pre-wrap;">@ViewBag.Suggestions</pre>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div>
+            <h1 class="section-header text-3xl font-bold text-gray-900">Đề xuất chỉnh sửa CV từ AI</h1>
+            <p class="text-gray-600 font-medium">Các gợi ý được tạo tự động bởi hệ thống AI để tối ưu hóa CV của bạn</p>
+        </div>
+        <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary mt-4 sm:mt-0 text-gray-700 font-medium py-2.5 px-6 rounded-lg inline-flex items-center">
+            <i class="fas fa-arrow-left mr-3"></i> Quay lại kết quả
+        </a>
+    </div>
+
+    <!-- Error Message -->
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-8">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700">
+                        @ViewBag.ErrorMessage
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Suggestions Card -->
+    <div class="suggestion-card bg-white p-6 rounded-xl shadow-md">
+        <div class="flex items-center mb-6">
+            <div class="ai-icon bg-blue-50 text-blue-600 p-3 rounded-xl mr-4">
+                <i class="fas fa-robot text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">Gợi ý chỉnh sửa từ AI</h2>
+        </div>
+
+        <div class="suggestion-content bg-gray-50 p-6 rounded-lg border-l-4 border-yellow-400">
+            <!-- Format sections with proper spacing and styling -->
+            <div class="ai-suggestion-text space-y-6">
+                @if (!string.IsNullOrEmpty(ViewBag.Suggestions))
+                {
+                    var sections = ViewBag.Suggestions.ToString().Split(new[] { "##" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var section in sections)
+                    {
+                        var parts = section.Trim().Split(new[] { '\n' }, 2);
+                        if (parts.Length > 0)
+                        {
+                            <div class="section-block">
+                                @if (parts.Length > 1)
+                                {
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">@parts[0].Trim()</h3>
+                                    <div class="section-content text-gray-700 leading-relaxed">
+                                        @Html.Raw(parts[1].Trim().Replace("\n", "<br>"))
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="section-content text-gray-700 leading-relaxed">
+                                        @Html.Raw(parts[0].Trim().Replace("\n", "<br>"))
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <p class="text-gray-500">Không có đề xuất nào được tìm thấy.</p>
+                }
+            </div>
+        </div>
+
+        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
+            <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-100 transition">
+                <i class="fas fa-arrow-left mr-3"></i> Quay lại kết quả
+            </a>
+            <a href="@Url.Action("Index", "Home")" class="btn-primary bg-blue-600 text-white font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-blue-700 transition">
+                <i class="fas fa-home mr-3"></i> Về trang chủ
+            </a>
+        </div>
     </div>
 </div>
-<a href="@Url.Action("Index", "Home")" class="btn btn-secondary mt-3">Về trang chủ</a> 
