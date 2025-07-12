@@ -12,8 +12,8 @@
             <a asp-controller="CVAnalysis" asp-action="JobPrediction" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                 <i class="fas fa-arrow-left mr-2"></i> Gợi ý việc làm
             </a>
-            <button id="btnBackEditSuggestions" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                <i class="fas fa-edit mr-2"></i> Đề xuất chỉnh sửa
+            <button id="btnBackEditSuggestions" type="button" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                <i class="fas fa-edit mr-2"></i> Quay lại đề xuất chỉnh sửa
             </button>
         </div>
     </div>
@@ -64,13 +64,57 @@
                 </div>
             }
 
+            <!-- Name Section -->
+            @if (!string.IsNullOrEmpty(Model.Name))
+            {
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-user text-blue-500 mr-3"></i> Name
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-3">
+                            @foreach (var skill in Model.Name.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
+                            {
+                                <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
+                                    @skill.Trim()
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Email Section -->
+            @if (!string.IsNullOrEmpty(Model.Email))
+            {
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-envelope text-blue-500 mr-3"></i> Email
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-3">
+                            @foreach (var skill in Model.Email.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
+                            {
+                                <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
+                                    @skill.Trim()
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
             <!-- Skills Section -->
             @if (!string.IsNullOrEmpty(Model.Skills))
             {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-tools text-blue-500 mr-3"></i> Kỹ năng chuyên môn
+                            <i class="fas fa-tools text-blue-500 mr-3"></i> Skill
                         </h2>
                     </div>
                     <div class="p-6">
@@ -92,7 +136,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-graduation-cap text-blue-500 mr-3"></i> Học vấn & Bằng cấp
+                            <i class="fas fa-graduation-cap text-blue-500 mr-3"></i> Education
                         </h2>
                     </div>
                     <div class="p-6">
@@ -117,7 +161,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-briefcase text-blue-500 mr-3"></i> Kinh nghiệm làm việc
+                            <i class="fas fa-briefcase text-blue-500 mr-3"></i> Experience
                         </h2>
                     </div>
                     <div class="p-6">
@@ -333,3 +377,19 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    document.getElementById('btnBackEditSuggestions').addEventListener('click', function() {
+        fetch('@Url.Action("HasEditSuggestions", "CVAnalysis")', { method: 'GET' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.hasSuggestions) {
+                    window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
+                } else {
+                    alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV!');
+                }
+            });
+    });
+</script>
+}

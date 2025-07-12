@@ -1,154 +1,145 @@
-# AI CV Analysis System
+# AI CV Analyze
 
-Hệ thống phân tích CV tự động sử dụng AI, tích hợp nhiều công nghệ Azure AI để phân tích và đánh giá CV một cách toàn diện.
+**AI CV Analyze** là hệ thống phân tích CV tự động sử dụng các dịch vụ AI của Azure (Computer Vision, Form Recognizer, Text Analytics, OpenAI GPT-4) để đánh giá, trích xuất thông tin và đề xuất vị trí công việc phù hợp cho ứng viên.
 
-## Tính năng chính
+## Tính năng nổi bật
 
-- Phân tích hình ảnh CV sử dụng Azure Computer Vision
-- Trích xuất thông tin từ CV sử dụng Azure Form Recognizer
-- Phân tích ngôn ngữ và từ khóa với Azure Text Analytics
-- Phân tích nội dung CV với OpenAI GPT-4
-- Đánh giá và đề xuất phù hợp với các vị trí công việc
-- Lưu trữ và quản lý lịch sử phân tích CV
+- Phân tích hình ảnh CV (PDF/JPG/PNG) bằng Azure Computer Vision
+- Trích xuất thông tin có cấu trúc từ CV với Azure Form Recognizer
+- Phân tích ngôn ngữ, từ khóa, cảm xúc bằng Azure Text Analytics
+- Đánh giá nội dung, kỹ năng, kinh nghiệm với Azure OpenAI GPT-4
+- Đề xuất vị trí công việc phù hợp dựa trên nội dung CV
+- Lưu trữ lịch sử phân tích, hỗ trợ quản lý người dùng, quên mật khẩu qua email
 
 ## Yêu cầu hệ thống
 
-- .NET 7.0 SDK hoặc mới hơn
-- SQL Server 2019 hoặc mới hơn
-- Visual Studio 2022 hoặc mới hơn
-- Azure subscription (để sử dụng các dịch vụ AI)
+- .NET 7.0 SDK trở lên
+- SQL Server 2019 trở lên
+- Visual Studio 2022 (hoặc dùng CLI .NET)
+- Azure Subscription (để lấy API Key các dịch vụ AI)
+- Gmail (nếu muốn dùng chức năng gửi OTP quên mật khẩu)
 
-## Cài đặt
+## Hướng dẫn cài đặt & chạy dự án
 
-1. Clone repository:
+### 1. Clone source code
+
 ```bash
 git clone [repository-url]
 cd AI_CV_Analyze
 ```
 
-2. Cài đặt các package NuGet cần thiết:
+### 2. Cài đặt package
+
 ```bash
 dotnet restore
 ```
 
-3. Cấu hình connection string trong `appsettings.json`:
+### 3. Cấu hình kết nối Database & Azure AI
+
+- Tạo file `appsettings.Development.json` (hoặc sửa `appsettings.json`)
+- Thêm các thông tin sau (thay YOUR_* bằng thông tin thực tế):
+
 ```json
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=YOUR_SERVER;Database=CV_Analysis;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
-  }
-}
-```
-
-4. Cấu hình các dịch vụ Azure AI trong `appsettings.json`:
-```json
-{
+  },
   "Azure": {
     "ComputerVision": {
-      "SubscriptionKey": "YOUR_KEY",
-      "Endpoint": "YOUR_ENDPOINT"
+      "SubscriptionKey": "YOUR_COMPUTER_VISION_KEY",
+      "Endpoint": "YOUR_COMPUTER_VISION_ENDPOINT"
     },
     "FormRecognizer": {
-      "Endpoint": "YOUR_ENDPOINT",
-      "Key": "YOUR_KEY"
+      "Endpoint": "YOUR_FORM_RECOGNIZER_ENDPOINT",
+      "Key": "YOUR_FORM_RECOGNIZER_KEY"
     },
     "TextAnalytics": {
-      "Endpoint": "YOUR_ENDPOINT",
-      "Key": "YOUR_KEY"
+      "Endpoint": "YOUR_TEXT_ANALYTICS_ENDPOINT",
+      "Key": "YOUR_TEXT_ANALYTICS_KEY"
     }
   },
   "AzureAI": {
-    "OpenAIEndpoint": "YOUR_ENDPOINT",
-    "OpenAIKey": "YOUR_KEY",
-    "OpenAIDeploymentName": "YOUR_DEPLOYMENT"
+    "OpenAIEndpoint": "YOUR_OPENAI_ENDPOINT",
+    "OpenAIKey": "YOUR_OPENAI_KEY",
+    "OpenAIDeploymentName": "YOUR_OPENAI_DEPLOYMENT"
   }
 }
 ```
 
-5. Tạo database và migration:
+> **Tham khảo chi tiết cấu hình trong file [`README_Configuration.md`](AI_CV_Analyze/README_Configuration.md)**
+
+### 4. Tạo database và migration
+
 ```bash
-dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-## Thiết lập chức năng Quên mật khẩu & Gửi OTP qua Gmail
+### 5. (Tùy chọn) Cấu hình gửi email OTP qua Gmail
 
-### 1. Cài đặt MailKit
+- Cài package MailKit:
+  ```bash
+  dotnet add package MailKit
+  ```
+- Thêm vào `appsettings.Development.json`:
+  ```json
+  "Smtp": {
+    "Host": "smtp.gmail.com",
+    "Port": "587",
+    "Username": "your_gmail@gmail.com",
+    "Password": "your_app_password_16_ky_tu",
+    "From": "your_gmail@gmail.com"
+  }
+  ```
+- Xem hướng dẫn lấy App Password trong README_Configuration.md
 
-Ứng dụng đã sử dụng thư viện [MailKit](https://www.nuget.org/packages/MailKit) để gửi email OTP. Nếu chưa có, cài đặt bằng lệnh:
-```bash
-dotnet add package MailKit
-```
+- Đăng ký Service và Session trong `Program.cs`:
+  ```csharp
+  builder.Services.AddScoped<AI_CV_Analyze.Services.Interfaces.IEmailSender, AI_CV_Analyze.Services.Implementation.EmailSender>();
+  builder.Services.AddSession(options =>
+  {
+      options.IdleTimeout = TimeSpan.FromMinutes(10);
+      options.Cookie.HttpOnly = true;
+      options.Cookie.IsEssential = true;
+  });
+  ...
+  app.UseSession();
+  ```
 
-### 2. Cấu hình SMTP Gmail trong `appsettings.Development.json`
+- Sử dụng chức năng quên mật khẩu:
+  - Tại trang đăng nhập, nhấn "Quên mật khẩu?"
+  - Nhập email, nhận OTP qua Gmail
+  - Nhập OTP và mật khẩu mới để đặt lại mật khẩu
 
-Thêm hoặc cập nhật phần cấu hình sau:
-```json
-"Smtp": {
-  "Host": "smtp.gmail.com",
-  "Port": "587",
-  "Username": "your_gmail@gmail.com",
-  "Password": "your_app_password_16_ky_tu",
-  "From": "your_gmail@gmail.com"
-}
-```
-- **Username**: Địa chỉ Gmail của bạn
-- **Password**: App Password 16 ký tự (KHÔNG phải mật khẩu Gmail thông thường)
-- **From**: Địa chỉ Gmail gửi mail
+### 6. Chạy ứng dụng
 
-#### Cách lấy App Password Gmail:
-1. Bật xác thực 2 bước cho tài khoản Gmail ([Hướng dẫn](https://myaccount.google.com/security))
-2. Truy cập [App Passwords](https://myaccount.google.com/apppasswords)
-3. Tạo mật khẩu ứng dụng cho "Mail" và "Windows Computer"
-4. Copy 16 ký tự mật khẩu ứng dụng vào trường `Password` ở trên
+- Trong Visual Studio: Mở solution và nhấn F5
+- Hoặc dùng CLI:
+  ```bash
+  dotnet run
+  ```
+- Truy cập: http://localhost:5000 hoặc https://localhost:5001
 
-### 3. Đăng ký Service và Session trong `Program.cs`
-
-Đảm bảo đã có các dòng sau:
-```csharp
-builder.Services.AddScoped<AI_CV_Analyze.Services.Interfaces.IEmailSender, AI_CV_Analyze.Services.Implementation.EmailSender>();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(10);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-...
-app.UseSession();
-```
-
-### 4. Sử dụng chức năng quên mật khẩu
-- Tại trang đăng nhập, nhấn "Quên mật khẩu?"
-- Nhập email, nhận OTP qua Gmail
-- Nhập OTP và mật khẩu mới để đặt lại mật khẩu
-
-Nếu gặp lỗi xác thực Gmail, hãy kiểm tra lại App Password và cấu hình như hướng dẫn trên.
-
-## Chạy ứng dụng
-
-1. Chạy ứng dụng trong Visual Studio:
-   - Mở solution trong Visual Studio
-   - Nhấn F5 hoặc chọn "Start Debugging"
-
-2. Hoặc chạy bằng command line:
-```bash
-dotnet run
-```
-
-3. Truy cập ứng dụng tại: `https://localhost:5001` hoặc `http://localhost:5000`
-
-## Cấu trúc dự án
+## Cấu trúc thư mục chính
 
 ```
 AI_CV_Analyze/
-├── Controllers/         # MVC Controllers
-├── Models/             # Data models
-├── Views/              # Razor views
-├── Data/               # Database context và migrations
-├── Services/           # Business logic và services
-├── wwwroot/           # Static files
-└── Program.cs         # Application entry point
+├── Controllers/         # Controller MVC
+├── Models/              # Data models
+├── Views/               # Razor views
+├── Data/                # DbContext & Migrations
+├── Services/            # Business logic & services
+├── wwwroot/             # Static files (css, js, img)
+└── Program.cs           # Entry point
 ```
+
+## Lưu ý bảo mật
+
+- **Không commit API Key lên Git**. Sử dụng User Secrets hoặc Environment Variables khi deploy production.
+- Đảm bảo endpoint, deployment name, API version đúng với Azure portal.
+
+## Troubleshooting
+
+- Xem chi tiết các lỗi thường gặp và cách xử lý trong [`README_Configuration.md`](AI_CV_Analyze/README_Configuration.md)
 
 ## Các dịch vụ Azure AI được sử dụng
 
