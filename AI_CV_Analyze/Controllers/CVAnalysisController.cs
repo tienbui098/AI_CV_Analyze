@@ -187,5 +187,13 @@ namespace AI_CV_Analyze.Controllers
             }
             return View();
         }
+
+        [HttpGet]
+        public IActionResult HasEditSuggestions()
+        {
+            var suggestionsJson = HttpContext.Session.GetString("EditSuggestions");
+            bool hasSuggestions = !string.IsNullOrEmpty(suggestionsJson);
+            return Json(new { hasSuggestions });
+        }
     }
 }
