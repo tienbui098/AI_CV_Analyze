@@ -130,8 +130,9 @@ function hideError() {
 form.addEventListener('submit', function (e) {
     if (formSubmitting) return; // Đã submit, không submit lại
     e.preventDefault();
-    analyzeModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-    analyzeModal.show();
+    // Hiển thị loading modal (không dùng bootstrap.Modal)
+    const loadingModal = document.getElementById('loadingModal');
+    if (loadingModal) loadingModal.classList.remove('hidden');
     formSubmitting = true;
 
     // Tạo AbortController cho fetch (nếu dùng fetch)
@@ -154,11 +155,11 @@ form.addEventListener('submit', function (e) {
         .catch(err => {
             if (err.name === 'AbortError') {
                 // Đã hủy
-                analyzeModal.hide();
+                if (loadingModal) loadingModal.classList.add('hidden');
                 formSubmitting = false;
             } else {
                 alert('Đã xảy ra lỗi khi phân tích CV!');
-                analyzeModal.hide();
+                if (loadingModal) loadingModal.classList.add('hidden');
                 formSubmitting = false;
             }
         });
@@ -166,7 +167,8 @@ form.addEventListener('submit', function (e) {
 
 cancelBtn.addEventListener('click', function () {
     if (abortController) abortController.abort();
-    analyzeModal.hide();
+    const loadingModal = document.getElementById('loadingModal');
+    if (loadingModal) loadingModal.classList.add('hidden');
     formSubmitting = false;
 });
 
