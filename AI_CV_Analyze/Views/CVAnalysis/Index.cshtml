@@ -116,18 +116,19 @@
 </div>
 
 <!-- Loading Modal -->
-<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center p-4">
-                <div class="spinner-border text-primary mb-3" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <div id="loadingModalLabel" class="fw-bold fs-5">Hệ thống đang xử lý CV của bạn, Hãy chờ một chút nhé</div>
-                <div class="mt-3">
-                    <button type="button" class="btn btn-danger" id="cancelAnalyzeBtn">Hủy</button>
-                </div>
-            </div>
+<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
+        <div id="loadingSpinner" class="mb-4">
+            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        </div>
+        <div id="loadingText" class="font-semibold text-lg text-center">
+            Hệ thống AI đang xử lý CV của bạn, vui lòng chờ một chút nhé...
+        </div>
+        <div class="mt-4">
+            <button type="button" id="cancelAnalyzeBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Hủy</button>
         </div>
     </div>
 </div>
