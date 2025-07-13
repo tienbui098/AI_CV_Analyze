@@ -38,21 +38,20 @@
                     <!-- Desktop Navigation Menu (hidden on mobile) -->
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <!-- Home page link -->
                             <a asp-controller="Home" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
                                 <i class="fas fa-home mr-1"></i>Home
                             </a>
-                            <!-- CV Analysis page link -->
                             <a asp-controller="CVAnalysis" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
                                 <i class="fas fa-file-alt mr-1"></i>CV Analysis
                             </a>
-                            <!-- Analysis results page link -->
                             <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-                                <i class="fas fa-file-alt mr-1"></i>Analysis Results
+                                <i class="fas fa-chart-line mr-1"></i>Analysis Results
                             </a>
-                            <!-- Edit suggestions page link -->
+                            <a asp-controller="CVAnalysis" asp-action="JobPrediction" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                                <i class="fas fa-briefcase mr-1"></i>Job Prediction
+                            </a>
                             <a asp-controller="CVAnalysis" asp-action="EditSuggestions" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-                                <i class="fas fa-briefcase mr-1"></i>Edit Suggestions
+                                <i class="fas fa-edit mr-1"></i>Edit Suggestions
                             </a>
                         </div>
                     </div>
@@ -86,7 +85,6 @@
             <!-- Mobile Menu (hidden by default) -->
             <div class="hidden md:hidden bg-blue-600" id="mobile-menu">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <!-- Mobile navigation links (same as desktop but stacked) -->
                     <a asp-controller="Home" asp-action="Index" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
                         <i class="fas fa-home mr-1"></i>Home
                     </a>
@@ -94,10 +92,13 @@
                         <i class="fas fa-file-alt mr-1"></i>CV Analysis
                     </a>
                     <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
-                        <i class="fas fa-file-alt mr-1"></i>Analysis Results
+                        <i class="fas fa-chart-line mr-1"></i>Analysis Results
                     </a>
-                    <a asp-controller="CVAnalysis" asp-action="EditSuggestions" class="text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
-                        <i class="fas fa-briefcase mr-1"></i>Edit Suggestions
+                    <a asp-controller="CVAnalysis" asp-action="JobPrediction" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                        <i class="fas fa-briefcase mr-1"></i>Job Prediction
+                    </a>
+                    <a asp-controller="CVAnalysis" asp-action="EditSuggestions" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                        <i class="fas fa-edit mr-1"></i>Edit Suggestions
                     </a>
                 </div>
 
