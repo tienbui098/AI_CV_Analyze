@@ -360,6 +360,30 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
+    // ================ LOADING MODAL HANDLING ================
+    const loadingModal = document.getElementById('loadingModal');
+    const cancelAnalyzeBtn = document.getElementById('cancelAnalyzeBtn');
+    let formSubmitting = false;
+
+    function showLoadingModal() {
+        if (loadingModal) {
+            loadingModal.classList.remove('hidden');
+        }
+        formSubmitting = true;
+    }
+    function hideLoadingModal() {
+        if (loadingModal) {
+            loadingModal.classList.add('hidden');
+        }
+        formSubmitting = false;
+    }
+    if (cancelAnalyzeBtn) {
+        cancelAnalyzeBtn.addEventListener('click', function () {
+            hideLoadingModal();
+            // Optionally, you can abort the form submission here if using AJAX
+        });
+    }
+
     // ================ INITIALIZATION ================
     mobileMenu.init();
     userMenu.init();
@@ -381,24 +405,22 @@ document.addEventListener('DOMContentLoaded', function () {
             if (href) {
                 window.location.href = href;
             }
+            hideLoadingModal(); // Hide loading modal on navigation
         });
     }
 
-    // Handle form submission with loading state
-    const submitButton = document.querySelector('button[type="submit"]');
-    if (submitButton) {
-        submitButton.addEventListener('click', () => {
-            if (submitButton.disabled) return;
-            
-            const originalText = submitButton.innerHTML;
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
-            
-            // Re-enable after 5 seconds as fallback
-            setTimeout(() => {
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalText;
-            }, 5000);
+    // Handle form submission with loading modal
+    const jobPredictionForm = document.getElementById('jobPredictionForm');
+    if (jobPredictionForm) {
+        jobPredictionForm.addEventListener('submit', function (e) {
+            // Only show modal if validation passes (no .is-invalid)
+            if (!jobPredictionForm.querySelector('.is-invalid')) {
+                showLoadingModal();
+                // Hide modal after 30 seconds as fallback
+                setTimeout(() => {
+                    if (formSubmitting) hideLoadingModal();
+                }, 30000);
+            }
         });
     }
 

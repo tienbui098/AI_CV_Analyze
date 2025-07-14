@@ -178,3 +178,20 @@
         </div>
     </div>
 </div>
+<!-- Loading Modal -->
+<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
+        <div id="loadingSpinner" class="mb-4">
+            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        </div>
+        <div id="loadingText" class="font-semibold text-lg text-center">
+            The AI system is processing and generating edit suggestions. Please wait a moment...
+        </div>
+        <div class="mt-4">
+            <button type="button" id="cancelAnalyzeBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Cancel</button>
+        </div>
+    </div>
+</div>
