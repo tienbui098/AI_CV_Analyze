@@ -451,11 +451,17 @@ namespace AI_CV_Analyze.Services
                     case "skills":
                     case "skill":
                     case "kỹ năng":
+                    case "kĩ năng":
                         analysisResult.Skills = value;
                         break;
                     case "experience":
                     case "kinh nghiệm":
                         analysisResult.Experience = value;
+                        break;
+                    case "projects":
+                    case "project":
+                    case "dự án":
+                        analysisResult.Project = value;
                         break;
                     case "education":
                     case "học vấn":
@@ -466,9 +472,9 @@ namespace AI_CV_Analyze.Services
 
             if (string.IsNullOrEmpty(analysisResult.Name) && string.IsNullOrEmpty(analysisResult.Email) &&
                 string.IsNullOrEmpty(analysisResult.Skills) && string.IsNullOrEmpty(analysisResult.Experience) &&
-                string.IsNullOrEmpty(analysisResult.Education))
+                string.IsNullOrEmpty(analysisResult.Project) && string.IsNullOrEmpty(analysisResult.Education))
             {
-                analysisResult.ErrorMessage = "Không trích xuất được bất kỳ trường nào (Name, Email, Skills, Experience, Education) từ mô hình.";
+                analysisResult.ErrorMessage = "Không trích xuất được bất kỳ trường nào (Name, Email, Skills, Experience, Projects, Education) từ mô hình.";
             }
         }
 
