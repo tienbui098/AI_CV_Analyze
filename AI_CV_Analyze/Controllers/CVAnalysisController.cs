@@ -87,32 +87,13 @@ namespace AI_CV_Analyze.Controllers
             var jobRecsJson = HttpContext.Session.GetString("JobRecommendations");
             if (!string.IsNullOrEmpty(jobRecsJson))
             {
-                ViewBag.JobRecommendations = JsonConvert.DeserializeObject<List<JobRecommendationDto>>(jobRecsJson);
+                var jobSuggestions = JsonConvert.DeserializeObject<Dictionary<string, double>>(jobRecsJson);
+                ViewBag.JobRecommendations = jobSuggestions;
             }
             return View(result);
         }
 
-        // New method to get job recommendations from CV content via AJAX
-        [HttpPost]
-        public async Task<IActionResult> GetJobRecommendationsFromCV(string cvContent, string skillsContent = null)
-        {
-            if (string.IsNullOrWhiteSpace(cvContent))
-            {
-                return BadRequest("No CV content provided");
-            }
-
-            try
-            {
-                // Use skills section if available, otherwise use full content
-                var contentToAnalyze = !string.IsNullOrEmpty(skillsContent) ? skillsContent : cvContent;
-                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(contentToAnalyze);
-                return Json(new { success = true, suggestions = result.Suggestions });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, error = ex.Message });
-            }
-        }
+        
 
         // Job prediction methods
         [HttpGet]
@@ -156,7 +137,7 @@ namespace AI_CV_Analyze.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RecommendJobs([FromBody] SkillsRequest request)
+        public async Task<IActionResult> RecommendJobs([FromBody] JobSuggestionRequest request)
         {
             if (request == null || string.IsNullOrWhiteSpace(request.Skills))
             {
@@ -165,25 +146,13 @@ namespace AI_CV_Analyze.Controllers
             try
             {
                 var result = await _resumeAnalysisService.GetJobSuggestionsAsync(request.Skills);
-                // Map to a simple array of { title, description }
-                var jobs = (result.Suggestions ?? new Dictionary<string, double>())
-                    .Select(s => new {
-                        title = s.Key,
-                        score = s.Value
-                    }).ToList();
-                // Save to session
-                HttpContext.Session.SetString("JobRecommendations", Newtonsoft.Json.JsonConvert.SerializeObject(jobs));
-                return Json(jobs);
+                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result.Suggestions));
+                return Json(result.Suggestions);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { error = ex.Message });
             }
-        }
-
-        public class SkillsRequest
-        {
-            public string Skills { get; set; }
         }
 
         [HttpGet]
@@ -211,12 +180,6 @@ namespace AI_CV_Analyze.Controllers
             var suggestionsJson = HttpContext.Session.GetString("EditSuggestions");
             bool hasSuggestions = !string.IsNullOrEmpty(suggestionsJson);
             return Json(new { hasSuggestions });
-        }
-
-        public class JobRecommendationDto
-        {
-            public string title { get; set; }
-            public double score { get; set; }
         }
     }
 }
