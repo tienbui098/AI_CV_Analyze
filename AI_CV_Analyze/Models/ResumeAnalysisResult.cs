@@ -40,6 +40,7 @@ namespace AI_CV_Analyze.Models
         public string Email { get; set; } // Email người dùng
         public string SkillsAnalysis { get; set; } // Phân tích kỹ năng dạng JSON
         public string Experience { get; set; } // Phân tích kinh nghiệm
+        public string Project { get; set; } // Phân tích dự án
         public string Education { get; set; } // Phân tích học vấn
         public string OverallAnalysis { get; set; } // Phân tích tổng thể dạng JSON
 
