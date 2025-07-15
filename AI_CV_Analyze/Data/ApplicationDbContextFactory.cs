@@ -14,4 +14,4 @@ namespace AI_CV_Analyze.Data
             return new ApplicationDbContext(optionsBuilder.Options);
         }
     }
-} 
+}
