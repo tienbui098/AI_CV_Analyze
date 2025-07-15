@@ -246,71 +246,46 @@
                         </h2>
                     </div>
                     <div class="p-6">
-                        @if (ViewBag.JobRecommendations is Dictionary<string, double> jobRecs && jobRecs.Any())
-                        {
-                            <div class="space-y-4">
-                                <p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following positions:</p>
-
-                                @foreach (var job in jobRecs.OrderByDescending(x => x.Value).Take(3))
+                        <div class="text-center py-6">
+                            <div id="jobRecommendResult" class="mb-4">
+                                @if (ViewBag.JobRecommendations is List<AI_CV_Analyze.Controllers.CVAnalysisController.JobRecommendationDto> jobRecs && jobRecs.Any())
                                 {
-                                    <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
-                                        <div class="flex items-start">
-                                            <div class="flex-grow">
-                                                <h3 class="font-bold text-gray-900">@job.Key</h3>
-                                                <div class="flex items-center mt-2">
-                                                    <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
-                                                        <div class="bg-green-500 h-2 rounded-full" style="width: @((job.Value * 100).ToString("F0"))%"></div>
+                                    <div class="space-y-4">
+                                        <p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following positions:</p>
+                                        @foreach (var job in jobRecs.OrderByDescending(x => x.score).Take(3))
+                                        {
+                                            var percent = (job.score * 100).ToString("F1");
+                                            <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
+                                                <div class="flex items-start">
+                                                    <div class="flex-grow">
+                                                        <h3 class="font-bold text-gray-900">@job.title</h3>
+                                                        <div class="flex items-center mt-2">
+                                                            <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
+                                                                <div class="bg-green-500 h-2 rounded-full" style="width: @percent%"></div>
+                                                            </div>
+                                                            <span class="text-xs text-gray-600">@percent%</span>
+                                                        </div>
                                                     </div>
-                                                    <span class="text-xs text-gray-600">@((job.Value * 100).ToString("F1"))%</span>
+                                                    <div class="ml-4">
+                                                        <div class="circular-chart w-12 h-12">
+                                                            <svg viewBox="0 0 36 36">
+                                                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                                <path class="circle" stroke="#10b981" stroke-dasharray="@percent, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                                <text x="18" y="20.35" class="percentage">@((int)(job.score * 100))%</text>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="ml-4">
-                                                <div class="circular-chart w-12 h-12">
-                                                    <svg viewBox="0 0 36 36">
-                                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                        <path class="circle" stroke="#10b981" stroke-dasharray="@((job.Value * 100).ToString("0")), 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                        <text x="18" y="20.35" class="percentage">@((job.Value * 100).ToString("0"))%</text>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        }
                                     </div>
+                                    <a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class="fas fa-search mr-2"></i>View more jobs</a>
                                 }
                             </div>
-
-                            <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                                <i class="fas fa-search mr-2"></i>View more jobs
-                            </a>
-                        }
-                        else if (!string.IsNullOrEmpty(ViewBag.JobRecommendationsError))
-                        {
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-                                <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm text-yellow-700">
-                                            <strong>Unable to load job suggestions:</strong> @ViewBag.JobRecommendationsError
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                                <i class="fas fa-search mr-2"></i>Manual Search
-                            </a>
-                        }
-                        else
-                        {
-                            <div class="text-center py-6">
-                                <i class="fas fa-briefcase text-gray-300 text-4xl mb-3"></i>
-                                <p class="text-gray-500 text-sm mb-4">No job suggestions available yet</p>
-                                <a href="@Url.Action("JobPrediction", "CVAnalysis")" class="w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                                    <i class="fas fa-search mr-2"></i>Search for Jobs
-                                </a>
-                            </div>
-                        }
+                            <button id="btnJobRecommend" type="button" class="btn-primary px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition font-semibold shadow">
+                                Job Recommend
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -398,6 +373,75 @@
                     alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV!');
                 }
             });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('btnJobRecommend');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                btn.disabled = true;
+                btn.textContent = 'Loading...';
+                const skills = `@Model.Skills`;
+                fetch('/CVAnalysis/RecommendJobs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
+                    },
+                    body: JSON.stringify({ skills })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+                    if (data && data.length > 0) {
+                        // Sort by score descending
+                        data.sort((a, b) => b.score - a.score);
+                        html = '<div class="space-y-4">';
+                        html += '<p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following positions:</p>';
+                        data.slice(0, 3).forEach(job => {
+                            const percent = (job.score * 100).toFixed(1);
+                            html += `
+                                <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
+                                    <div class="flex items-start">
+                                        <div class="flex-grow">
+                                            <h3 class="font-bold text-gray-900">${job.title}</h3>
+                                            <div class="flex items-center mt-2">
+                                                <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
+                                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${percent}%"></div>
+                                                </div>
+                                                <span class="text-xs text-gray-600">${percent}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="circular-chart w-12 h-12">
+                                                <svg viewBox="0 0 36 36">
+                                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                    <path class="circle" stroke="#10b981" stroke-dasharray="${percent}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                    <text x="18" y="20.35" class="percentage">${parseInt(percent)}%</text>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        html += `<a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class=\"fas fa-search mr-2\"></i>View more jobs</a>`;
+                    } else {
+                        html = '<div class="text-gray-500">No recommendations found.</div>';
+                    }
+                    document.getElementById('jobRecommendResult').innerHTML = html;
+                })
+                .catch(() => {
+                    document.getElementById('jobRecommendResult').innerHTML = '<div class="text-red-500">Error fetching recommendations.</div>';
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Job Recommend';
+                });
+            });
+        }
     });
 </script>
 }
