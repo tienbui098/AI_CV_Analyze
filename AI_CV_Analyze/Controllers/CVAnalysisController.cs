@@ -6,6 +6,7 @@ using AI_CV_Analyze.Services;
 using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq; // Added for .Select()
 
 namespace AI_CV_Analyze.Controllers
 {
@@ -40,21 +41,6 @@ namespace AI_CV_Analyze.Controllers
                 // Lưu kết quả phân tích vào Session
                 HttpContext.Session.SetString("ResumeAnalysisResult", JsonConvert.SerializeObject(result));
                 HttpContext.Session.SetString("CVContent", result.Content);
-                // Get job recommendations based on CV skills section
-                try
-                {
-                    // Use the extracted skills section instead of full content
-                    var skillsContent = !string.IsNullOrEmpty(result.Skills) ? result.Skills : result.Content;
-                    var jobRecommendations = await _resumeAnalysisService.GetJobSuggestionsAsync(skillsContent);
-                    ViewBag.JobRecommendations = jobRecommendations.Suggestions;
-                    // Lưu gợi ý công việc vào Session
-                    HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(jobRecommendations.Suggestions));
-                }
-                catch (Exception jobEx)
-                {
-                    // Log the error but don't fail the entire analysis
-                    ViewBag.JobRecommendationsError = jobEx.Message;
-                }
                 return View("AnalysisResult", result);
             }
             catch (Exception ex)
@@ -101,7 +87,7 @@ namespace AI_CV_Analyze.Controllers
             var jobRecsJson = HttpContext.Session.GetString("JobRecommendations");
             if (!string.IsNullOrEmpty(jobRecsJson))
             {
-                ViewBag.JobRecommendations = JsonConvert.DeserializeObject<Dictionary<string, double>>(jobRecsJson);
+                ViewBag.JobRecommendations = JsonConvert.DeserializeObject<List<JobRecommendationDto>>(jobRecsJson);
             }
             return View(result);
         }
@@ -169,6 +155,37 @@ namespace AI_CV_Analyze.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RecommendJobs([FromBody] SkillsRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Skills))
+            {
+                return BadRequest("No skills provided");
+            }
+            try
+            {
+                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(request.Skills);
+                // Map to a simple array of { title, description }
+                var jobs = (result.Suggestions ?? new Dictionary<string, double>())
+                    .Select(s => new {
+                        title = s.Key,
+                        score = s.Value
+                    }).ToList();
+                // Save to session
+                HttpContext.Session.SetString("JobRecommendations", Newtonsoft.Json.JsonConvert.SerializeObject(jobs));
+                return Json(jobs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        public class SkillsRequest
+        {
+            public string Skills { get; set; }
+        }
+
         [HttpGet]
         public IActionResult EditSuggestions()
         {
@@ -194,6 +211,12 @@ namespace AI_CV_Analyze.Controllers
             var suggestionsJson = HttpContext.Session.GetString("EditSuggestions");
             bool hasSuggestions = !string.IsNullOrEmpty(suggestionsJson);
             return Json(new { hasSuggestions });
+        }
+
+        public class JobRecommendationDto
+        {
+            public string title { get; set; }
+            public double score { get; set; }
         }
     }
 }
