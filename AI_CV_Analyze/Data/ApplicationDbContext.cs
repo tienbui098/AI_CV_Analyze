@@ -50,6 +50,19 @@ namespace AI_CV_Analyze.Data
             // Ràng buộc điểm số cho ResumeHistory
             modelBuilder.Entity<ResumeHistory>()
                 .HasCheckConstraint("CK_ResumeHistory_Score", "Score BETWEEN 0 AND 100");
+
+            modelBuilder.Entity<ResumeAnalysis>()
+                .Property(r => r.LayoutScore).HasDefaultValue(0);
+            modelBuilder.Entity<ResumeAnalysis>()
+                .Property(r => r.SkillScore).HasDefaultValue(0);
+            modelBuilder.Entity<ResumeAnalysis>()
+                .Property(r => r.ExperienceScore).HasDefaultValue(0);
+            modelBuilder.Entity<ResumeAnalysis>()
+                .Property(r => r.EducationScore).HasDefaultValue(0);
+            modelBuilder.Entity<ResumeAnalysis>()
+                .Property(r => r.KeywordScore).HasDefaultValue(0);
+            modelBuilder.Entity<ResumeAnalysis>()
+                .Property(r => r.FormatScore).HasDefaultValue(0);
         }
     }
 } 
