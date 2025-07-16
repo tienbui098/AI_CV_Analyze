@@ -1,0 +1,72 @@
+﻿/* Navigation Active State */
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+}
+
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 2px;
+        background-color: #fbbf24;
+        border-radius: 1px;
+    }
+
+
+/* NavBar Hover Effects - Match HomePage & Auth */
+.nav-link {
+    position: relative;
+    padding-bottom: 4px;
+}
+
+    .nav-link:after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ffd700;
+        transition: width 0.3s ease, left 0.3s ease;
+    }
+
+    .nav-link:hover:after {
+        width: 100%;
+        left: 0;
+        transform: translateX(0);
+        background-color: #ffd700;
+    }
+
+    .nav-link.text-white:hover,
+    .text-white.hover\:text-yellow-300:hover {
+        color: #ffd700 !important;
+    }
+
+/* Mobile Menu */
+@media (max-width: 768px) {
+    .nav-link.active::after {
+        display: none;
+    }
+
+    .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* User Menu Dropdown */
+#user-menu-dropdown {
+    z-index: 1000;
+}
+
+/* Focus States */
+.btn:focus,
+.form-control:focus,
+.nav-link:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}

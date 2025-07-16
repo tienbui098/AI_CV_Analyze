@@ -8,11 +8,23 @@
     --danger-color: #ef4444;
     --light-color: #f8f9fa;
     --dark-color: #212529;
+    /* Add JobPrediction color variables for consistency */
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #93c5fd;
+    --secondary: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #06b6d4;
+    --gray: #64748b;
+    --gray-light: #e2e8f0;
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #f5f7fa;
+    line-height: 1.6;
+    color: var(--dark);
+    background-color: #f9fafb;
 }
 
 .suggestion-card {

@@ -4,8 +4,24 @@
     --accent-color: #4895ef;
     --light-color: #f8f9fa;
     --dark-color: #212529;
+    /* Add JobPrediction color variables for consistency */
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #93c5fd;
+    --secondary: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #06b6d4;
+    --gray: #64748b;
+    --gray-light: #e2e8f0;
 }
 
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: var(--dark);
+    background-color: #f9fafb;
+}
 .hero-bg {
     background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
 }
@@ -19,110 +35,6 @@
         transform: translateY(-8px);
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
     }
-
-.nav-link {
-    position: relative;
-    padding-bottom: 4px;
-}
-
-    .nav-link:after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--primary-color);
-        transition: width 0.3s ease, left 0.3s ease;
-    }
-
-    .nav-link:hover:after {
-        width: 100%;
-        left: 0;
-        transform: translateX(0);
-    }
-
-/* Navigation Bar Styles for Home Layout */
-.navbar {
-    background: var(--primary-color) !important;
-    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.08);
-    padding: 0.5rem 0;
-}
-
-    .navbar .navbar-brand {
-        color: #fff !important;
-        font-size: 1.5rem;
-        letter-spacing: 1px;
-    }
-
-    .navbar .nav-link {
-        color: #f8f9fa !important;
-        font-weight: 500;
-        margin-right: 0.5rem;
-        transition: color 0.2s;
-    }
-
-        .navbar .nav-link.active, .navbar .nav-link:hover {
-            color: #ffd700 !important;
-        }
-
-    .navbar .dropdown-menu {
-        background: #fff;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 16px rgba(67, 97, 238, 0.10);
-        min-width: 180px;
-    }
-
-    .navbar .dropdown-item {
-        color: var(--dark-color);
-        transition: background 0.2s, color 0.2s;
-    }
-
-        .navbar .dropdown-item:hover {
-            background: var(--primary-color);
-            color: #fff;
-        }
-
-.navbar-toggler {
-    border: none;
-}
-
-@media (max-width: 991px) {
-    .navbar .navbar-collapse {
-        background: var(--primary-color);
-        border-radius: 0 0 1rem 1rem;
-        margin-top: 0.5rem;
-    }
-}
-
-/* Enhanced Navigation Styles for Tailwind Integration */
-.bg-blue-600 {
-    background-color: var(--primary-color) !important;
-}
-
-.nav-link.text-white:hover {
-    color: #ffd700 !important;
-}
-
-/* Dropdown animation */
-.origin-top-right {
-    transform-origin: top right;
-}
-
-/* Mobile menu transitions */
-#mobile-menu {
-    transition: all 0.3s ease-in-out;
-}
-
-/* Ensure proper z-index for dropdowns */
-.relative {
-    position: relative;
-}
-
-.absolute {
-    position: absolute;
-}
 
 /* Enhanced button styles */
 .btn-primary {
