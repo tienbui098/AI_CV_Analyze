@@ -111,6 +111,7 @@ namespace AI_CV_Analyze.Controllers
                 ViewBag.JobRecommendations = jobSuggestions;
             }
             // Lấy điểm từng tiêu chí từ bảng ResumeAnalysis
+            bool hasDbScore = false;
             if (rid > 0)
             {
                 var analysis = _dbContext.ResumeAnalysis.AsNoTracking().FirstOrDefault(a => a.ResumeId == rid);
@@ -123,6 +124,23 @@ namespace AI_CV_Analyze.Controllers
                     ViewBag.KeywordScore = analysis.KeywordScore;
                     ViewBag.FormatScore = analysis.FormatScore;
                     ViewBag.TotalScore = analysis.Score;
+                    hasDbScore = (analysis.LayoutScore > 0 || analysis.SkillScore > 0 || analysis.ExperienceScore > 0 || analysis.EducationScore > 0 || analysis.KeywordScore > 0 || analysis.FormatScore > 0);
+                }
+            }
+            // Nếu không có điểm trong DB, thử lấy từ session (cho guest)
+            if (!hasDbScore)
+            {
+                var scoreJson = HttpContext.Session.GetString("CVScoreResult");
+                if (!string.IsNullOrEmpty(scoreJson))
+                {
+                    dynamic score = JsonConvert.DeserializeObject(scoreJson);
+                    ViewBag.LayoutScore = (int?)score.layout ?? 0;
+                    ViewBag.SkillScore = (int?)score.skill ?? 0;
+                    ViewBag.ExperienceScore = (int?)score.experience ?? 0;
+                    ViewBag.EducationScore = (int?)score.education ?? 0;
+                    ViewBag.KeywordScore = (int?)score.keyword ?? 0;
+                    ViewBag.FormatScore = (int?)score.format ?? 0;
+                    ViewBag.TotalScore = (int?)score.total ?? 0;
                 }
             }
             return View(result);
@@ -233,6 +251,17 @@ namespace AI_CV_Analyze.Controllers
                     resumeAnalysis.AnalysisDate = DateTime.UtcNow;
                     await _dbContext.SaveChangesAsync();
                 }
+                // Luôn lưu kết quả chấm điểm vào session (dù có đăng nhập hay không)
+                var scoreResult = new {
+                    layout,
+                    skill,
+                    experience,
+                    education,
+                    keyword,
+                    format,
+                    total = layout + skill + experience + education + keyword + format
+                };
+                HttpContext.Session.SetString("CVScoreResult", Newtonsoft.Json.JsonConvert.SerializeObject(scoreResult));
                 // Trả về kết quả (dù có lưu hay không)
                 return Json(new {
                     success = true,
