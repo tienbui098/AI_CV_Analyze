@@ -5,14 +5,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (suggestionContent) {
         const copyBtn = document.createElement('button');
         copyBtn.className = 'copy-btn flex items-center';
-        copyBtn.innerHTML = '<i class="far fa-copy mr-2"></i> Sao chép';
+        copyBtn.innerHTML = '<i class="far fa-copy mr-2"></i> Copy';
 
         copyBtn.addEventListener('click', function () {
             const textToCopy = document.querySelector('.ai-suggestion-text').textContent;
             navigator.clipboard.writeText(textToCopy).then(() => {
-                copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Đã sao chép!';
+                copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
                 setTimeout(() => {
-                    copyBtn.innerHTML = '<i class="far fa-copy mr-2"></i> Sao chép';
+                    copyBtn.innerHTML = '<i class="far fa-copy mr-2"></i> Copy';
                 }, 2000);
             });
         });

@@ -8,29 +8,29 @@
 <div class="job-prediction-container">
     <div class="container">
         <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="back-button">
-            <i class="fas fa-arrow-left"></i>Quay lại kết quả phân tích
+            <i class="fas fa-arrow-left"></i>Analysis Result
         </a>
         
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="job-prediction-card shadow">
                     <div class="card-header">
-                        <h2><i class="fas fa-briefcase me-2"></i>Dự đoán công việc phù hợp</h2>
+                        <h2><i class="fas fa-briefcase me-2"></i>Suitable Job Prediction</h2>
                     </div>
                     <div class="card-body p-4">
                         <form asp-action="JobPrediction" method="post" id="jobPredictionForm">
                             <div class="mb-4">
                                 <label for="Skills" class="form-label">
-                                    <i class="fas fa-code me-2"></i>Nhập kỹ năng của bạn (phân cách bằng dấu phẩy):
+                                    <i class="fas fa-code me-2"></i>Enter your skills (separated by commas):
                                 </label>
                                 <div class="skills-input-container">
                                     <textarea asp-for="Skills" class="form-control" rows="4" 
-                                              placeholder="Ví dụ: C#, JavaScript, HTML, CSS, React, Node.js, SQL, Git, Docker, AWS"
+                                              placeholder="Example: C#, JavaScript, HTML, CSS, React, Node.js, SQL, Git, Docker, AWS"
                                               id="Skills"></textarea>
                                 </div>
                                 <div class="skills-hint">
                                     <i class="fas fa-lightbulb me-1"></i>
-                                    Nhập các kỹ năng kỹ thuật, ngôn ngữ lập trình, framework và công cụ bạn thành thạo.
+                                    Enter the technical skills, programming languages, frameworks, and tools you are proficient in.
                                 </div>
                             </div>
                             
@@ -38,7 +38,7 @@
                             
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-search me-2"></i>Tìm kiếm công việc phù hợp
+                                    <i class="fas fa-search me-2"></i>Search for suitable jobs
                                 </button>
                             </div>
                         </form>
@@ -54,7 +54,7 @@
                             <div class="results-section">
                                 <div class="results-header">
                                     <i class="fas fa-chart-line"></i>
-                                    <span>Top công việc phù hợp nhất</span>
+                                    <span>Top suitable jobs</span>
                                 </div>
                                 
                                 <div class="row">
@@ -93,7 +93,7 @@
                                 {
                                     <div class="mt-4">
                                         <h5 class="text-muted mb-3">
-                                            <i class="fas fa-list me-2"></i>Các công việc khác
+                                            <i class="fas fa-list me-2"></i>Other Jobs
                                         </h5>
                                         <div class="row">
                                             @foreach (var item in results.OrderByDescending(x => x.Value).Skip(3).Take(6))
@@ -119,18 +119,18 @@
                                 
                                 <div class="mt-4 p-3 bg-light rounded">
                                     <h6 class="text-primary mb-2">
-                                        <i class="fas fa-info-circle me-2"></i>Lưu ý
+                                        <i class="fas fa-info-circle me-2"></i>Note
                                     </h6>
                                     <p class="mb-2 small">
-                                        Kết quả dựa trên phân tích kỹ năng và yêu cầu công việc. 
-                                        Để có kết quả chính xác hơn, hãy cập nhật thêm kỹ năng và kinh nghiệm của bạn.
+                                        The results are based on the analysis of your skills and job requirements.
+                                        For more accurate results, please update your skills and experience.
                                     </p>
                                     <div class="d-flex gap-2">
                                         <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
-                                            <i class="fas fa-print me-1"></i>In kết quả
+                                            <i class="fas fa-print me-1"></i>Export Results
                                         </button>
                                         <button class="btn btn-sm btn-outline-secondary" onclick="shareResults()">
-                                            <i class="fas fa-share me-1"></i>Chia sẻ
+                                            <i class="fas fa-share me-1"></i>Share
                                         </button>
                                     </div>
                                 </div>
@@ -143,11 +143,11 @@
             <div class="col-lg-4">
                 <div class="job-prediction-card shadow">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Gợi ý</h5>
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Suggestion</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <h6 class="text-primary">Kỹ năng phổ biến:</h6>
+                            <h6 class="text-primary">Popular skills:</h6>
                             <div class="d-flex flex-wrap gap-1">
                                 <span class="badge bg-light text-dark">JavaScript</span>
                                 <span class="badge bg-light text-dark">Python</span>
@@ -159,7 +159,7 @@
                         </div>
                         
                         <div class="mb-3">
-                            <h6 class="text-primary">Công việc hot:</h6>
+                            <h6 class="text-primary">Hot jobs:</h6>
                             <ul class="list-unstyled small">
                                 <li><i class="fas fa-check text-success me-2"></i>Frontend Developer</li>
                                 <li><i class="fas fa-check text-success me-2"></i>Backend Developer</li>
@@ -170,7 +170,7 @@
                         
                         <div class="alert alert-info small">
                             <i class="fas fa-tip me-2"></i>
-                            <strong>Mẹo:</strong> Càng nhiều kỹ năng liên quan, kết quả càng chính xác!
+                            <strong>Tips:</strong> The more relevant skills you provide, the more accurate the results!
                         </div>
                     </div>
                 </div>

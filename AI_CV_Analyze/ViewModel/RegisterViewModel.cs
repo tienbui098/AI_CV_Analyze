@@ -4,20 +4,20 @@ namespace AI_CV_Analyze.Models.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Email là bắt buộc")]
-        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid Email")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự")]
+        [Required(ErrorMessage = "Password is required.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Mật khẩu xác nhận không khớp")]
+        [Compare("Password", ErrorMessage = "Confirmation password does not match")]
         public string ConfirmPassword { get; set; }
 
-        [Required(ErrorMessage = "Họ tên là bắt buộc")]
+        [Required(ErrorMessage = "Full name is required")]
         public string FullName { get; set; }
     }
 }
