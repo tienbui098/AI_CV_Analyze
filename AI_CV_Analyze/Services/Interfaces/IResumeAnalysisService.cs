@@ -6,8 +6,9 @@ namespace AI_CV_Analyze.Services
 {
     public interface IResumeAnalysisService
     {
-        Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile);
+        Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile, int userId, bool skipDb = false);
         Task<string> GetCVEditSuggestions(string cvContent);
         Task<JobSuggestionResult> GetJobSuggestionsAsync(string skills);
+        Task<(int Layout, int Skill, int Experience, int Education, int Keyword, int Format, string RawJson)> AnalyzeScoreWithOpenAI(string cvContent);
     }
 }

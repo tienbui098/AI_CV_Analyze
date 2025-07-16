@@ -3,6 +3,16 @@
 @{
     ViewData["Title"] = "Kết Quả Phân Tích CV";
     Layout = "~/Views/Shared/_LayoutAnalysisResult.cshtml";
+    var analysis = Model.Resume?.ResumeAnalysis;
+    bool hasScore = analysis != null && (
+        analysis.LayoutScore > 0 ||
+        analysis.SkillScore > 0 ||
+        analysis.ExperienceScore > 0 ||
+        analysis.EducationScore > 0 ||
+        analysis.KeywordScore > 0 ||
+        analysis.FormatScore > 0
+    );
+    // Nếu là khách, cho phép JS render điểm tạm thời
 }
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -237,6 +247,106 @@
                         </form>
                     </div>
                 </div>
+
+                <!-- CV Scoring Table + Button -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6" id="cv-score-block">
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-star text-yellow-500 mr-3"></i> CV Scoring (AI)
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <button id="btnScoreCV" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition" data-resumeid="@Model.ResumeId" @(hasScore ? "style='display:none'" : "")>
+                            <i class="fas fa-magic mr-2"></i> Chấm điểm CV
+                        </button>
+                        <div id="cv-score-table" @(hasScore ? "" : "style='display:none'")>
+                            <table class="min-w-full text-sm text-gray-700">
+                                <tbody>
+                                    <tr>
+                                        <td class="font-medium py-2 pr-4">Bố cục & trình bày</td>
+                                        <td class="text-right py-2" id="score-layout">@(analysis?.LayoutScore ?? 0) / 10</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium py-2 pr-4">Kỹ năng</td>
+                                        <td class="text-right py-2" id="score-skill">@(analysis?.SkillScore ?? 0) / 10</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium py-2 pr-4">Kinh nghiệm/Project</td>
+                                        <td class="text-right py-2" id="score-experience">@(analysis?.ExperienceScore ?? 0) / 10</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium py-2 pr-4">Học vấn</td>
+                                        <td class="text-right py-2" id="score-education">@(analysis?.EducationScore ?? 0) / 10</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium py-2 pr-4">Từ khóa phù hợp</td>
+                                        <td class="text-right py-2" id="score-keyword">@(analysis?.KeywordScore ?? 0) / 10</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-medium py-2 pr-4">Hình thức/Định dạng</td>
+                                        <td class="text-right py-2" id="score-format">@(analysis?.FormatScore ?? 0) / 10</td>
+                                    </tr>
+                                    <tr class="border-t">
+                                        <td class="font-bold py-2 pr-4">Tổng điểm</td>
+                                        <td class="text-right py-2 font-bold text-blue-600 text-lg" id="score-total">@((analysis?.LayoutScore ?? 0) + (analysis?.SkillScore ?? 0) + (analysis?.ExperienceScore ?? 0) + (analysis?.EducationScore ?? 0) + (analysis?.KeywordScore ?? 0) + (analysis?.FormatScore ?? 0)) / 60</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="score-loading" style="display:none" class="text-center text-blue-600 mt-2"><i class="fas fa-spinner fa-spin"></i> Đang chấm điểm...</div>
+                        <div id="score-error" style="display:none" class="text-center text-red-600 mt-2"></div>
+                    </div>
+                </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var btn = document.getElementById('btnScoreCV');
+                    if (btn) {
+                        btn.addEventListener('click', function () {
+                            var resumeId = btn.getAttribute('data-resumeid');
+                            var loading = document.getElementById('score-loading');
+                            var error = document.getElementById('score-error');
+                            var table = document.getElementById('cv-score-table');
+                            btn.style.display = 'none';
+                            error.style.display = 'none';
+                            loading.style.display = 'block';
+                            fetch('/CVAnalysis/ScoreCV', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
+                                },
+                                body: 'resumeId=' + encodeURIComponent(resumeId) + '&cvContent=' + encodeURIComponent('@(Model.Content ?? "")')
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                loading.style.display = 'none';
+                                if (data.success) {
+                                    table.style.display = 'block';
+                                    btn.style.display = 'none';
+                                    // Hiển thị điểm vừa chấm lên bảng điểm (kể cả khách)
+                                    document.getElementById('score-layout').textContent = data.layout + ' / 10';
+                                    document.getElementById('score-skill').textContent = data.skill + ' / 10';
+                                    document.getElementById('score-experience').textContent = data.experience + ' / 10';
+                                    document.getElementById('score-education').textContent = data.education + ' / 10';
+                                    document.getElementById('score-keyword').textContent = data.keyword + ' / 10';
+                                    document.getElementById('score-format').textContent = data.format + ' / 10';
+                                    document.getElementById('score-total').textContent = data.total + ' / 60';
+                                } else {
+                                    btn.style.display = 'block';
+                                    error.style.display = 'block';
+                                    error.textContent = data.error || 'Đã xảy ra lỗi khi chấm điểm.';
+                                }
+                            })
+                            .catch(err => {
+                                loading.style.display = 'none';
+                                btn.style.display = 'block';
+                                error.style.display = 'block';
+                                error.textContent = 'Đã xảy ra lỗi khi kết nối máy chủ.';
+                            });
+                        });
+                    }
+                });
+                </script>
 
                 <!-- Job Recommendations -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
