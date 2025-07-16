@@ -4,9 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - AI CV Analyze</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="~/css/HomePage.css" />
+    <link rel="stylesheet" href="~/css/nav-styles.css" />
     @RenderSection("Styles", required: false)
 </head>
 <body class="bg-light">
@@ -25,7 +27,7 @@
                     <!-- Desktop Navigation -->
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a asp-controller="Home" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                            <a asp-controller="Home" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200 active">
                                 <i class="fas fa-home mr-1"></i>Home
                             </a>
                             <a asp-controller="CVAnalysis" asp-action="Index" class="nav-link text-white hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
@@ -80,8 +82,8 @@
                                         <i class="fas fa-sign-in-alt mr-1"></i>Sign in
                                     </a>
                                     <a asp-controller="Auth" asp-action="Register" class="bg-white text-blue-600 hover:bg-yellow-300 px-4 py-2 rounded-md text-sm font-medium transition duration-200">
-                                    <i class="fas fa-user-plus mr-1"></i>Register
-                                </a>
+                                        <i class="fas fa-user-plus mr-1"></i>Register
+                                    </a>
                                 </div>
                             }
                         </div>
@@ -99,7 +101,7 @@
             <!-- Mobile menu -->
             <div class="hidden md:hidden bg-blue-600" id="mobile-menu">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a asp-controller="Home" asp-action="Index" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
+                    <a asp-controller="Home" asp-action="Index" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200 active">
                         <i class="fas fa-home mr-1"></i>Home
                     </a>
                     <a asp-controller="CVAnalysis" asp-action="Index" class="text-white hover:text-yellow-300 block px-3 py-2 rounded-md text-base font-medium transition duration-200">
@@ -236,6 +238,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/Home.js"></script>
+    <script src="~/js/nav-styles.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html> 

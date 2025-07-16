@@ -213,7 +213,7 @@
                         </div>
                     </div>
                 </div>
-			}
+            }
         </div>
 
         <!-- Right Sidebar - Sticky -->
@@ -298,54 +298,54 @@
                     </div>
                 </div>
                 <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var btn = document.getElementById('btnScoreCV');
-                    if (btn) {
-                        btn.addEventListener('click', function () {
-                            var resumeId = btn.getAttribute('data-resumeid');
-                            var loading = document.getElementById('score-loading');
-                            var error = document.getElementById('score-error');
-                            var table = document.getElementById('cv-score-table');
-                            btn.style.display = 'none';
-                            error.style.display = 'none';
-                            loading.style.display = 'block';
-                            fetch('/CVAnalysis/ScoreCV', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                    'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
-                                },
-                                body: 'resumeId=' + encodeURIComponent(resumeId) + '&cvContent=' + encodeURIComponent('@(Model.Content ?? "")')
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                loading.style.display = 'none';
-                                if (data.success) {
-                                    table.style.display = 'block';
-                                    btn.style.display = 'none';
-                                    // Hiển thị điểm vừa chấm lên bảng điểm (kể cả khách)
-                                    document.getElementById('score-layout').textContent = data.layout + ' / 10';
-                                    document.getElementById('score-skill').textContent = data.skill + ' / 10';
-                                    document.getElementById('score-experience').textContent = data.experience + ' / 10';
-                                    document.getElementById('score-education').textContent = data.education + ' / 10';
-                                    document.getElementById('score-keyword').textContent = data.keyword + ' / 10';
-                                    document.getElementById('score-format').textContent = data.format + ' / 10';
-                                    document.getElementById('score-total').textContent = data.total + ' / 60';
-                                } else {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var btn = document.getElementById('btnScoreCV');
+                        if (btn) {
+                            btn.addEventListener('click', function () {
+                                var resumeId = btn.getAttribute('data-resumeid');
+                                var loading = document.getElementById('score-loading');
+                                var error = document.getElementById('score-error');
+                                var table = document.getElementById('cv-score-table');
+                                btn.style.display = 'none';
+                                error.style.display = 'none';
+                                loading.style.display = 'block';
+                                fetch('/CVAnalysis/ScoreCV', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
+                                    },
+                                    body: 'resumeId=' + encodeURIComponent(resumeId) + '&cvContent=' + encodeURIComponent('@(Model.Content ?? "")')
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    loading.style.display = 'none';
+                                    if (data.success) {
+                                        table.style.display = 'block';
+                                        btn.style.display = 'none';
+                                        // Hiển thị điểm vừa chấm lên bảng điểm (kể cả khách)
+                                        document.getElementById('score-layout').textContent = data.layout + ' / 10';
+                                        document.getElementById('score-skill').textContent = data.skill + ' / 10';
+                                        document.getElementById('score-experience').textContent = data.experience + ' / 10';
+                                        document.getElementById('score-education').textContent = data.education + ' / 10';
+                                        document.getElementById('score-keyword').textContent = data.keyword + ' / 10';
+                                        document.getElementById('score-format').textContent = data.format + ' / 10';
+                                        document.getElementById('score-total').textContent = data.total + ' / 60';
+                                    } else {
+                                        btn.style.display = 'block';
+                                        error.style.display = 'block';
+                                        error.textContent = data.error || 'Đã xảy ra lỗi khi chấm điểm.';
+                                    }
+                                })
+                                .catch(err => {
+                                    loading.style.display = 'none';
                                     btn.style.display = 'block';
                                     error.style.display = 'block';
-                                    error.textContent = data.error || 'Đã xảy ra lỗi khi chấm điểm.';
-                                }
-                            })
-                            .catch(err => {
-                                loading.style.display = 'none';
-                                btn.style.display = 'block';
-                                error.style.display = 'block';
-                                error.textContent = 'Đã xảy ra lỗi khi kết nối máy chủ.';
+                                    error.textContent = 'Đã xảy ra lỗi khi kết nối máy chủ.';
+                                });
                             });
-                        });
-                    }
-                });
+                        }
+                    });
                 </script>
 
                 <!-- Job Recommendations -->
@@ -475,147 +475,147 @@
 </div>
 
 @section Scripts {
-<script>
-    document.getElementById('btnBackEditSuggestions').addEventListener('click', function() {
-        fetch('@Url.Action("HasEditSuggestions", "CVAnalysis")', { method: 'GET' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.hasSuggestions) {
-                    window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
-                } else {
-                    alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV!');
-                }
-            });
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const btn = document.getElementById('btnJobRecommend');
-        const loadingText = document.getElementById('loadingText');
-        let abortController = null;
-        // Lấy đối tượng loadingModal từ AnalysisResult.js
-        let loadingModal = window.loadingModalInstance;
-        if (!loadingModal && typeof window !== 'undefined') {
-            // Nếu chưa có instance, tạo lại từ AnalysisResult.js
-            loadingModal = {
-                element: document.getElementById('loadingModal'),
-                modalContent: document.querySelector('#loadingModal > div'),
-                show: function () {
-                    if (!this.element) return;
-                    this.element.classList.remove('hidden');
-                    this.element.style.display = 'flex';
-                    this.element.classList.remove('show');
-                    if (this.modalContent) this.modalContent.classList.remove('show');
-                    setTimeout(() => {
-                        this.element.classList.add('show');
-                        if (this.modalContent) this.modalContent.classList.add('show');
-                    }, 50);
-                },
-                hide: function () {
-                    if (!this.element) return;
-                    this.element.classList.remove('show');
-                    if (this.modalContent) this.modalContent.classList.remove('show');
-                    setTimeout(() => {
-                        this.element.style.display = 'none';
-                        this.element.classList.add('hidden');
-                    }, 300);
-                }
-            };
-            window.loadingModalInstance = loadingModal;
-        }
-        const cancelBtn = document.getElementById('cancelAnalyzeBtn');
-        if (btn) {
-            btn.addEventListener('click', function () {
-                btn.disabled = true;
-                btn.textContent = 'Loading...';
-                if (loadingText) loadingText.textContent = 'AI system is processing and giving suitable jobs based on your CV. Please wait a moment...';
-                if (loadingModal) loadingModal.show();
-                abortController = new AbortController();
-                const skills = `@Model.Skills`;
-                fetch('/CVAnalysis/RecommendJobs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
-                    },
-                    body: JSON.stringify({ skills }),
-                    signal: abortController.signal
-                })
-                .then(response => response.json())
+    <script>
+        document.getElementById('btnBackEditSuggestions').addEventListener('click', function() {
+            fetch('@Url.Action("HasEditSuggestions", "CVAnalysis")', { method: 'GET' })
+                .then(res => res.json())
                 .then(data => {
-                    let html = '';
-                    // Convert dictionary to array if needed
-                    let jobs = [];
-                    if (data && !Array.isArray(data)) {
-                        jobs = Object.entries(data).map(([title, score]) => ({ title, score }));
-                    } else if (Array.isArray(data)) {
-                        jobs = data;
+                    if (data.hasSuggestions) {
+                        window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
+                    } else {
+                        alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV!');
                     }
-                    if (jobs.length > 0) {
-                        // Sort by score descending
-                        jobs.sort((a, b) => b.score - a.score);
-                        html = '<div class="space-y-4">';
-                        html += '<p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following positions:</p>';
-                        jobs.slice(0, 3).forEach(job => {
-                            const percent = (job.score * 100).toFixed(1);
-                            html += `
-                                <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
-                                    <div class="flex items-start">
-                                        <div class="flex-grow">
-                                            <h3 class="font-bold text-gray-900">${job.title}</h3>
-                                            <div class="flex items-center mt-2">
-                                                <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
-                                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${percent}%"></div>
+                });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('btnJobRecommend');
+            const loadingText = document.getElementById('loadingText');
+            let abortController = null;
+            // Lấy đối tượng loadingModal từ AnalysisResult.js
+            let loadingModal = window.loadingModalInstance;
+            if (!loadingModal && typeof window !== 'undefined') {
+                // Nếu chưa có instance, tạo lại từ AnalysisResult.js
+                loadingModal = {
+                    element: document.getElementById('loadingModal'),
+                    modalContent: document.querySelector('#loadingModal > div'),
+                    show: function () {
+                        if (!this.element) return;
+                        this.element.classList.remove('hidden');
+                        this.element.style.display = 'flex';
+                        this.element.classList.remove('show');
+                        if (this.modalContent) this.modalContent.classList.remove('show');
+                        setTimeout(() => {
+                            this.element.classList.add('show');
+                            if (this.modalContent) this.modalContent.classList.add('show');
+                        }, 50);
+                    },
+                    hide: function () {
+                        if (!this.element) return;
+                        this.element.classList.remove('show');
+                        if (this.modalContent) this.modalContent.classList.remove('show');
+                        setTimeout(() => {
+                            this.element.style.display = 'none';
+                            this.element.classList.add('hidden');
+                        }, 300);
+                    }
+                };
+                window.loadingModalInstance = loadingModal;
+            }
+            const cancelBtn = document.getElementById('cancelAnalyzeBtn');
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    btn.disabled = true;
+                    btn.textContent = 'Loading...';
+                    if (loadingText) loadingText.textContent = 'AI system is processing and giving suitable jobs based on your CV. Please wait a moment...';
+                    if (loadingModal) loadingModal.show();
+                    abortController = new AbortController();
+                    const skills = `@Model.Skills`;
+                    fetch('/CVAnalysis/RecommendJobs', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
+                        },
+                        body: JSON.stringify({ skills }),
+                        signal: abortController.signal
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+                        // Convert dictionary to array if needed
+                        let jobs = [];
+                        if (data && !Array.isArray(data)) {
+                            jobs = Object.entries(data).map(([title, score]) => ({ title, score }));
+                        } else if (Array.isArray(data)) {
+                            jobs = data;
+                        }
+                        if (jobs.length > 0) {
+                            // Sort by score descending
+                            jobs.sort((a, b) => b.score - a.score);
+                            html = '<div class="space-y-4">';
+                            html += '<p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following positions:</p>';
+                            jobs.slice(0, 3).forEach(job => {
+                                const percent = (job.score * 100).toFixed(1);
+                                html += `
+                                    <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
+                                        <div class="flex items-start">
+                                            <div class="flex-grow">
+                                                <h3 class="font-bold text-gray-900">${job.title}</h3>
+                                                <div class="flex items-center mt-2">
+                                                    <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
+                                                        <div class="bg-green-500 h-2 rounded-full" style="width: ${percent}%"></div>
+                                                    </div>
+                                                    <span class="text-xs text-gray-600">${percent}%</span>
                                                 </div>
-                                                <span class="text-xs text-gray-600">${percent}%</span>
                                             </div>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="circular-chart w-12 h-12">
-                                                <svg viewBox="0 0 36 36">
-                                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                    <path class="circle" stroke="#10b981" stroke-dasharray="${percent}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                    <text x="18" y="20.35" class="percentage">${parseInt(percent)}%</text>
-                                                </svg>
+                                            <div class="ml-4">
+                                                <div class="circular-chart w-12 h-12">
+                                                    <svg viewBox="0 0 36 36">
+                                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                        <path class="circle" stroke="#10b981" stroke-dasharray="${percent}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                        <text x="18" y="20.35" class="percentage">${parseInt(percent)}%</text>
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                        html += `<a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class=\"fas fa-search mr-2\"></i>View more jobs</a>`;
-                    } else {
-                        html = '<div class="text-gray-500">No recommendations found.</div>';
-                    }
-                    document.getElementById('jobRecommendResult').innerHTML = html;
-                })
-                .catch((err) => {
-                    if (err.name === 'AbortError') {
-                        document.getElementById('jobRecommendResult').innerHTML = '<div class="text-gray-500">Đã hủy yêu cầu.</div>';
-                    } else {
-                        document.getElementById('jobRecommendResult').innerHTML = '<div class="text-red-500">Error fetching recommendations.</div>';
-                    }
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.textContent = 'Job Recommend';
+                                `;
+                            });
+                            html += '</div>';
+                            html += `<a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class=\"fas fa-search mr-2\"></i>View more jobs</a>`;
+                        } else {
+                            html = '<div class="text-gray-500">No recommendations found.</div>';
+                        }
+                        document.getElementById('jobRecommendResult').innerHTML = html;
+                    })
+                    .catch((err) => {
+                        if (err.name === 'AbortError') {
+                            document.getElementById('jobRecommendResult').innerHTML = '<div class="text-gray-500">Đã hủy yêu cầu.</div>';
+                        } else {
+                            document.getElementById('jobRecommendResult').innerHTML = '<div class="text-red-500">Error fetching recommendations.</div>';
+                        }
+                    })
+                    .finally(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'Job Recommend';
+                        if (loadingModal) loadingModal.hide();
+                        if (loadingText) loadingText.textContent = 'The AI system is processing and generating edit suggestions. Please wait a moment...';
+                    });
+                });
+            }
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function () {
+                    if (abortController) abortController.abort();
                     if (loadingModal) loadingModal.hide();
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = 'Job Recommend';
+                    }
                     if (loadingText) loadingText.textContent = 'The AI system is processing and generating edit suggestions. Please wait a moment...';
                 });
-            });
-        }
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', function () {
-                if (abortController) abortController.abort();
-                if (loadingModal) loadingModal.hide();
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = 'Job Recommend';
-                }
-                if (loadingText) loadingText.textContent = 'The AI system is processing and generating edit suggestions. Please wait a moment...';
-            });
-        }
-    });
-</script>
+            }
+        });
+    </script>
 }

@@ -1,78 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // ================ MOBILE MENU HANDLING ================
-    const mobileMenu = {
-        button: document.getElementById('mobile-menu-button'),
-        menu: document.getElementById('mobile-menu'),
-        isOpen: false,
-
-        toggle: function () {
-            this.isOpen = !this.isOpen;
-            if (this.isOpen) {
-                this.menu.classList.remove('hidden');
-                this.button.setAttribute('aria-expanded', 'true');
-            } else {
-                this.menu.classList.add('hidden');
-                this.button.setAttribute('aria-expanded', 'false');
-            }
-        },
-
-        init: function () {
-            if (this.button && this.menu) {
-                this.button.addEventListener('click', () => this.toggle());
-                
-                // Close menu when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (!this.button.contains(e.target) && !this.menu.contains(e.target)) {
-                        if (this.isOpen) {
-                            this.toggle();
-                        }
-                    }
-                });
-            }
-        }
-    };
-
-    // ================ USER MENU DROPDOWN ================
-    const userMenu = {
-        button: document.getElementById('user-menu-button'),
-        dropdown: document.getElementById('user-menu-dropdown'),
-        isOpen: false,
-
-        toggle: function () {
-            this.isOpen = !this.isOpen;
-            if (this.isOpen) {
-                this.dropdown.classList.remove('hidden');
-                this.button.setAttribute('aria-expanded', 'true');
-            } else {
-                this.dropdown.classList.add('hidden');
-                this.button.setAttribute('aria-expanded', 'false');
-            }
-        },
-
-        init: function () {
-            if (this.button && this.dropdown) {
-                this.button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.toggle();
-                });
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (!this.button.contains(e.target) && !this.dropdown.contains(e.target)) {
-                        if (this.isOpen) {
-                            this.toggle();
-                        }
-                    }
-                });
-            }
-        }
-    };
-
     // ================ FORM VALIDATION ================
     const formValidation = {
         form: null,
         skillsInput: null,
-
         validateSkills: function (skills) {
             if (!skills || skills.trim().length === 0) {
                 return {
@@ -80,45 +10,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     message: 'Vui lòng nhập ít nhất một kỹ năng.'
                 };
             }
-
             const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill.length > 0);
-            
             if (skillsArray.length === 0) {
                 return {
                     isValid: false,
                     message: 'Vui lòng nhập ít nhất một kỹ năng hợp lệ.'
                 };
             }
-
             if (skillsArray.length < 3) {
                 return {
                     isValid: false,
                     message: 'Vui lòng nhập ít nhất 3 kỹ năng để có kết quả chính xác hơn.'
                 };
             }
-
             return {
                 isValid: true,
                 message: ''
             };
         },
-
         showError: function (input, message) {
             input.classList.add('is-invalid');
-            
-            // Remove existing error message
             const existingError = input.parentNode.querySelector('.invalid-feedback');
             if (existingError) {
                 existingError.remove();
             }
-            
-            // Add new error message
             const errorDiv = document.createElement('div');
             errorDiv.className = 'invalid-feedback';
             errorDiv.textContent = message;
             input.parentNode.appendChild(errorDiv);
         },
-
         clearError: function (input) {
             input.classList.remove('is-invalid');
             const errorDiv = input.parentNode.querySelector('.invalid-feedback');
@@ -126,13 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorDiv.remove();
             }
         },
-
         init: function () {
             this.form = document.querySelector('form[asp-action="JobPrediction"]');
             this.skillsInput = document.getElementById('Skills');
-
             if (this.skillsInput) {
-                // Real-time validation
                 this.skillsInput.addEventListener('input', () => {
                     const validation = this.validateSkills(this.skillsInput.value);
                     if (validation.isValid) {
@@ -141,8 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         this.showError(this.skillsInput, validation.message);
                     }
                 });
-
-                // Form submission validation
                 if (this.form) {
                     this.form.addEventListener('submit', (e) => {
                         const validation = this.validateSkills(this.skillsInput.value);
@@ -157,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     };
-
     // ================ SKILLS AUTOCOMPLETE ================
     const skillsAutocomplete = {
         commonSkills: [
@@ -171,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
             'Machine Learning', 'Data Science', 'TensorFlow', 'PyTorch', 'Pandas', 'NumPy',
             'Photoshop', 'Illustrator', 'Figma', 'Sketch', 'Adobe XD'
         ],
-
         createSuggestionBox: function () {
             const suggestionBox = document.createElement('div');
             suggestionBox.className = 'skills-suggestion-box';
@@ -192,41 +105,31 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             return suggestionBox;
         },
-
         filterSkills: function (input) {
             const value = input.value.toLowerCase();
             const lastCommaIndex = value.lastIndexOf(',');
             const currentWord = lastCommaIndex >= 0 ? value.substring(lastCommaIndex + 1).trim() : value;
-            
             if (currentWord.length < 2) return [];
-
             return this.commonSkills.filter(skill => 
                 skill.toLowerCase().includes(currentWord) &&
                 !value.toLowerCase().includes(skill.toLowerCase())
             ).slice(0, 8);
         },
-
         showSuggestions: function (input, suggestions) {
             let suggestionBox = input.parentNode.querySelector('.skills-suggestion-box');
-            
             if (!suggestionBox) {
                 suggestionBox = this.createSuggestionBox();
                 input.parentNode.style.position = 'relative';
                 input.parentNode.appendChild(suggestionBox);
             }
-
             if (suggestions.length === 0) {
                 suggestionBox.style.display = 'none';
                 return;
             }
-
             suggestionBox.innerHTML = suggestions.map(skill => 
                 `<div class="suggestion-item" style="padding: 0.5rem 1rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='white'">${skill}</div>`
             ).join('');
-
             suggestionBox.style.display = 'block';
-
-            // Add click handlers
             suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const value = input.value;
@@ -234,17 +137,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     const newValue = lastCommaIndex >= 0 
                         ? value.substring(0, lastCommaIndex + 1) + ' ' + item.textContent
                         : item.textContent;
-                    
                     input.value = newValue;
                     suggestionBox.style.display = 'none';
                     input.focus();
-                    
-                    // Trigger input event for validation
                     input.dispatchEvent(new Event('input'));
                 });
             });
         },
-
         init: function () {
             const skillsInput = document.getElementById('Skills');
             if (!skillsInput) return;
@@ -385,8 +284,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ================ INITIALIZATION ================
-    mobileMenu.init();
-    userMenu.init();
     formValidation.init();
     skillsAutocomplete.init();
     animations.init();
