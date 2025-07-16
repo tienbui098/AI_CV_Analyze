@@ -6,16 +6,21 @@ using AI_CV_Analyze.Services;
 using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq; // Added for .Select()
+using AI_CV_Analyze.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AI_CV_Analyze.Controllers
 {
     public class CVAnalysisController : Controller
     {
         private readonly IResumeAnalysisService _resumeAnalysisService;
+        private readonly ApplicationDbContext _dbContext;
 
-        public CVAnalysisController(IResumeAnalysisService resumeAnalysisService)
+        public CVAnalysisController(IResumeAnalysisService resumeAnalysisService, ApplicationDbContext dbContext)
         {
             _resumeAnalysisService = resumeAnalysisService;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
@@ -31,30 +36,29 @@ namespace AI_CV_Analyze.Controllers
                 return BadRequest("No file uploaded");
             }
 
+            // Lấy UserId từ claim (nếu có)
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            int? userId = null;
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int uid))
+            {
+                userId = uid;
+            }
+
             try
             {
-                var result = await _resumeAnalysisService.AnalyzeResume(cvFile);
-                // Gửi nội dung CV cho OpenAI để lấy đề xuất chỉnh sửa
-                var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(result.Content);
-                ViewBag.Suggestions = suggestions;
-                // Lưu kết quả phân tích vào Session
+                ResumeAnalysisResult result;
+                if (userId.HasValue)
+                {
+                    // Đăng nhập: lưu vào DB
+                    result = await _resumeAnalysisService.AnalyzeResume(cvFile, userId.Value);
+                }
+                else
+                {
+                    // Không đăng nhập: chỉ phân tích, không lưu DB
+                    result = await _resumeAnalysisService.AnalyzeResume(cvFile, 0, true); // skipDb = true
+                }
                 HttpContext.Session.SetString("ResumeAnalysisResult", JsonConvert.SerializeObject(result));
                 HttpContext.Session.SetString("CVContent", result.Content);
-                // Get job recommendations based on CV skills section
-                try
-                {
-                    // Use the extracted skills section instead of full content
-                    var skillsContent = !string.IsNullOrEmpty(result.Skills) ? result.Skills : result.Content;
-                    var jobRecommendations = await _resumeAnalysisService.GetJobSuggestionsAsync(skillsContent);
-                    ViewBag.JobRecommendations = jobRecommendations.Suggestions;
-                    // Lưu gợi ý công việc vào Session
-                    HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(jobRecommendations.Suggestions));
-                }
-                catch (Exception jobEx)
-                {
-                    // Log the error but don't fail the entire analysis
-                    ViewBag.JobRecommendationsError = jobEx.Message;
-                }
                 return View("AnalysisResult", result);
             }
             catch (Exception ex)
@@ -86,7 +90,7 @@ namespace AI_CV_Analyze.Controllers
             }
         }
 
-        public IActionResult AnalysisResult(ResumeAnalysisResult result)
+        public IActionResult AnalysisResult(ResumeAnalysisResult result, int? resumeId = null)
         {
             // Nếu không có model truyền vào, lấy từ Session
             if (result == null || string.IsNullOrEmpty(result.Content))
@@ -97,36 +101,34 @@ namespace AI_CV_Analyze.Controllers
                     result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
                 }
             }
+            // Nếu vẫn chưa có result, thử lấy ResumeId từ query/session
+            int rid = result?.ResumeId ?? resumeId ?? 0;
             // Lấy lại gợi ý công việc nếu có
             var jobRecsJson = HttpContext.Session.GetString("JobRecommendations");
             if (!string.IsNullOrEmpty(jobRecsJson))
             {
-                ViewBag.JobRecommendations = JsonConvert.DeserializeObject<Dictionary<string, double>>(jobRecsJson);
+                var jobSuggestions = JsonConvert.DeserializeObject<Dictionary<string, double>>(jobRecsJson);
+                ViewBag.JobRecommendations = jobSuggestions;
+            }
+            // Lấy điểm từng tiêu chí từ bảng ResumeAnalysis
+            if (rid > 0)
+            {
+                var analysis = _dbContext.ResumeAnalysis.AsNoTracking().FirstOrDefault(a => a.ResumeId == rid);
+                if (analysis != null)
+                {
+                    ViewBag.LayoutScore = analysis.LayoutScore;
+                    ViewBag.SkillScore = analysis.SkillScore;
+                    ViewBag.ExperienceScore = analysis.ExperienceScore;
+                    ViewBag.EducationScore = analysis.EducationScore;
+                    ViewBag.KeywordScore = analysis.KeywordScore;
+                    ViewBag.FormatScore = analysis.FormatScore;
+                    ViewBag.TotalScore = analysis.Score;
+                }
             }
             return View(result);
         }
 
-        // New method to get job recommendations from CV content via AJAX
-        [HttpPost]
-        public async Task<IActionResult> GetJobRecommendationsFromCV(string cvContent, string skillsContent = null)
-        {
-            if (string.IsNullOrWhiteSpace(cvContent))
-            {
-                return BadRequest("No CV content provided");
-            }
-
-            try
-            {
-                // Use skills section if available, otherwise use full content
-                var contentToAnalyze = !string.IsNullOrEmpty(skillsContent) ? skillsContent : cvContent;
-                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(contentToAnalyze);
-                return Json(new { success = true, suggestions = result.Suggestions });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, error = ex.Message });
-            }
-        }
+        
 
         // Job prediction methods
         [HttpGet]
@@ -166,6 +168,86 @@ namespace AI_CV_Analyze.Controllers
             {
                 ViewBag.ErrorMessage = $"Error getting job suggestions: {ex.Message}";
                 return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RecommendJobs([FromBody] JobSuggestionRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Skills))
+            {
+                return BadRequest("No skills provided");
+            }
+            try
+            {
+                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(request.Skills);
+                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result.Suggestions));
+                return Json(result.Suggestions);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ScoreCV(int resumeId, string cvContent = null)
+        {
+            // Kiểm tra đăng nhập
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            bool isLoggedIn = userIdClaim != null && int.TryParse(userIdClaim.Value, out _);
+
+            string content = cvContent;
+            if (string.IsNullOrEmpty(content))
+            {
+                // Nếu có resumeId, lấy từ DB nếu có
+                var analysisResult = _dbContext.ResumeAnalysisResults.AsNoTracking().FirstOrDefault(r => r.ResumeId == resumeId);
+                if (analysisResult == null || string.IsNullOrEmpty(analysisResult.Content))
+                    return BadRequest("Chưa có nội dung CV để chấm điểm");
+                content = analysisResult.Content;
+            }
+            try
+            {
+                var (layout, skill, experience, education, keyword, format, rawJson) = await _resumeAnalysisService.AnalyzeScoreWithOpenAI(content);
+                if (isLoggedIn)
+                {
+                    // Lưu vào DB
+                    var resumeAnalysis = _dbContext.ResumeAnalysis.FirstOrDefault(a => a.ResumeId == resumeId);
+                    if (resumeAnalysis == null)
+                    {
+                        resumeAnalysis = new ResumeAnalysis
+                        {
+                            ResumeId = resumeId,
+                            AnalysisDate = DateTime.UtcNow
+                        };
+                        _dbContext.ResumeAnalysis.Add(resumeAnalysis);
+                    }
+                    resumeAnalysis.LayoutScore = layout;
+                    resumeAnalysis.SkillScore = skill;
+                    resumeAnalysis.ExperienceScore = experience;
+                    resumeAnalysis.EducationScore = education;
+                    resumeAnalysis.KeywordScore = keyword;
+                    resumeAnalysis.FormatScore = format;
+                    resumeAnalysis.Score = layout + skill + experience + education + keyword + format;
+                    resumeAnalysis.Suggestions = rawJson;
+                    resumeAnalysis.AnalysisDate = DateTime.UtcNow;
+                    await _dbContext.SaveChangesAsync();
+                }
+                // Trả về kết quả (dù có lưu hay không)
+                return Json(new {
+                    success = true,
+                    layout,
+                    skill,
+                    experience,
+                    education,
+                    keyword,
+                    format,
+                    total = layout + skill + experience + education + keyword + format
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
             }
         }
 

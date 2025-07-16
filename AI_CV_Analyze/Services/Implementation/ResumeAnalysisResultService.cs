@@ -161,6 +161,7 @@ namespace AI_CV_Analyze.Services.Implementation
                 ["Email"] = analysisResult.Email ?? "Not extracted",
                 ["Skills"] = analysisResult.Skills ?? "Not extracted",
                 ["Experience"] = analysisResult.Experience ?? "Not extracted",
+                ["Project"] = analysisResult.Project ?? "Not extracted",
                 ["Education"] = analysisResult.Education ?? "Not extracted"
             };
 
