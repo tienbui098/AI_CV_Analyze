@@ -17,7 +17,7 @@ namespace AI_CV_Analyze.ViewModel
 
         [Required]
         [DataType(DataType.Password)]
-        [Compare("NewPassword", ErrorMessage = "Mật khẩu xác nhận không khớp.")]
+        [Compare("NewPassword", ErrorMessage = "Confirmation password does not match.")]
         public string ConfirmPassword { get; set; }
     }
 } 

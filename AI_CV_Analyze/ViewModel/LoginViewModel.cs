@@ -4,11 +4,11 @@ namespace AI_CV_Analyze.Models.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email là bắt buộc")]
-        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid Email")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

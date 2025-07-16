@@ -221,7 +221,7 @@ namespace AI_CV_Analyze.Controllers
                 // Nếu có resumeId, lấy từ DB nếu có
                 var analysisResult = _dbContext.ResumeAnalysisResults.AsNoTracking().FirstOrDefault(r => r.ResumeId == resumeId);
                 if (analysisResult == null || string.IsNullOrEmpty(analysisResult.Content))
-                    return BadRequest("Chưa có nội dung CV để chấm điểm");
+                    return BadRequest("No CV content available for scoring");
                 content = analysisResult.Content;
             }
             try
@@ -294,7 +294,7 @@ namespace AI_CV_Analyze.Controllers
             {
                 ViewBag.Suggestions = null;
                 ViewBag.CVContent = null;
-                ViewBag.ErrorMessage = "Bạn chưa dùng chức năng đề xuất chỉnh sửa CV.";
+                ViewBag.ErrorMessage = "You have not used the CV edit suggestion feature yet.";
             }
             return View();
         }

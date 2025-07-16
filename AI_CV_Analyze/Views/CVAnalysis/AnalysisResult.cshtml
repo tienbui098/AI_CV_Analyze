@@ -258,7 +258,7 @@
                     </div>
                     <div class="p-6">
                         <button id="btnScoreCV" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition" data-resumeid="@Model.ResumeId" @(hasScore ? "style='display:none'" : "")>
-                            <i class="fas fa-magic mr-2"></i> Chấm điểm CV
+                            <i class="fas fa-magic mr-2"></i> CV Scoring
                         </button>
                         <div id="cv-score-table" @(hasScore ? "" : "style='display:none'")>
                             <table class="min-w-full text-sm text-gray-700">
@@ -294,7 +294,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div id="score-loading" style="display:none" class="text-center text-blue-600 mt-2"><i class="fas fa-spinner fa-spin"></i> Đang chấm điểm...</div>
+                        <div id="score-loading" style="display:none" class="text-center text-blue-600 mt-2"><i class="fas fa-spinner fa-spin"></i> Scoring...</div>
                         <div id="score-error" style="display:none" class="text-center text-red-600 mt-2"></div>
                     </div>
                 </div>
@@ -344,7 +344,7 @@
                                     } else {
                                         btn.style.display = 'block';
                                         error.style.display = 'block';
-                                        error.textContent = data.error || 'Đã xảy ra lỗi khi chấm điểm.';
+                                        error.textContent = data.error || 'An error occurred while scoring the CV.';
                                     }
                                 })
                                 .catch(err => {
@@ -355,7 +355,7 @@
                                     }
                                     btn.style.display = 'block';
                                     error.style.display = 'block';
-                                    error.textContent = 'Đã xảy ra lỗi khi kết nối máy chủ.';
+                                    error.textContent = 'An error occurred while connecting to the server.';
                                 });
                             });
                         }
@@ -409,8 +409,8 @@
                                     <a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class="fas fa-search mr-2"></i>View more jobs</a>
                                 }
                             </div>
-                            <button id="btnJobRecommend" type="button" class="btn-primary px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition font-semibold shadow">
-                                Job Recommend
+                            <button id="btnJobRecommend" type="button" class=" w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                                <i class="fas fa-magic mr-2"></i> Job Recommendation
                             </button>
                         </div>
                     </div>
@@ -458,7 +458,7 @@
             </svg>
         </div>
         <div class="font-semibold text-lg text-center">
-            AI system is grading your CV. Please wait.
+            AI system is scoring your CV. Please wait a moment...
         </div>
     </div>
 </div>
@@ -512,7 +512,7 @@
                     if (data.hasSuggestions) {
                         window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
                     } else {
-                        alert('Bạn chưa dùng chức năng đề xuất chỉnh sửa CV!');
+                        alert('You have not used the CV edit suggestion feature yet!');
                     }
                 });
         });
