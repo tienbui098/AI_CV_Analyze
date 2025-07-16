@@ -36,8 +36,8 @@ namespace AI_CV_Analyze.Controllers
             {
                 var result = await _resumeAnalysisService.AnalyzeResume(cvFile);
                 // Gửi nội dung CV cho OpenAI để lấy đề xuất chỉnh sửa
-                var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(result.Content);
-                ViewBag.Suggestions = suggestions;
+                //var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(result.Content);
+                //ViewBag.Suggestions = suggestions;
                 // Lưu kết quả phân tích vào Session
                 HttpContext.Session.SetString("ResumeAnalysisResult", JsonConvert.SerializeObject(result));
                 HttpContext.Session.SetString("CVContent", result.Content);

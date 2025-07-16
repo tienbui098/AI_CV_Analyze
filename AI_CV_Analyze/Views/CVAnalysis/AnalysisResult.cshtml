@@ -381,10 +381,46 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById('btnJobRecommend');
+        const loadingText = document.getElementById('loadingText');
+        let abortController = null;
+        // Lấy đối tượng loadingModal từ AnalysisResult.js
+        let loadingModal = window.loadingModalInstance;
+        if (!loadingModal && typeof window !== 'undefined') {
+            // Nếu chưa có instance, tạo lại từ AnalysisResult.js
+            loadingModal = {
+                element: document.getElementById('loadingModal'),
+                modalContent: document.querySelector('#loadingModal > div'),
+                show: function () {
+                    if (!this.element) return;
+                    this.element.classList.remove('hidden');
+                    this.element.style.display = 'flex';
+                    this.element.classList.remove('show');
+                    if (this.modalContent) this.modalContent.classList.remove('show');
+                    setTimeout(() => {
+                        this.element.classList.add('show');
+                        if (this.modalContent) this.modalContent.classList.add('show');
+                    }, 50);
+                },
+                hide: function () {
+                    if (!this.element) return;
+                    this.element.classList.remove('show');
+                    if (this.modalContent) this.modalContent.classList.remove('show');
+                    setTimeout(() => {
+                        this.element.style.display = 'none';
+                        this.element.classList.add('hidden');
+                    }, 300);
+                }
+            };
+            window.loadingModalInstance = loadingModal;
+        }
+        const cancelBtn = document.getElementById('cancelAnalyzeBtn');
         if (btn) {
             btn.addEventListener('click', function () {
                 btn.disabled = true;
                 btn.textContent = 'Loading...';
+                if (loadingText) loadingText.textContent = 'AI system is processing and giving suitable jobs based on your CV. Please wait a moment...';
+                if (loadingModal) loadingModal.show();
+                abortController = new AbortController();
                 const skills = `@Model.Skills`;
                 fetch('/CVAnalysis/RecommendJobs', {
                     method: 'POST',
@@ -392,7 +428,8 @@
                         'Content-Type': 'application/json',
                         'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
                     },
-                    body: JSON.stringify({ skills })
+                    body: JSON.stringify({ skills }),
+                    signal: abortController.signal
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -443,13 +480,30 @@
                     }
                     document.getElementById('jobRecommendResult').innerHTML = html;
                 })
-                .catch(() => {
-                    document.getElementById('jobRecommendResult').innerHTML = '<div class="text-red-500">Error fetching recommendations.</div>';
+                .catch((err) => {
+                    if (err.name === 'AbortError') {
+                        document.getElementById('jobRecommendResult').innerHTML = '<div class="text-gray-500">Đã hủy yêu cầu.</div>';
+                    } else {
+                        document.getElementById('jobRecommendResult').innerHTML = '<div class="text-red-500">Error fetching recommendations.</div>';
+                    }
                 })
                 .finally(() => {
                     btn.disabled = false;
                     btn.textContent = 'Job Recommend';
+                    if (loadingModal) loadingModal.hide();
+                    if (loadingText) loadingText.textContent = 'The AI system is processing and generating edit suggestions. Please wait a moment...';
                 });
+            });
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function () {
+                if (abortController) abortController.abort();
+                if (loadingModal) loadingModal.hide();
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Job Recommend';
+                }
+                if (loadingText) loadingText.textContent = 'The AI system is processing and generating edit suggestions. Please wait a moment...';
             });
         }
     });
