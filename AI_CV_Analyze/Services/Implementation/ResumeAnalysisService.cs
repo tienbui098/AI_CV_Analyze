@@ -395,9 +395,12 @@ namespace AI_CV_Analyze.Services
 
                 if (pageCount == 1)
                 {
-                    // Nếu chỉ có 1 trang, không cần xử lý
-                    pdfStream.Position = 0;
-                    return pdfStream;
+                    // Nếu chỉ có 1 trang, render thành 1 ảnh luôn để xử lý thống nhất
+                    using var bitmap = pdfDocument.Render(0, 2480, 3508, true);
+                    using var ms = new MemoryStream();
+                    bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    ms.Position = 0;
+                    return new MemoryStream(ms.ToArray());  // return bản sao m
                 }
 
                 var renderedImages = new List<Image<Rgba32>>();
