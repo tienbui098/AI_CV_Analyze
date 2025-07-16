@@ -338,6 +338,12 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net.Http;
+using PdfiumViewer;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using System.IO;
 
 namespace AI_CV_Analyze.Services
 {
@@ -379,6 +385,58 @@ namespace AI_CV_Analyze.Services
             }
         }
 
+        public class PdfPreprocessor
+        {
+            public static async Task<Stream> ConvertMultiPagePdfToSingleImageAsync(Stream pdfStream)
+            {
+                // Load PDF
+                using var pdfDocument = PdfDocument.Load(pdfStream);
+                int pageCount = pdfDocument.PageCount;
+
+                if (pageCount == 1)
+                {
+                    // Nếu chỉ có 1 trang, không cần xử lý
+                    pdfStream.Position = 0;
+                    return pdfStream;
+                }
+
+                var renderedImages = new List<Image<Rgba32>>();
+
+                // Render từng trang thành ảnh
+                for (int i = 0; i < pageCount; i++)
+                {
+                    using var bitmap = pdfDocument.Render(i, 2480, 3508, true); // A4 300dpi
+                    using var ms = new MemoryStream();
+                    bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    ms.Position = 0;
+
+                    var image = await Image.LoadAsync<Rgba32>(ms);
+                    renderedImages.Add(image);
+                }
+
+                // Tính kích thước ảnh tổng (chiều dọc)
+                int totalHeight = renderedImages.Sum(img => img.Height);
+                int maxWidth = renderedImages.Max(img => img.Width);
+
+                // Tạo ảnh trống để ghép
+                using var finalImage = new Image<Rgba32>(maxWidth, totalHeight);
+                int yOffset = 0;
+
+                foreach (var image in renderedImages)
+                {
+                    finalImage.Mutate(ctx => ctx.DrawImage(image, new Point(0, yOffset), 1f));
+                    yOffset += image.Height;
+                }
+
+                // Lưu ảnh ghép thành stream
+                var outputStream = new MemoryStream();
+                await finalImage.SaveAsync(outputStream, new PngEncoder());
+                outputStream.Position = 0;
+
+                return outputStream;
+            }
+        }
+
         public async Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile)
         {
             if (cvFile == null || cvFile.Length == 0)
@@ -388,7 +446,18 @@ namespace AI_CV_Analyze.Services
             if (!supportedTypes.Contains(cvFile.ContentType.ToLowerInvariant()))
                 throw new ArgumentException($"Unsupported file type. Supported types are: {string.Join(", ", supportedTypes)}", nameof(cvFile));
 
-            using var stream = cvFile.OpenReadStream();
+            Stream processedStream;
+
+            if (cvFile.ContentType == "application/pdf")
+            {
+                using var originalStream = cvFile.OpenReadStream();
+                processedStream = await PdfPreprocessor.ConvertMultiPagePdfToSingleImageAsync(originalStream);
+            }
+            else
+            {
+                processedStream = cvFile.OpenReadStream();
+            }
+
             var analysisResult = new ResumeAnalysisResult
             {
                 AnalysisDate = DateTime.UtcNow,
@@ -398,13 +467,11 @@ namespace AI_CV_Analyze.Services
 
             try
             {
-                var operation = await _formRecognizerClient.AnalyzeDocumentAsync(WaitUntil.Completed, _customModelId, stream);
+                var operation = await _formRecognizerClient.AnalyzeDocumentAsync(WaitUntil.Completed, _customModelId, processedStream);
                 var result = operation.Value;
 
                 analysisResult.Content = result.Content;
-
                 ExtractCustomFields(result, analysisResult);
-
                 analysisResult.AnalysisStatus = string.IsNullOrEmpty(analysisResult.ErrorMessage) ? "Completed" : "Failed";
             }
             catch (RequestFailedException ex)
