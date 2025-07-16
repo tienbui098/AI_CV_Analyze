@@ -4,14 +4,15 @@
     ViewData["Title"] = "Kết Quả Phân Tích CV";
     Layout = "~/Views/Shared/_LayoutAnalysisResult.cshtml";
     var analysis = Model.Resume?.ResumeAnalysis;
-    bool hasScore = analysis != null && (
-        analysis.LayoutScore > 0 ||
-        analysis.SkillScore > 0 ||
-        analysis.ExperienceScore > 0 ||
-        analysis.EducationScore > 0 ||
-        analysis.KeywordScore > 0 ||
-        analysis.FormatScore > 0
-    );
+    // Sử dụng điểm từ ViewBag nếu có (ưu tiên cho cả guest)
+    int layoutScore = ViewBag.LayoutScore ?? (analysis?.LayoutScore ?? 0);
+    int skillScore = ViewBag.SkillScore ?? (analysis?.SkillScore ?? 0);
+    int experienceScore = ViewBag.ExperienceScore ?? (analysis?.ExperienceScore ?? 0);
+    int educationScore = ViewBag.EducationScore ?? (analysis?.EducationScore ?? 0);
+    int keywordScore = ViewBag.KeywordScore ?? (analysis?.KeywordScore ?? 0);
+    int formatScore = ViewBag.FormatScore ?? (analysis?.FormatScore ?? 0);
+    int totalScore = ViewBag.TotalScore ?? (layoutScore + skillScore + experienceScore + educationScore + keywordScore + formatScore);
+    bool hasScore = (layoutScore > 0 || skillScore > 0 || experienceScore > 0 || educationScore > 0 || keywordScore > 0 || formatScore > 0);
     // Nếu là khách, cho phép JS render điểm tạm thời
 }
 
@@ -263,32 +264,32 @@
                             <table class="min-w-full text-sm text-gray-700">
                                 <tbody>
                                     <tr>
-                                        <td class="font-medium py-2 pr-4">Bố cục & trình bày</td>
-                                        <td class="text-right py-2" id="score-layout">@(analysis?.LayoutScore ?? 0) / 10</td>
+                                        <td class="font-medium py-2 pr-4">Layout and presentation</td>
+                                        <td class="text-right py-2" id="score-layout">@layoutScore / 10</td>
                                     </tr>
                                     <tr>
-                                        <td class="font-medium py-2 pr-4">Kỹ năng</td>
-                                        <td class="text-right py-2" id="score-skill">@(analysis?.SkillScore ?? 0) / 10</td>
+                                        <td class="font-medium py-2 pr-4">Skill</td>
+                                        <td class="text-right py-2" id="score-skill">@skillScore / 10</td>
                                     </tr>
                                     <tr>
-                                        <td class="font-medium py-2 pr-4">Kinh nghiệm/Project</td>
-                                        <td class="text-right py-2" id="score-experience">@(analysis?.ExperienceScore ?? 0) / 10</td>
+                                        <td class="font-medium py-2 pr-4">Experience/Project</td>
+                                        <td class="text-right py-2" id="score-experience">@experienceScore / 10</td>
                                     </tr>
                                     <tr>
-                                        <td class="font-medium py-2 pr-4">Học vấn</td>
-                                        <td class="text-right py-2" id="score-education">@(analysis?.EducationScore ?? 0) / 10</td>
+                                        <td class="font-medium py-2 pr-4">Education</td>
+                                        <td class="text-right py-2" id="score-education">@educationScore / 10</td>
                                     </tr>
                                     <tr>
-                                        <td class="font-medium py-2 pr-4">Từ khóa phù hợp</td>
-                                        <td class="text-right py-2" id="score-keyword">@(analysis?.KeywordScore ?? 0) / 10</td>
+                                        <td class="font-medium py-2 pr-4">Relevant Keywords</td>
+                                        <td class="text-right py-2" id="score-keyword">@keywordScore / 10</td>
                                     </tr>
                                     <tr>
-                                        <td class="font-medium py-2 pr-4">Hình thức/Định dạng</td>
-                                        <td class="text-right py-2" id="score-format">@(analysis?.FormatScore ?? 0) / 10</td>
+                                        <td class="font-medium py-2 pr-4">Form/Format</td>
+                                        <td class="text-right py-2" id="score-format">@formatScore / 10</td>
                                     </tr>
                                     <tr class="border-t">
-                                        <td class="font-bold py-2 pr-4">Tổng điểm</td>
-                                        <td class="text-right py-2 font-bold text-blue-600 text-lg" id="score-total">@((analysis?.LayoutScore ?? 0) + (analysis?.SkillScore ?? 0) + (analysis?.ExperienceScore ?? 0) + (analysis?.EducationScore ?? 0) + (analysis?.KeywordScore ?? 0) + (analysis?.FormatScore ?? 0)) / 60</td>
+                                        <td class="font-bold py-2 pr-4">Total score</td>
+                                        <td class="text-right py-2 font-bold text-blue-600 text-lg" id="score-total">@totalScore / 60</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -300,6 +301,7 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         var btn = document.getElementById('btnScoreCV');
+                        var cvScoreLoadingModal = document.getElementById('cvScoreLoadingModal');
                         if (btn) {
                             btn.addEventListener('click', function () {
                                 var resumeId = btn.getAttribute('data-resumeid');
@@ -309,6 +311,10 @@
                                 btn.style.display = 'none';
                                 error.style.display = 'none';
                                 loading.style.display = 'block';
+                                if (cvScoreLoadingModal) {
+                                    cvScoreLoadingModal.classList.remove('hidden');
+                                    cvScoreLoadingModal.style.display = 'flex';
+                                }
                                 fetch('/CVAnalysis/ScoreCV', {
                                     method: 'POST',
                                     headers: {
@@ -320,6 +326,10 @@
                                 .then(res => res.json())
                                 .then(data => {
                                     loading.style.display = 'none';
+                                    if (cvScoreLoadingModal) {
+                                        cvScoreLoadingModal.classList.add('hidden');
+                                        cvScoreLoadingModal.style.display = 'none';
+                                    }
                                     if (data.success) {
                                         table.style.display = 'block';
                                         btn.style.display = 'none';
@@ -339,6 +349,10 @@
                                 })
                                 .catch(err => {
                                     loading.style.display = 'none';
+                                    if (cvScoreLoadingModal) {
+                                        cvScoreLoadingModal.classList.add('hidden');
+                                        cvScoreLoadingModal.style.display = 'none';
+                                    }
                                     btn.style.display = 'block';
                                     error.style.display = 'block';
                                     error.textContent = 'Đã xảy ra lỗi khi kết nối máy chủ.';
@@ -430,6 +444,21 @@
         </div>
         <div class="mt-4">
             <button type="button" id="cancelAnalyzeBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal for CV Scoring -->
+<div id="cvScoreLoadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
+        <div class="mb-4">
+            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+        </div>
+        <div class="font-semibold text-lg text-center">
+            AI system is grading your CV. Please wait.
         </div>
     </div>
 </div>
