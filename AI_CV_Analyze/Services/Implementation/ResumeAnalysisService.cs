@@ -476,7 +476,10 @@ CV:
                 model = modelName, // Sử dụng model name đã xác định
                 messages = new[]
                 {
-                            new { role = "system", content = "Bạn là chuyên gia nhân sự có kinh nghiệm 10+ năm trong lĩnh vực tuyển dụng và đánh giá CV. Hãy phân tích CV một cách chi tiết và đưa ra các đề xuất chỉnh sửa cụ thể, chuyên nghiệp. Tập trung vào:\r\n\r\n1. Cấu trúc và bố cục CV\r\n2. Nội dung và cách trình bày\r\n3. Điểm mạnh cần nhấn mạnh\r\n4. Điểm yếu cần cải thiện\r\n5. Từ khóa và kỹ năng quan trọng\r\n6. Cách viết mô tả công việc\r\n7. Định dạng và trình bày\r\n\r\nHãy đưa ra nhận xét rõ ràng, cụ thể và có thể thực hiện được. " },
+                            new { role = "system", content = "Bạn là chuyên gia nhân sự có kinh nghiệm 10+ năm trong lĩnh vực tuyển dụng và đánh giá CV." +
+                            " Hãy phân tích CV một cách chi tiết và đưa ra các đề xuất chỉnh sửa cụ thể, chuyên nghiệp. Tập trung vào:\r\n\r\n1. Cấu trúc và bố cục CV\r\n2." +
+                            " Nội dung và cách trình bày\r\n3. Điểm mạnh cần nhấn mạnh\r\n4. Điểm yếu cần cải thiện\r\n5. Từ khóa và kỹ năng quan trọng\r\n6. Cách viết mô tả công việc\r\n7." +
+                            " Định dạng và trình bày\r\n\r\nHãy đưa ra nhận xét rõ ràng, cụ thể và có thể thực hiện được. " },
 
                             new { role = "user", content = cvContent }
                         },

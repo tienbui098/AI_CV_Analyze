@@ -1,12 +1,8 @@
 ﻿// EditSuggestions.js
 document.addEventListener('DOMContentLoaded', function () {
-    // Add copy button functionality
-    const suggestionContent = document.querySelector('.suggestion-content');
-    if (suggestionContent) {
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'copy-btn flex items-center';
-        copyBtn.innerHTML = '<i class="far fa-copy mr-2"></i> Copy';
-
+    // Gắn sự kiện cho nút copy phía trên nội dung gợi ý
+    const copyBtn = document.getElementById('copy-btn');
+    if (copyBtn) {
         copyBtn.addEventListener('click', function () {
             const textToCopy = document.querySelector('.ai-suggestion-text').textContent;
             navigator.clipboard.writeText(textToCopy).then(() => {
@@ -16,8 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, 2000);
             });
         });
-
-        suggestionContent.appendChild(copyBtn);
     }
 
     // Format and highlight content

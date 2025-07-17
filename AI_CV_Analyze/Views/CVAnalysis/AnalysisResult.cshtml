@@ -197,20 +197,12 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-briefcase text-blue-500 mr-3"></i> Project
+                            <i class="fas fa-briefcase text-blue-500 mr-3"></i> Projects
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-4">
-                            @foreach (var exp in Model.Project.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-                            {
-                                <div class="timeline-item pl-6 relative">
-                                    <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
-                                    <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                        @exp
-                                    </div>
-                                </div>
-                            }
+                        <div class="prose max-w-none text-gray-700">
+                            @Html.Raw(Model.Project.Replace("\n", "<br>"))
                         </div>
                     </div>
                 </div>
@@ -368,6 +360,17 @@
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-briefcase text-blue-500 mr-3"></i>Suitable Jobs
                         </h2>
+                        <div class="p-6">
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-yellow-800">Click to view detailed edit suggestions from AI</h3>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
                     <div class="p-6">
                         <div class="text-center py-6">
