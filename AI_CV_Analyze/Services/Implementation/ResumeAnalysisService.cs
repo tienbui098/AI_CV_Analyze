@@ -337,6 +337,30 @@ CV:
                     case "học vấn":
                         analysisResult.Education = value;
                         break;
+                    case "language proficiency":
+                    case "language":
+                    case "trình độ ngoại ngữ":
+                    case "trình độ ngôn ngữ":
+                    case "ngoại ngữ":
+                    case "ngôn ngữ":
+                        analysisResult.LanguageProficiency = value;
+                        break;
+                    case "certificate":
+                    case "chứng chỉ":
+                        analysisResult.Certificate = value;
+                        break;
+                    case "achievement":
+                    case "thành tựu":
+                    case "honor":
+                    case "giải thưởng":
+                    case "achievements":
+                    case "honors":
+                    case "awards":
+                    case "award":
+                    case "honors and awards":
+                        analysisResult.Achievement = value;
+                        break;
+
                 }
             }
 
@@ -344,7 +368,7 @@ CV:
                 string.IsNullOrEmpty(analysisResult.Skills) && string.IsNullOrEmpty(analysisResult.Experience) &&
                 string.IsNullOrEmpty(analysisResult.Project) && string.IsNullOrEmpty(analysisResult.Education))
             {
-                analysisResult.ErrorMessage = "Không trích xuất được bất kỳ trường nào (Name, Email, Skills, Experience, Projects, Education) từ mô hình.";
+                analysisResult.ErrorMessage = "No fields could be extracted (Name, Email, Skills, Experience, Projects, Education, LanguageProficiency, Certificate, Achivement, Course) from model.";
             }
         }
 

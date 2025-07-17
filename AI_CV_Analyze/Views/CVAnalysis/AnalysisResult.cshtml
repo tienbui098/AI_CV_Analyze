@@ -119,45 +119,136 @@
                 </div>
             }
 
-            <!-- Skills Section -->
-            @if (!string.IsNullOrEmpty(Model.Skills))
+            <!-- Combined Skills & Language Section -->
+            @if (!string.IsNullOrEmpty(Model.Skills) || !string.IsNullOrEmpty(Model.LanguageProficiency))
             {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-tools text-blue-500 mr-3"></i> Skill
+                            <i class="fas fa-tools text-blue-500 mr-3"></i> Skills & Languages
+                        </h2>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Skills Subsection -->
+                        @if (!string.IsNullOrEmpty(Model.Skills))
+                        {
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700 mb-3">Technical Skills</h3>
+                                <div class="flex flex-wrap gap-3">
+                                    @foreach (var skill in Model.Skills.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
+                                    {
+                                        <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
+                                            @skill.Trim()
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Languages Subsection -->
+                        @if (!string.IsNullOrEmpty(Model.LanguageProficiency))
+                        {
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700 mb-3">Language</h3>
+                                <div class="space-y-3">
+                                    @foreach (var skill in Model.LanguageProficiency.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
+                                    {
+                                        <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
+                                            @skill.Trim()
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Combined Education, Courses & Certificates Section -->
+            @if (!string.IsNullOrEmpty(Model.Education) || !string.IsNullOrEmpty(Model.Course) || !string.IsNullOrEmpty(Model.Certificate))
+            {
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-graduation-cap text-blue-500 mr-3"></i> Education & Qualifications
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="flex flex-wrap gap-3">
-                            @foreach (var skill in Model.Skills.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
+                        <div class="space-y-6">
+                            <!-- Education Subsection -->
+                            @if (!string.IsNullOrEmpty(Model.Education))
                             {
-                                <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
-                                    @skill.Trim()
-                                </span>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Education</h3>
+                                    <div class="space-y-4">
+                                        @foreach (var edu in Model.Education.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <div class="timeline-item pl-6 relative">
+                                                <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
+                                                <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                                    @edu
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Courses Subsection -->
+                            @if (!string.IsNullOrEmpty(Model.Course))
+                            {
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Courses</h3>
+                                    <div class="space-y-3">
+                                        @foreach (var course in Model.Course.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <div class="flex items-start">
+                                                <i class="fas fa-book-open text-blue-400 mt-1 mr-3"></i>
+                                                <span>@course</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Certificates Subsection -->
+                            @if (!string.IsNullOrEmpty(Model.Certificate))
+                            {
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Certificates</h3>
+                                    <div class="space-y-3">
+                                        @foreach (var cert in Model.Certificate.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <div class="flex items-start">
+                                                <i class="fas fa-certificate text-blue-400 mt-1 mr-3"></i>
+                                                <span>@cert</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
                             }
                         </div>
                     </div>
                 </div>
             }
 
-            <!-- Education Section -->
-            @if (!string.IsNullOrEmpty(Model.Education))
+            <!-- Achievements Section -->
+            @if (!string.IsNullOrEmpty(Model.Achievement))
             {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-graduation-cap text-blue-500 mr-3"></i> Education
+                            <i class="fas fa-trophy text-blue-500 mr-3"></i> Achievements
                         </h2>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
-                            @foreach (var edu in Model.Education.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                            @foreach (var achievement in Model.Achievement.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
                             {
-                                <div class="timeline-item pl-6 relative">
-                                    <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
-                                    <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                        @edu
+                                <div class="flex items-start">
+                                    <i class="fas fa-star text-yellow-400 mt-1 mr-3"></i>
+                                    <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100 flex-1">
+                                        @achievement
                                     </div>
                                 </div>
                             }
@@ -360,17 +451,6 @@
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-briefcase text-blue-500 mr-3"></i>Suitable Jobs
                         </h2>
-                        <div class="p-6">
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
-                                <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-sm font-medium text-yellow-800">Click to view detailed edit suggestions from AI</h3>
-                                    </div>
-                                </div>
-                            </div>
                     </div>
                     <div class="p-6">
                         <div class="text-center py-6">
