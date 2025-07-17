@@ -42,6 +42,10 @@ namespace AI_CV_Analyze.Models
         public string Experience { get; set; } // Phân tích kinh nghiệm
         public string Project { get; set; } // Phân tích dự án
         public string Education { get; set; } // Phân tích học vấn
+        public string LanguageProficiency { get; set; } // Phân tích trình độ ngôn ngữ
+        public string Certificate { get; set; }
+        public string Achievement { get; set; } // Phân tích thành tựu
+        public string Course { get; set; } // Phân tích khóa học
         public string OverallAnalysis { get; set; } // Phân tích tổng thể dạng JSON
 
         // Liên kết với bảng Resume
