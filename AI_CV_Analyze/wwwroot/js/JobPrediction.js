@@ -7,20 +7,20 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!skills || skills.trim().length === 0) {
                 return {
                     isValid: false,
-                    message: 'Vui lòng nhập ít nhất một kỹ năng.'
+                    message: 'Please enter at least one skill.'
                 };
             }
             const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill.length > 0);
             if (skillsArray.length === 0) {
                 return {
                     isValid: false,
-                    message: 'Vui lòng nhập ít nhất một kỹ năng hợp lệ.'
+                    message: 'Please enter at least one valid skill.'
                 };
             }
             if (skillsArray.length < 3) {
                 return {
                     isValid: false,
-                    message: 'Vui lòng nhập ít nhất 3 kỹ năng để có kết quả chính xác hơn.'
+                    message: 'Please enter at least 3 skills for more accurate results.'
                 };
             }
             return {
@@ -335,14 +335,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function shareResults() {
         if (navigator.share) {
             navigator.share({
-                title: 'Kết quả dự đoán công việc - AI CV Analyze',
-                text: 'Xem kết quả dự đoán công việc phù hợp với kỹ năng của tôi',
+                title: 'Job Prediction Results - AI CV Analyze',
+                text: 'See job predictions that match my skills',
                 url: window.location.href
             });
         } else {
             // Fallback: copy to clipboard
             navigator.clipboard.writeText(window.location.href).then(() => {
-                toast.show('Đã sao chép link vào clipboard!', 'success');
+                toast.show('Link copied to clipboard!', 'success');
             });
         }
     }

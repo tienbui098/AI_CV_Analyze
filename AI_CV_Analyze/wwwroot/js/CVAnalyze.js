@@ -74,12 +74,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
 
             if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
-                showError('Chỉ hỗ trợ định dạng PDF, DOC, DOCX, JPG hoặc PNG');
+                showError('Only supports PDF, DOC, DOCX, JPG or PNG format');
                 return;
             }
 
             if (file.size > 5 * 1024 * 1024) {
-                showError('Kích thước file tối đa là 5MB. Vui lòng chọn file nhỏ hơn.');
+                showError('Maximum file size is 5MB. Please choose a smaller file.');
                 return;
             }
 
