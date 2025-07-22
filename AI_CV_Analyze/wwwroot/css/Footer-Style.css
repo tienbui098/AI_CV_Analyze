@@ -1,0 +1,50 @@
+﻿/* Footer Styles */
+footer {
+    background-color: var(--dark-color);
+    color: white;
+}
+
+    footer a {
+        transition: color 0.3s ease;
+    }
+
+        footer a:hover {
+            color: var(--accent-color);
+        }
+
+.max-content-width {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.instagram-hover:hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    color: white;
+}
+
+.input-focus:focus {
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    border-color: var(--primary-color);
+}
+
+/* Social media icons */
+.social-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    footer {
+        padding: 3rem 0;
+    }
+
+    .footer-columns {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
