@@ -71,7 +71,6 @@
             const maxHeight = window.innerHeight - 40;
             this.element.style.maxHeight = `${maxHeight}px`;
 
-            // Đã xóa logic liên quan đến footer
             this.element.style.top = '20px';
         },
 
