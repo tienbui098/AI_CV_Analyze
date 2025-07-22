@@ -158,87 +158,12 @@
         @RenderBody()
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white pt-16 pb-8">
-        <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- Column 1 -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 uppercase tracking-wider">About AI CV Analyze</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Our Team</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Careers</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Blog</a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 2 -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 uppercase tracking-wider">Support</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 3 -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 uppercase tracking-wider">Tools</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">CV Templates</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Cover Letters</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Interview Tips</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Salary Insights</a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 4 -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 uppercase tracking-wider">Connect</h3>
-                    <div class="flex space-x-4 mb-6">
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-400 transition">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-600 transition">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 instagram-hover transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
-
-                    <h4 class="text-sm font-semibold mb-3 uppercase tracking-wider">Subscribe to our newsletter</h4>
-                    <form class="flex">
-                        <input type="email" placeholder="Your email" class="input-focus px-4 py-3 rounded-l-lg w-full focus:outline-none text-gray-900">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-r-lg">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <a href="#" class="text-2xl font-bold">AI CV Analyze</a>
-                </div>
-                <div class="text-gray-400 text-sm">
-                    &copy; 2025 AI CV Analyze. All rights reserved.
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/EditSuggestions.js" asp-append-version="true"></script>
     <script src="~/js/nav-styles.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+    @await Html.PartialAsync("_Layout-Footer")
 </body>
 </html>
