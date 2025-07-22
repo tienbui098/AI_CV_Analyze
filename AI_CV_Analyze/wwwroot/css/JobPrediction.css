@@ -386,7 +386,7 @@ body {
 }
 
 /* Print Styles */
-@media print {
+/*@media print {
     .back-button,
     .btn,
     nav,
@@ -398,7 +398,7 @@ body {
         box-shadow: none;
         border: 1px solid #000;
     }
-}
+}*/
 .skills-input-container {
     position: relative;
 }
