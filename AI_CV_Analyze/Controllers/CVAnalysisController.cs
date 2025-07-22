@@ -9,6 +9,11 @@ using System.Collections.Generic;
 using System.Linq; // Added for .Select()
 using AI_CV_Analyze.Data;
 using Microsoft.EntityFrameworkCore;
+using DinkToPdf;
+using DinkToPdf.Contracts;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace AI_CV_Analyze.Controllers
 {
@@ -16,11 +21,13 @@ namespace AI_CV_Analyze.Controllers
     {
         private readonly IResumeAnalysisService _resumeAnalysisService;
         private readonly ApplicationDbContext _dbContext;
+        private readonly IConverter _pdfConverter;
 
-        public CVAnalysisController(IResumeAnalysisService resumeAnalysisService, ApplicationDbContext dbContext)
+        public CVAnalysisController(IResumeAnalysisService resumeAnalysisService, ApplicationDbContext dbContext, IConverter pdfConverter)
         {
             _resumeAnalysisService = resumeAnalysisService;
             _dbContext = dbContext;
+            _pdfConverter = pdfConverter;
         }
 
         public IActionResult Index()
@@ -278,6 +285,72 @@ namespace AI_CV_Analyze.Controllers
             {
                 return Json(new { success = false, error = ex.Message });
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateFinalCV(string cvContent, string suggestions)
+        {
+            if (string.IsNullOrEmpty(cvContent) || string.IsNullOrEmpty(suggestions))
+            {
+                return BadRequest("Thiếu nội dung CV hoặc đề xuất.");
+            }
+            try
+            {
+                var finalCV = await _resumeAnalysisService.GenerateFinalCV(cvContent, suggestions);
+                HttpContext.Session.SetString("FinalCVContent", finalCV);
+                return RedirectToAction("ShowFinalCV");
+            }
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorViewModel { Message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ShowFinalCV()
+        {
+            var finalCV = HttpContext.Session.GetString("FinalCVContent");
+            if (string.IsNullOrEmpty(finalCV))
+            {
+                ViewBag.ErrorMessage = "Chưa có CV hoàn chỉnh.";
+                return View();
+            }
+            ViewBag.FinalCV = finalCV;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult PublishFinalCV()
+        {
+            var finalCV = HttpContext.Session.GetString("FinalCVContent");
+            if (string.IsNullOrEmpty(finalCV))
+            {
+                return BadRequest("Không có CV để xuất bản.");
+            }
+
+            // Tạo PDF bằng QuestPDF
+            var pdfBytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(40);
+                    page.Size(PageSizes.A4);
+                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily("Arial"));
+                    page.Content()
+                        .Column(col =>
+                        {
+                            col.Item().PaddingBottom(20).Text("CV Hoàn Chỉnh").FontSize(18).Bold().AlignCenter();
+                            // Hiển thị nội dung CV, giữ định dạng xuống dòng
+                            var lines = finalCV.Split('\n');
+                            foreach (var line in lines)
+                            {
+                                col.Item().Text(line);
+                            }
+                        });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", "CV_Hoan_Chinh.pdf");
         }
 
         [HttpGet]

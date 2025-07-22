@@ -83,6 +83,15 @@
             </div>
         </div>
 
+        @if (ViewBag.Suggestions != null && ViewBag.CVContent != null)
+        {
+            <form id="generateFinalCVForm" method="post" asp-action="GenerateFinalCV">
+                <input type="hidden" name="cvContent" value="@ViewBag.CVContent" />
+                <input type="hidden" name="suggestions" value="@ViewBag.Suggestions" />
+                <button type="submit" class="btn btn-success mt-4">Tạo CV hoàn chỉnh theo đề xuất</button>
+            </form>
+        }
+
         <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
             <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-100 transition">
                 <i class="fas fa-arrow-left mr-3"></i> Analysis Result

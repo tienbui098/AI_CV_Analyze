@@ -1,0 +1,15 @@
+@{
+    ViewBag.Title = "CV hoàn chỉnh";
+}
+<h2>CV đã chỉnh sửa hoàn thiện</h2>
+@if (ViewBag.FinalCV != null)
+{
+    <pre style="white-space: pre-wrap; background: #f8f8f8; padding: 1.5em; border-radius: 8px;">@ViewBag.FinalCV</pre>
+    <form method="post" asp-action="PublishFinalCV">
+        <button type="submit" class="btn btn-primary mt-3">Xuất bản CV này</button>
+    </form>
+}
+else
+{
+    <p>@ViewBag.ErrorMessage</p>
+} 
