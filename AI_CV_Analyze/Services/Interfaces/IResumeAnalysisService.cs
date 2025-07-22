@@ -10,5 +10,6 @@ namespace AI_CV_Analyze.Services
         Task<string> GetCVEditSuggestions(string cvContent);
         Task<JobSuggestionResult> GetJobSuggestionsAsync(string skills);
         Task<(int Layout, int Skill, int Experience, int Education, int Keyword, int Format, string RawJson)> AnalyzeScoreWithOpenAI(string cvContent);
+        Task<string> GenerateFinalCV(string cvContent, string suggestions);
     }
 }

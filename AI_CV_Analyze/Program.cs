@@ -4,6 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
+using DinkToPdf;
+using DinkToPdf.Contracts;
+using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Runtime.Loader;
+using QuestPDF.Infrastructure;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +26,14 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IResumeAnalysisService, ResumeAnalysisService>();
 builder.Services.AddScoped<AI_CV_Analyze.Services.Interfaces.IEmailSender, AI_CV_Analyze.Services.Implementation.EmailSender>();
+// Load native libwkhtmltox.dll nếu chạy trên Windows
+var libPath = Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll");
+if (File.Exists(libPath))
+{
+    var context = new CustomAssemblyLoadContext();
+    context.LoadUnmanagedLibrary(libPath);
+}
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(10);
