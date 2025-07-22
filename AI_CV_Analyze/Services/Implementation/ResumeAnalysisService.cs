@@ -543,6 +543,44 @@ CV:
             return suggestion;
         }
 
+        public async Task<string> GenerateFinalCV(string cvContent, string suggestions)
+        {
+            if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
+            {
+                return "Lỗi cấu hình: Thiếu thông tin Azure OpenAI. Vui lòng kiểm tra cấu hình AzureAI trong appsettings.json";
+            }
+            string endpoint = _openAIEndpoint;
+            string apiKey = _openAIKey;
+            string modelName = _openAIDeploymentName;
+            var client = _httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(2);
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+            string prompt = $@"Bạn là chuyên gia nhân sự. Hãy chỉnh sửa lại CV dưới đây theo các đề xuất sau để tạo ra một bản CV hoàn chỉnh, chuyên nghiệp, tối ưu nhất. Chỉ trả về nội dung CV đã chỉnh sửa, không giải thích thêm.\n\nĐề xuất chỉnh sửa:\n{suggestions}\n\nCV gốc:\n{cvContent}";
+            var requestBody = new
+            {
+                model = modelName,
+                messages = new[]
+                {
+                    new { role = "system", content = "Bạn là chuyên gia nhân sự, hãy chỉnh sửa CV theo đề xuất." },
+                    new { role = "user", content = prompt }
+                },
+                max_tokens = 2000,
+                temperature = 0.5
+            };
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
+            var content = new System.Net.Http.StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
+            if (response == null)
+                return "Không nhận được phản hồi từ AI";
+            var responseString = await response.Content.ReadAsStringAsync();
+            var doc = Newtonsoft.Json.Linq.JObject.Parse(responseString);
+            var finalCV = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+            if (string.IsNullOrEmpty(finalCV))
+                return "AI không trả về nội dung CV đã chỉnh sửa";
+            return finalCV.Trim();
+        }
+
         // Hàm retry request vô hạn
         private async Task<HttpResponseMessage?> SendWithRetryAsync(Func<Task<HttpResponseMessage>> sendRequest, int delayMs = 2000)
         {
