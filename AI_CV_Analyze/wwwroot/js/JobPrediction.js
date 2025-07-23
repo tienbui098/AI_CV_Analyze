@@ -95,13 +95,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 right: 0;
                 background: white;
                 border: 1px solid #e2e8f0;
-                border-top: none;
                 border-radius: 0 0 0.5rem 0.5rem;
                 max-height: 200px;
                 overflow-y: auto;
                 z-index: 1000;
                 display: none;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                padding: 0.5rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
             `;
             return suggestionBox;
         },
@@ -127,9 +130,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             suggestionBox.innerHTML = suggestions.map(skill => 
-                `<div class="suggestion-item" style="padding: 0.5rem 1rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='white'">${skill}</div>`
+                `<div class="suggestion-item" style="
+                    padding: 0.5rem 1rem;
+                    cursor: pointer;
+                    border: 1px solid #f1f5f9;
+                    border-radius: 9999px;
+                    background: #f8fafc;
+                    margin: 0;
+                    transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+                    display: inline-block;
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                " 
+                onmouseover="this.style.backgroundColor='#e0e7ef'; this.style.boxShadow='0 2px 8px rgba(59,130,246,0.08)'; this.style.transform='scale(1.07)';" 
+                onmouseout="this.style.backgroundColor='#f8fafc'; this.style.boxShadow='none'; this.style.transform='scale(1)';"
+                >${skill}</div>`
             ).join('');
-            suggestionBox.style.display = 'block';
+            suggestionBox.style.display = 'flex';
             suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const value = input.value;

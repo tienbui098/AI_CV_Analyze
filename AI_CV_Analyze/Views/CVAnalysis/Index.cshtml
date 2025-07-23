@@ -3,132 +3,158 @@
     Layout = "_LayoutCVAnalysis";
 }
 
-<div class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl">
-        <!-- Upload Card -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+<div class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-50 to-white">
+    <div class="w-full max-w-2xl animate-fade-in-up">
+        <!-- Upload Card with Enhanced Styling -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1">
             <form id="cvForm" class="p-8" method="post" enctype="multipart/form-data" asp-action="AnalyzeCV">
-                <!-- Dropzone Area -->
-                <div id="dropzone" class="dropzone cursor-pointer">
-                    <div id="upload-instructions" class="text-center space-y-6">
-                        <div class="upload-icon w-20 h-20 rounded-2xl flex items-center justify-center mx-auto">
-                            <i class="fas fa-cloud-upload-alt text-blue-600 text-3xl"></i>
+                <!-- Dropzone Area with Advanced Interactions -->
+                <div id="dropzone" class="dropzone cursor-pointer relative group">
+                    <!-- Animated background elements -->
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <div class="absolute top-0 left-0 w-32 h-32 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+                        <div class="absolute bottom-0 right-0 w-32 h-32 bg-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+                    </div>
+
+                    <div id="upload-instructions" class="text-center space-y-6 relative z-10">
+                        <div class="upload-icon w-20 h-20 rounded-2xl flex items-center justify-center mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 shadow-inner transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
+                            <i class="fas fa-cloud-upload-alt text-blue-600 text-3xl transition-transform duration-300 group-hover:scale-125"></i>
                         </div>
                         <div class="space-y-2">
                             <h3 class="text-xl sm:text-2xl font-semibold text-gray-900">Drop your CV here</h3>
-                            <p class="text-gray-500">or</p>
+                            <p class="text-gray-500 transition-all duration-300 group-hover:text-blue-600">or</p>
                         </div>
-                        <label for="cvFile" class="file-input-label bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg cursor-pointer inline-block">
-                            <i class="fas fa-folder-open mr-2"></i>Select files
+                        <label for="cvFile" class="file-input-label relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-8 rounded-lg cursor-pointer inline-block transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                            <span class="relative z-10 flex items-center">
+                                <i class="fas fa-folder-open mr-2 transition-transform duration-300 group-hover:rotate-12"></i>Select files
+                            </span>
+                            <span class="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                         </label>
                         <input id="cvFile" name="cvFile" type="file" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
-                        <p class="text-gray-500 text-sm">Supported formats: PDF, DOC, DOCX, JPG, PNG (max. 5MB)</p>
+                        <p class="text-gray-500 text-sm transition-all duration-300 group-hover:text-blue-600">Supported formats: PDF, DOC, DOCX, JPG, PNG (max. 5MB)</p>
                     </div>
 
                     <!-- File Info & Analyze Button (hidden by default) -->
-                    <div id="analyze-section" class="text-center space-y-6">
-                        <div id="file-info" class="file-card bg-gray-50 p-4 rounded-lg max-w-md mx-auto">
+                    <div id="analyze-section" class="text-center space-y-6 relative z-10">
+                        <div id="file-info" class="file-card bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg max-w-md mx-auto shadow-md border border-gray-200 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
                             <div class="flex items-center">
-                                <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                                <div class="bg-gradient-to-br from-blue-100 to-indigo-100 p-3 rounded-lg mr-4 shadow-inner transform transition-all duration-300 hover:rotate-6">
                                     <i class="fas fa-file-alt text-blue-600 text-xl"></i>
                                 </div>
                                 <div class="text-left overflow-hidden">
                                     <p id="file-name" class="font-medium text-gray-900 truncate"></p>
                                     <p id="file-size" class="text-sm text-gray-500 mt-1"></p>
                                 </div>
-                                <button id="remove-file" type="button" class="text-gray-400 hover:text-red-500 transition ml-auto">
+                                <button id="remove-file" type="button" class="text-gray-400 hover:text-red-500 transition-all duration-300 transform hover:scale-125 ml-auto">
                                     <i class="fas fa-times text-xl"></i>
                                 </button>
                             </div>
                         </div>
-                        <button type="submit" class="btn-primary text-white font-medium py-3 px-8 rounded-lg mx-auto">
-                            <i class="fas fa-magic mr-2"></i> Analyze CV now 
+                        <button type="submit" class="btn-primary relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-8 rounded-lg mx-auto transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                            <span class="relative z-10 flex items-center">
+                                <i class="fas fa-magic mr-2 transition-transform duration-300 group-hover:rotate-12"></i> Analyze CV now
+                            </span>
+                            <span class="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Error Message -->
-                <div id="error-message" class="mt-4 hidden">
-                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 pt-0.5">
-                                <i class="fas fa-exclamation-circle text-red-500"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p id="error-text" class="text-sm text-red-700"></p>
-                            </div>
+                <!-- Error Message with Animation -->
+                <div id="error-message" class="mt-4 hidden animate-fade-in">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg flex items-start">
+                        <div class="flex-shrink-0 pt-0.5">
+                            <i class="fas fa-exclamation-circle text-red-500 animate-pulse"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p id="error-text" class="text-sm text-red-700"></p>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
 
-        <!-- Tips Section -->
-        <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-xl">
+        <!-- Tips Section with Enhanced Visuals -->
+        <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-xl shadow-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-lightbulb text-blue-600 mr-3 text-xl"></i>
-                Tips for a Perfect CV
+                <div class="icon-container bg-gradient-to-br from-blue-100 to-indigo-100 w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-inner">
+                    <i class="fas fa-lightbulb text-blue-600 text-xl"></i>
+                </div>
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Tips for a Perfect CV</span>
             </h3>
             <ul class="space-y-3">
-                <li class="flex items-start">
-                    <div class="flex-shrink-0 mt-1 mr-3">
-                        <div class="bg-blue-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center">
+                <li class="flex items-start group">
+                    <div class="flex-shrink-0 mt-1 mr-3 transform transition-all duration-300 group-hover:rotate-12">
+                        <div class="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center shadow-inner">
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Use PDF format to ensure accurate display across all devices</p>
+                    <p class="text-gray-700 group-hover:text-blue-700 transition-colors duration-300">Use PDF format to ensure accurate display across all devices</p>
                 </li>
-                <li class="flex items-start">
-                    <div class="flex-shrink-0 mt-1 mr-3">
-                        <div class="bg-blue-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center">
+                <li class="flex items-start group">
+                    <div class="flex-shrink-0 mt-1 mr-3 transform transition-all duration-300 group-hover:rotate-12">
+                        <div class="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center shadow-inner">
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Carefully check spelling, grammar, and formatting before uploading</p>
+                    <p class="text-gray-700 group-hover:text-blue-700 transition-colors duration-300">Carefully check spelling, grammar, and formatting before uploading</p>
                 </li>
-                <li class="flex items-start">
-                    <div class="flex-shrink-0 mt-1 mr-3">
-                        <div class="bg-blue-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center">
+                <li class="flex items-start group">
+                    <div class="flex-shrink-0 mt-1 mr-3 transform transition-all duration-300 group-hover:rotate-12">
+                        <div class="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center shadow-inner">
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Name the file clearly, e.g.: 'NguyenVanA_CV_Developer.pdf'</p>
+                    <p class="text-gray-700 group-hover:text-blue-700 transition-colors duration-300">Name the file clearly, e.g.: 'NguyenVanA_CV_Developer.pdf'</p>
                 </li>
-                <li class="flex items-start">
-                    <div class="flex-shrink-0 mt-1 mr-3">
-                        <div class="bg-blue-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center">
+                <li class="flex items-start group">
+                    <div class="flex-shrink-0 mt-1 mr-3 transform transition-all duration-300 group-hover:rotate-12">
+                        <div class="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center shadow-inner">
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">Keep the file size under 5MB for faster uploading</p>
+                    <p class="text-gray-700 group-hover:text-blue-700 transition-colors duration-300">Keep the file size under 5MB for faster uploading</p>
                 </li>
-                <li class="flex items-start">
-                    <div class="flex-shrink-0 mt-1 mr-3">
-                        <div class="bg-blue-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center">
+                <li class="flex items-start group">
+                    <div class="flex-shrink-0 mt-1 mr-3 transform transition-all duration-300 group-hover:rotate-12">
+                        <div class="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center shadow-inner">
                             <i class="fas fa-check text-xs"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700">To ensure the best analysis quality, users are recommended to write their CV in English</p>
+                    <p class="text-gray-700 group-hover:text-blue-700 transition-colors duration-300">To ensure the best analysis quality, users are recommended to write their CV in English</p>
                 </li>
             </ul>
         </div>
     </div>
 </div>
 
-<!-- Loading Modal -->
-<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 hidden">
-    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
-        <div id="loadingSpinner" class="mb-4">
-            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-            </svg>
+<!-- Enhanced Loading Modal with Progress Animation -->
+<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-fade-in-up w-80 max-w-[90vw]">
+        <!-- Animated spinner with gradient -->
+        <div id="loadingSpinner" class="mb-6 relative w-16 h-16">
+            <div class="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-blue-600 animate-spin"></div>
+            <div class="absolute inset-1 rounded-full bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+                <i class="fas fa-file-alt text-blue-500 text-xl"></i>
+            </div>
         </div>
-        <div id="loadingText" class="font-semibold text-lg text-center">
-            The system is processing your CV. Please wait a moment...
+
+        <!-- Progress text with animation -->
+        <div id="loadingText" class="font-semibold text-lg text-center mb-4">
+            <div class="text-gray-800">Analyzing your CV...</div>
+            <div class="text-sm text-gray-500 mt-1 animate-pulse">This may take a few moments</div>
         </div>
-        <div class="mt-4">
-            <button type="button" id="cancelAnalyzeBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Cancel</button>
+
+        <!-- Animated progress bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full animate-progress"></div>
+        </div>
+
+        <!-- Cancel button with enhanced styling -->
+        <div class="mt-2">
+            <button type="button" id="cancelAnalyzeBtn" class="px-5 py-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-lg hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                Cancel Analysis
+            </button>
         </div>
     </div>
 </div>
