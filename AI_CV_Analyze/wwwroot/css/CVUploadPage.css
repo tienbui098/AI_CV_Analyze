@@ -1,134 +1,159 @@
-﻿:root {
-    --primary-color: #4361ee;
-    --secondary-color: #3f37c9;
-    --accent-color: #4895ef;
-    --light-color: #f8f9fa;
-    --dark-color: #212529;
-    /* Add JobPrediction color variables for consistency */
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --primary-light: #93c5fd;
-    --secondary: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --info: #06b6d4;
-    --gray: #64748b;
-    --gray-light: #e2e8f0;
+﻿/* Animation keyframes */
+@@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    line-height: 1.6;
-    color: var(--dark);
-    background-color: #f9fafb;
+@@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
+@@keyframes blob {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
+
+@@keyframes progress {
+    0% {
+        width: 0%;
+    }
+
+    50% {
+        width: 70%;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+/* Animation classes */
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-blob {
+    animation: blob 8s infinite ease-in-out;
+}
+
+.animate-progress {
+    animation: progress 2s infinite ease-in-out;
+}
+
+.animation-delay-100 {
+    animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+
+/* Dropzone styles */
 .dropzone {
-    border: 2px dashed var(--primary-color);
+    border: 2px dashed #3b82f6;
     border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    background-color: rgba(67, 97, 238, 0.03);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-color: rgba(59, 130, 246, 0.03);
     min-height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
 
     .dropzone.active {
-        border-color: var(--accent-color);
-        background-color: rgba(67, 97, 238, 0.05);
-        transform: translateY(-2px);
+        border-color: #6366f1;
+        background-color: rgba(59, 130, 246, 0.08);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
     }
 
     .dropzone:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(67, 97, 238, 0.15);
-        border-color: var(--accent-color);
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.2);
+        border-color: #6366f1;
     }
 
-/* Enhanced button styles matching HomePage */
-.btn-primary {
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
-    background-color: var(--primary-color);
-}
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
-        background-color: var(--secondary-color);
-    }
-
-.btn-secondary {
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-    .btn-secondary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        background-color: #f1f3f5;
-    }
-
-.file-input-label {
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-}
-
-    .file-input-label:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-
-.upload-icon {
-    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(72, 149, 239, 0.1) 100%);
-    transition: all 0.3s ease;
-}
-
-    .upload-icon:hover {
-        transform: scale(1.05);
-        background: linear-gradient(135deg, rgba(67, 97, 238, 0.15) 0%, rgba(72, 149, 239, 0.15) 100%);
-    }
-
+/* File card styles */
 .file-card {
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border-left: 4px solid var(--primary-color);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-left: 4px solid #3b82f6;
     border-radius: 12px;
+    position: relative;
+    overflow: hidden;
 }
 
     .file-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-    }
-
-/* Card hover effect matching HomePage */
-.card-hover {
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border-radius: 12px;
-}
-
-    .card-hover:hover {
-        transform: translateY(-8px);
+        transform: translateY(-6px);
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
     }
 
-#analyze-section {
-    display: none;
+    .file-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .file-card:hover::before {
+        opacity: 1;
+    }
+
+/* Button hover effects */
+.btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
 }
 
-/* Additional hover effects for form elements */
-.form-control:focus {
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-    border-color: var(--primary-color);
-}
+/* Responsive adjustments */
+@@media (max-width: 640px) {
+    .dropzone {
+        min-height: 250px;
+        padding: 1.5rem;
+    }
 
-.input-focus:focus {
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-    border-color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
-    .section-spacing {
-        padding: 4rem 0;
+    #upload-instructions .upload-icon {
+        width: 16px;
+        height: 16px;
     }
 }

@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const aiSuggestions = document.querySelector('.ai-suggestion-text');
     if (aiSuggestions) {
         // Highlight important keywords
-        const keywords = ['nên', 'khuyến nghị', 'cải thiện', 'thêm', 'bổ sung', 'tối ưu', 'quan trọng'];
+        const keywords = ['should', 'recommended', 'improved', 'add', 'supplementary', 'optimal', 'important'];
         keywords.forEach(keyword => {
             const regex = new RegExp(`(${keyword})`, 'gi');
             aiSuggestions.innerHTML = aiSuggestions.innerHTML.replace(

@@ -9,13 +9,15 @@ const removeFileBtn = document.getElementById('remove-file');
 const errorMessage = document.getElementById('error-message');
 const errorText = document.getElementById('error-text');
 const form = document.getElementById('cvForm');
-let analyzeModal;
+const loadingModal = document.getElementById('loadingModal');
+const cancelBtn = document.getElementById('cancelAnalyzeBtn');
+const progressBar = document.getElementById('progressBar');
+
 let formSubmitting = false;
 let abortController;
-const cancelBtn = document.getElementById('cancelAnalyzeBtn');
 
 // =============== CV UPLOAD LOGIC ===============
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropzone.addEventListener(eventName, preventDefaults, false);
@@ -38,10 +40,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function highlight() {
         dropzone.classList.add('active');
+        // Add pulse animation
+        dropzone.style.animation = 'pulse 1.5s infinite';
     }
 
     function unhighlight() {
         dropzone.classList.remove('active');
+        // Remove pulse animation
+        dropzone.style.animation = '';
     }
 
     // Handle dropped files
@@ -74,18 +80,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
 
             if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
-                showError('Chỉ hỗ trợ định dạng PDF, DOC, DOCX, JPG hoặc PNG');
+                showError('Only PDF, DOC, DOCX, JPG or PNG files are supported');
                 return;
             }
 
             if (file.size > 5 * 1024 * 1024) {
-                showError('Kích thước file tối đa là 5MB. Vui lòng chọn file nhỏ hơn.');
+                showError('File size exceeds 5MB limit. Please choose a smaller file.');
                 return;
             }
 
             hideError();
             displayFileInfo(file);
             fileInput.files = files; // Set files to input for form submission
+
+            // Add success animation
+            dropzone.style.animation = 'none';
+            dropzone.offsetHeight; // Trigger reflow
+            dropzone.style.animation = 'successPulse 1s ease';
         }
     }
 
@@ -95,6 +106,11 @@ document.addEventListener('DOMContentLoaded', function() {
         fileSize.textContent = formatFileSize(file.size);
         uploadInstructions.style.display = 'none';
         analyzeSection.style.display = 'block';
+
+        // Add file info animation
+        analyzeSection.style.animation = 'none';
+        analyzeSection.offsetHeight; // Trigger reflow
+        analyzeSection.style.animation = 'fadeInUp 0.6s ease-out';
     }
 
     // Remove file and reset to upload state
@@ -103,6 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadInstructions.style.display = 'block';
         analyzeSection.style.display = 'none';
         hideError();
+
+        // Add reset animation
+        uploadInstructions.style.animation = 'none';
+        uploadInstructions.offsetHeight; // Trigger reflow
+        uploadInstructions.style.animation = 'fadeIn 0.4s ease-out';
     });
 
     // Format file size
@@ -118,6 +139,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function showError(message) {
         errorText.textContent = message;
         errorMessage.classList.remove('hidden');
+
+        // Add error animation
+        errorMessage.style.animation = 'none';
+        errorMessage.offsetHeight; // Trigger reflow
+        errorMessage.style.animation = 'shake 0.5s ease';
     }
 
     // Hide error message
@@ -127,31 +153,89 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form submission
     form.addEventListener('submit', function (e) {
-        if (formSubmitting) return; // Đã submit, không submit lại
+        if (formSubmitting) return;
         e.preventDefault();
-        // Hiển thị loading modal (không dùng bootstrap.Modal)
+
         const loadingModal = document.getElementById('loadingModal');
-        if (loadingModal) loadingModal.classList.remove('hidden');
+        if (loadingModal) {
+            loadingModal.classList.remove('hidden');
+            loadingModal.style.animation = 'fadeIn 0.3s ease-out';
+        }
+
         formSubmitting = true;
         abortController = new AbortController();
+
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress > 90) progress = 90;
+            progressBar.style.width = `${progress}%`;
+        }, 300);
+
         const formData = new FormData(form);
+
         fetch(form.action, {
             method: 'POST',
             body: formData,
             signal: abortController.signal
         })
-            .then(response => response.text())
+            .then(response => {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                return response.text();
+            })
             .then(html => {
-                document.open();
-                document.write(html);
-                document.close();
+                if (loadingModal) {
+                    loadingModal.querySelector('#loadingSpinner').innerHTML = `
+                    <div class="success-checkmark">
+                        <div class="check-icon">
+                            <span class="icon-line line-tip"></span>
+                            <span class="icon-line line-long"></span>
+                            <div class="icon-circle"></div>
+                            <div class="icon-fix"></div>
+                        </div>
+                    </div>
+                `;
+                }
+
+                setTimeout(() => {
+                    // Xóa trạng thái active
+                    if (dropzone) dropzone.classList.remove('active');
+                    // Xóa các sự kiện cũ
+                    dropzone.removeEventListener('dragenter', highlight);
+                    dropzone.removeEventListener('dragover', highlight);
+                    dropzone.removeEventListener('dragleave', unhighlight);
+                    dropzone.removeEventListener('drop', unhighlight);
+                    dropzone.removeEventListener('drop', handleDrop);
+
+                    document.open();
+                    document.write(html);
+                    document.close();
+
+                    // Cập nhật URL
+                    const newUrl = '/CVAnalysis/AnalysisResult'; // URL thực tế
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+
+                    // Tái khởi tạo sự kiện nếu cần
+                    const newDropzone = document.getElementById('dropzone');
+                    if (newDropzone) {
+                        ['dragenter', 'dragover'].forEach(eventName => {
+                            newDropzone.addEventListener(eventName, highlight, false);
+                        });
+                        ['dragleave', 'drop'].forEach(eventName => {
+                            newDropzone.addEventListener(eventName, unhighlight, false);
+                        });
+                        newDropzone.addEventListener('drop', handleDrop, false);
+                    }
+                }, 1000);
             })
             .catch(err => {
+                clearInterval(progressInterval);
                 if (err.name === 'AbortError') {
                     if (loadingModal) loadingModal.classList.add('hidden');
                     formSubmitting = false;
                 } else {
-                    alert('Đã xảy ra lỗi khi phân tích CV!');
+                    showError('An error occurred during CV analysis. Please try again.');
                     if (loadingModal) loadingModal.classList.add('hidden');
                     formSubmitting = false;
                 }
@@ -160,8 +244,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     cancelBtn.addEventListener('click', function () {
         if (abortController) abortController.abort();
-        const loadingModal = document.getElementById('loadingModal');
-        if (loadingModal) loadingModal.classList.add('hidden');
+        loadingModal.classList.add('hidden');
         formSubmitting = false;
+    });
+
+    // Add shake animation for errors
+    const shakeKeyframes = [
+        { transform: 'translateX(0)' },
+        { transform: 'translateX(-10px)' },
+        { transform: 'translateX(10px)' },
+        { transform: 'translateX(-10px)' },
+        { transform: 'translateX(10px)' },
+        { transform: 'translateX(-10px)' },
+        { transform: 'translateX(0)' }
+    ];
+
+    const shakeTiming = {
+        duration: 500,
+        iterations: 1
+    };
+
+    errorMessage.addEventListener('animationend', function () {
+        this.style.animation = '';
     });
 });

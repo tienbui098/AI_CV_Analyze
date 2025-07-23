@@ -91,7 +91,7 @@ window.showRegisterSuccessModal = function() {
     if (loadingModal && loadingText && loadingSpinner) {
         loadingModal.classList.remove('hidden');
         loadingSpinner.style.display = 'none';
-        loadingText.innerHTML = 'Đăng ký thành công! Đang chuyển hướng...';
+        loadingText.innerHTML = 'Registration successful! Redirecting...';
         setTimeout(function() {
             window.location.href = '/Auth/Login';
         }, 2000);

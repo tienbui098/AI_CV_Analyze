@@ -73,7 +73,7 @@ window.showLoginSuccessModal = function() {
     if (loadingModal && loadingText && loadingSpinner) {
         loadingModal.classList.remove('hidden');
         loadingSpinner.style.display = 'none';
-        loadingText.innerHTML = 'Đăng nhập thành công! Đang chuyển hướng...';
+        loadingText.innerHTML = 'Login successful! Redirecting...';
         setTimeout(function() {
             window.location.href = '/';
         }, 2000);

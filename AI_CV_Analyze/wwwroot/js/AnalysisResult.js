@@ -56,7 +56,7 @@
     const stickySidebar = {
         element: document.querySelector('.sticky-sidebar'),
         mainContent: document.querySelector('.lg\\:col-span-2'),
-        footer: document.querySelector('footer'),
+        // Đã xóa: footer: document.querySelector('footer'),
 
         updatePosition: function () {
             if (!this.element) return;
@@ -71,14 +71,7 @@
             const maxHeight = window.innerHeight - 40;
             this.element.style.maxHeight = `${maxHeight}px`;
 
-            if (this.footer) {
-                const footerRect = this.footer.getBoundingClientRect();
-                if (sidebarRect.bottom > footerRect.top) {
-                    this.element.style.top = `${maxHeight - (sidebarRect.bottom - footerRect.top)}px`;
-                } else {
-                    this.element.style.top = '20px';
-                }
-            }
+            this.element.style.top = '20px';
         },
 
         init: function () {
@@ -118,7 +111,7 @@
                 }
             } catch (error) {
                 if (error.name !== 'AbortError') {
-                    toast.show('Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại.', 'error');
+                    toast.show('An error occurred while sending the request. Please try again.', 'error');
                 }
             } finally {
                 loadingModal.hide();
@@ -195,11 +188,11 @@
                 if (data.hasSuggestions) {
                     window.location.href = '/CVAnalysis/EditSuggestions';
                 } else {
-                    toast.show('Bạn chưa sử dụng chức năng đề xuất chỉnh sửa CV', 'warning');
+                    toast.show('You have not used the CV editing suggestion function', 'warning');
                 }
             })
             .catch(() => {
-                toast.show('Không thể kiểm tra đề xuất chỉnh sửa', 'error');
+                toast.show('Unable to check edit suggestions', 'error');
             });
     });
 
@@ -219,6 +212,6 @@
         const shareLink = document.getElementById('shareLink');
         shareLink?.select();
         document.execCommand('copy');
-        toast.show('Đã sao chép liên kết vào clipboard', 'success');
+        toast.show('Link copied to clipboard', 'success');
     });
 });

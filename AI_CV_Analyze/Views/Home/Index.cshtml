@@ -3,15 +3,22 @@
     ViewData["Title"] = "Home Page";
 }
 
-<body class="font-sans antialiased text-gray-800 leading-relaxed">
-    <!-- Hero Section -->
-    <section class="hero-bg section-spacing">
-        <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10">
+<body class="font-sans antialiased text-gray-800 leading-relaxed scroll-smooth">
+    <!-- Hero Section with Parallax Effect -->
+    <section class="hero-bg section-spacing bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+        <!-- Animated background elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div class="absolute top-0 right-0 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+            <div class="absolute bottom-0 left-1/2 w-64 h-64 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10 relative z-10">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
-                <div class="lg:w-1/2 space-y-8 text-center lg:text-left">
+                <div class="lg:w-1/2 space-y-8 text-center lg:text-left animate-fade-in-up">
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
                         <span class="block">Elevate your career</span>
-                        <span class="gradient-text block">with AI-powered CV analysis</span>
+                        <span class="gradient-text bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 block">with AI-powered CV analysis</span>
                     </h1>
 
                     <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0">
@@ -19,31 +26,37 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a asp-controller="CVAnalysis" asp-action="Index" class="btn-primary px-8 py-4 rounded-lg text-white font-medium text-lg inline-flex items-center justify-center">
-                            Upload your CV now <i class="fas fa-arrow-right ml-3"></i>
+                        <a asp-controller="CVAnalysis" asp-action="Index"
+                           class="relative overflow-hidden group bg-blue-600 hover:bg-blue-700 transition-all text-white font-medium text-lg inline-flex items-center justify-center px-8 py-4 rounded-lg shadow-lg hover:shadow-2xl duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300 active:scale-[0.98] transform hover:-translate-y-1">
+                            <span class="relative z-10">Upload your CV now</span>
+                            <i class="fas fa-arrow-right ml-3 transition-transform group-hover:translate-x-1"></i>
+                            <span class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                         </a>
 
-                        <a href="#" class="btn-secondary px-8 py-4 rounded-lg text-gray-800 font-medium text-lg inline-flex items-center justify-center border border-gray-200">
-                            View demo <i class="fas fa-play-circle ml-3"></i>
+                        <a href="#"
+                           class="relative overflow-hidden group bg-white border border-gray-200 hover:border-gray-300 transition-all text-gray-800 font-medium text-lg inline-flex items-center justify-center px-8 py-4 rounded-lg shadow hover:shadow-2xl duration-300 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.98] transform hover:-translate-y-1">
+                            <span class="relative z-10">View demo</span>
+                            <i class="fas fa-play-circle ml-3 transition-transform group-hover:scale-110"></i>
+                            <span class="absolute inset-0 bg-gradient-to-r from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                         </a>
                     </div>
 
-                    <div class="pt-4 flex items-center justify-center lg:justify-start gap-6">
+                    <div class="pt-4 flex items-center justify-center lg:justify-start gap-6 animate-fade-in-up animation-delay-300">
                         <div class="flex items-center">
                             <div class="flex -space-x-2">
-                                <img class="w-10 h-10 rounded-full border-2 border-white" src="https://randomuser.me/api/portraits/women/12.jpg" alt="">
-                                <img class="w-10 h-10 rounded-full border-2 border-white" src="https://randomuser.me/api/portraits/men/32.jpg" alt="">
-                                <img class="w-10 h-10 rounded-full border-2 border-white" src="https://randomuser.me/api/portraits/women/44.jpg" alt="">
+                                <img class="w-10 h-10 rounded-full border-2 border-white transition-transform hover:scale-110 hover:z-10" src="https://randomuser.me/api/portraits/women/12.jpg" alt="User avatar">
+                                <img class="w-10 h-10 rounded-full border-2 border-white transition-transform hover:scale-110 hover:z-10" src="https://randomuser.me/api/portraits/men/32.jpg" alt="User avatar">
+                                <img class="w-10 h-10 rounded-full border-2 border-white transition-transform hover:scale-110 hover:z-10" src="https://randomuser.me/api/portraits/women/44.jpg" alt="User avatar">
                             </div>
                             <span class="ml-3 text-gray-600">Over <span class="font-bold text-gray-800">10,000+</span> users</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:w-1/2 flex justify-center">
+                <div class="lg:w-1/2 flex justify-center animate-fade-in-right">
                     <div class="relative w-full max-w-xl">
                         <div class="relative aspect-w-16 aspect-h-9">
-                            <img class="w-full h-auto object-contain" src="~/image/Untitled%20design%20(1).png" alt="Hero animation">
+                            <img class="w-full h-auto object-contain transform hover:scale-[1.02] transition-transform duration-500" src="~/image/Untitled%20design%20(1).png" alt="Hero animation">
                         </div>
                     </div>
                 </div>
@@ -51,10 +64,10 @@
         </div>
     </section>
 
-    <!-- Benefits Section -->
+    <!-- Benefits Section with Staggered Animations -->
     <section class="section-spacing">
         <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10">
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-6">Why choose AI CV Analyze?</h2>
                 <p class="text-lg text-gray-600">
                     Our AI technology gives you a competitive edge in the job market with outstanding features.
@@ -63,54 +76,54 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Card 1 -->
-                <div class="card-hover bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                    <div class="feature-icon bg-blue-100 text-blue-600">
+                <div class="transition-all duration-300 rounded-xl bg-white p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 animate-fade-in-up animation-delay-100">
+                    <div class="feature-icon bg-blue-100 text-blue-600 w-14 h-14 rounded-full flex items-center justify-center mb-6 transform hover:rotate-12 transition-transform">
                         <i class="fas fa-robot text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-4">AI-powered CV Analysis</h3>
                     <p class="text-gray-600 mb-6">
                         Get detailed feedback on your CV's strengths and weaknesses with the most advanced AI technology.
                     </p>
-                    <a href="#" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition">
-                        Learn more <i class="fas fa-arrow-right ml-2"></i>
+                    <a href="#" class="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition group">
+                        Learn more <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
                     </a>
                 </div>
 
                 <!-- Card 2 -->
-                <div class="card-hover bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                    <div class="feature-icon bg-green-100 text-green-600">
+                <div class="transition-all duration-300 rounded-xl bg-white p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 animate-fade-in-up animation-delay-200">
+                    <div class="feature-icon bg-green-100 text-green-600 w-14 h-14 rounded-full flex items-center justify-center mb-6 transform hover:rotate-12 transition-transform">
                         <i class="fas fa-briefcase text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-4">Job Recommendations</h3>
                     <p class="text-gray-600 mb-6">
                         The system automatically suggests the most suitable jobs for your skills and experience from various companies.
                     </p>
-                    <a href="#" class="inline-flex items-center text-green-600 font-medium hover:text-green-800 transition">
-                        Learn more <i class="fas fa-arrow-right ml-2"></i>
+                    <a href="#" class="inline-flex items-center text-green-600 font-medium hover:text-green-800 transition group">
+                        Learn more <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
                     </a>
                 </div>
 
                 <!-- Card 3 -->
-                <div class="card-hover bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                    <div class="feature-icon bg-purple-100 text-purple-600">
+                <div class="transition-all duration-300 rounded-xl bg-white p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 animate-fade-in-up animation-delay-300">
+                    <div class="feature-icon bg-purple-100 text-purple-600 w-14 h-14 rounded-full flex items-center justify-center mb-6 transform hover:rotate-12 transition-transform">
                         <i class="fas fa-chart-line text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-4">Improve Your Profile</h3>
                     <p class="text-gray-600 mb-6">
                         Receive specific suggestions to improve your CV and increase your chances of being hired by top employers by up to 80%.
                     </p>
-                    <a href="#" class="inline-flex items-center text-purple-600 font-medium hover:text-purple-800 transition">
-                        Learn more <i class="fas fa-arrow-right ml-2"></i>
+                    <a href="#" class="inline-flex items-center text-purple-600 font-medium hover:text-purple-800 transition group">
+                        Learn more <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- How It Works Section -->
-    <section class="section-spacing bg-gray-50">
+    <!-- How It Works Section with Animated Steps -->
+    <section class="section-spacing bg-gradient-to-b from-gray-50 to-white">
         <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10">
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-6">How it works</h2>
                 <p class="text-lg text-gray-600">
                     Just 3 simple steps to get your perfect CV
@@ -120,25 +133,25 @@
             <div class="flex flex-col md:flex-row gap-8 items-center">
                 <div class="md:w-1/2 order-2 md:order-1">
                     <div class="space-y-8">
-                        <div class="flex items-start gap-6">
-                            <div class="flex-shrink-0 bg-white rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-500 text-blue-500 font-bold">1</div>
-                            <div>
+                        <div class="flex items-start gap-6 animate-fade-in-right animation-delay-100">
+                            <div class="flex-shrink-0 bg-white rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-500 text-blue-500 font-bold shadow-md transform hover:scale-110 transition-transform">1</div>
+                            <div class="transition-all duration-300 hover:translate-x-2">
                                 <h3 class="text-xl font-bold mb-3">Upload your CV</h3>
                                 <p class="text-gray-600">Upload your current CV in PDF or Word format. The system supports various CV formats.</p>
                             </div>
                         </div>
 
-                        <div class="flex items-start gap-6">
-                            <div class="flex-shrink-0 bg-white rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-500 text-blue-500 font-bold">2</div>
-                            <div>
+                        <div class="flex items-start gap-6 animate-fade-in-right animation-delay-200">
+                            <div class="flex-shrink-0 bg-white rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-500 text-blue-500 font-bold shadow-md transform hover:scale-110 transition-transform">2</div>
+                            <div class="transition-all duration-300 hover:translate-x-2">
                                 <h3 class="text-xl font-bold mb-3">Receive detailed analysis</h3>
                                 <p class="text-gray-600">The AI system will analyze and evaluate your CV based on multiple criteria: layout, content, keywords, experience, and more.</p>
                             </div>
                         </div>
 
-                        <div class="flex items-start gap-6">
-                            <div class="flex-shrink-0 bg-white rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-500 text-blue-500 font-bold">3</div>
-                            <div>
+                        <div class="flex items-start gap-6 animate-fade-in-right animation-delay-300">
+                            <div class="flex-shrink-0 bg-white rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-500 text-blue-500 font-bold shadow-md transform hover:scale-110 transition-transform">3</div>
+                            <div class="transition-all duration-300 hover:translate-x-2">
                                 <h3 class="text-xl font-bold mb-3">Download your perfect CV</h3>
                                 <p class="text-gray-600">After receiving improvement suggestions, you can edit and download your fully optimized CV for free.</p>
                             </div>
@@ -146,91 +159,104 @@
                     </div>
                 </div>
 
-                <div class="md:w-1/2 order-1 md:order-2">
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                        <img src="https://via.placeholder.com/600x400?text=Process+Demo" alt="How it works" class="w-full h-auto rounded-lg">
+                <div class="md:w-1/2 order-1 md:order-2 animate-fade-in-left">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="relative overflow-hidden rounded-lg aspect-w-16 aspect-h-9">
+                            <img src="https://via.placeholder.com/600x400?text=Process+Demo" alt="How it works" class="w-full h-auto rounded-lg object-cover transform hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="bg-blue-700 py-16">
-        <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10">
+    <!-- CTA Section with Gradient Animation -->
+    <section class="relative overflow-hidden py-16 bg-gradient-to-r from-blue-600 to-indigo-700 animate-gradient-x">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==')]"></div>
+        </div>
+
+        <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10 relative z-10">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
-                <div class="lg:w-1/2">
+                <div class="lg:w-1/2 animate-fade-in-up">
                     <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to upgrade your CV?</h2>
-                    <p class="text-xl text-blue-200 max-w-2xl">
+                    <p class="text-xl text-blue-100 max-w-2xl">
                         Sign up now to experience the most advanced AI CV analysis technology.
                     </p>
                 </div>
 
-                <div class="lg:w-1/2 flex flex-col sm:flex-row gap-4 justify-center lg:justify-end">
-                    <a asp-controller="CVAnalysis" asp-action="Index" class="btn-primary px-8 py-4 rounded-lg text-white font-medium text-lg inline-flex items-center justify-center">
-                        Get started <i class="fas fa-arrow-right ml-3"></i>
+                <div class="lg:w-1/2 flex flex-col sm:flex-row gap-4 justify-center lg:justify-end animate-fade-in-up animation-delay-100">
+                    <a asp-controller="CVAnalysis" asp-action="Index"
+                       class="relative overflow-hidden group bg-white text-blue-700 hover:text-blue-800 transition-all font-medium text-lg inline-flex items-center justify-center px-8 py-4 rounded-lg shadow-lg hover:shadow-2xl duration-300 focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-[0.98] transform hover:-translate-y-1">
+                        <span class="relative z-10">Get started</span>
+                        <i class="fas fa-arrow-right ml-3 transition-transform group-hover:translate-x-1"></i>
+                        <span class="absolute inset-0 bg-gradient-to-r from-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     </a>
 
-                    <a href="#" class="btn-secondary px-8 py-4 rounded-lg text-gray-800 font-medium text-lg inline-flex items-center justify-center bg-white hover:bg-gray-100">
-                        Contact us <i class="fas fa-phone-alt ml-3"></i>
+                    <a href="#"
+                       class="relative overflow-hidden group bg-transparent border-2 border-white text-white hover:text-white transition-all font-medium text-lg inline-flex items-center justify-center px-8 py-4 rounded-lg shadow hover:shadow-2xl duration-300 focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-[0.98] transform hover:-translate-y-1">
+                        <span class="relative z-10">Contact us</span>
+                        <i class="fas fa-phone-alt ml-3 transition-transform group-hover:scale-110"></i>
+                        <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FAQ Section -->
+    <!-- FAQ Section with Animated Accordion -->
     <section class="section-spacing bg-gray-50">
         <div class="max-content-width mx-auto px-6 sm:px-8 lg:px-10">
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-6">Frequently Asked Questions</h2>
                 <p class="text-lg text-gray-600">
                     Find answers to common questions about our service
                 </p>
             </div>
 
-            <div class="max-w-4xl mx-auto space-y-6">
+            <div class="max-w-4xl mx-auto space-y-4">
                 <!-- FAQ Item 1 -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <button class="flex items-center justify-between w-full text-left">
-                        <h3 class="text-lg font-medium text-gray-900">Is AI CV Analyze free?</h3>
-                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl animate-fade-in-up animation-delay-100">
+                    <button class="faq-toggle flex items-center justify-between w-full text-left group">
+                        <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">Is AI CV Analyze free?</h3>
+                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
                     </button>
-                    <div class="mt-4 text-gray-600 hidden">
-                        <p>AI CV Analyze offers a free version. The free version allows users to access all analysis features of the system.</p>
+                    <div class="faq-content mt-4 text-gray-600 overflow-hidden max-h-0 transition-all duration-300">
+                        <p>AI CV Analyze offers a free version with comprehensive analysis features. For advanced recommendations and unlimited revisions, we offer premium plans starting at just $9.99/month.</p>
                     </div>
                 </div>
 
                 <!-- FAQ Item 2 -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <button class="flex items-center justify-between w-full text-left">
-                        <h3 class="text-lg font-medium text-gray-900">Is my CV data safe?</h3>
-                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl animate-fade-in-up animation-delay-200">
+                    <button class="faq-toggle flex items-center justify-between w-full text-left group">
+                        <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">Is my CV data safe?</h3>
+                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
                     </button>
-                    <div class="mt-4 text-gray-600 hidden">
-                        <p>We are committed to user data security. All CVs are encrypted and used only for analysis purposes. You can delete your data at any time from your account.</p>
+                    <div class="faq-content mt-4 text-gray-600 overflow-hidden max-h-0 transition-all duration-300">
+                        <p>We prioritize your privacy with military-grade 256-bit encryption. All CVs are stored securely and never shared with third parties. You can permanently delete your data anytime from your dashboard.</p>
                     </div>
                 </div>
 
                 <!-- FAQ Item 3 -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <button class="flex items-center justify-between w-full text-left">
-                        <h3 class="text-lg font-medium text-gray-900">How long does the analysis take?</h3>
-                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl animate-fade-in-up animation-delay-300">
+                    <button class="faq-toggle flex items-center justify-between w-full text-left group">
+                        <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">How long does the analysis take?</h3>
+                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
                     </button>
-                    <div class="mt-4 text-gray-600 hidden">
-                        <p>The analysis process usually takes about 1-2 minutes. For long or complex CVs, it may take up to 5 minutes for the most accurate results.</p>
+                    <div class="faq-content mt-4 text-gray-600 overflow-hidden max-h-0 transition-all duration-300">
+                        <p>Our AI typically completes analysis in under 60 seconds. Complex CVs with multiple pages may take up to 2 minutes. You'll receive an email notification when your report is ready.</p>
                     </div>
                 </div>
 
                 <!-- FAQ Item 4 -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <button class="flex items-center justify-between w-full text-left">
-                        <h3 class="text-lg font-medium text-gray-900">What file formats does AI CV Analyze support?</h3>
-                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl animate-fade-in-up animation-delay-400">
+                    <button class="faq-toggle flex items-center justify-between w-full text-left group">
+                        <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">What file formats does AI CV Analyze support?</h3>
+                        <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
                     </button>
-                    <div class="mt-4 text-gray-600 hidden">
-                        <p>We support a variety of formats: PDF, DOC, DOCX. For image files (JPG, PNG), you need to use the paid version with OCR feature to convert to text.</p>
+                    <div class="faq-content mt-4 text-gray-600 overflow-hidden max-h-0 transition-all duration-300">
+                        <p>We support PDF, DOC, DOCX, and TXT formats. Our premium OCR feature can extract text from image files (JPG, PNG) with 98% accuracy. Maximum file size is 10MB.</p>
                     </div>
                 </div>
             </div>
