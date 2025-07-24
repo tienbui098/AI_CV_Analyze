@@ -198,13 +198,15 @@
                             @if (!string.IsNullOrEmpty(Model.Course))
                             {
                                 <div>
-                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Courses</h3>
-                                    <div class="space-y-3">
-                                        @foreach (var course in Model.Course.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Course</h3>
+                                    <div class="space-y-4">
+                                        @foreach (var edu in Model.Course.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
                                         {
-                                            <div class="flex items-start">
-                                                <i class="fas fa-book-open text-blue-400 mt-1 mr-3"></i>
-                                                <span>@course</span>
+                                            <div class="timeline-item pl-6 relative">
+                                                <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
+                                                <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                                    @edu
+                                                </div>
                                             </div>
                                         }
                                     </div>
@@ -215,13 +217,15 @@
                             @if (!string.IsNullOrEmpty(Model.Certificate))
                             {
                                 <div>
-                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Certificates</h3>
-                                    <div class="space-y-3">
-                                        @foreach (var cert in Model.Certificate.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Certification</h3>
+                                    <div class="space-y-4">
+                                        @foreach (var edu in Model.Certificate.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
                                         {
-                                            <div class="flex items-start">
-                                                <i class="fas fa-certificate text-blue-400 mt-1 mr-3"></i>
-                                                <span>@cert</span>
+                                            <div class="timeline-item pl-6 relative">
+                                                <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
+                                                <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                                    @edu
+                                                </div>
                                             </div>
                                         }
                                     </div>
