@@ -480,10 +480,10 @@ CV:
 
         public async Task<string> GetCVEditSuggestions(string cvContent)
         {
-            // Chỉ sử dụng Azure OpenAI
+            // Use Azure OpenAI only
             if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
             {
-                return "Lỗi cấu hình: Thiếu thông tin Azure OpenAI. Vui lòng kiểm tra cấu hình AzureAI trong appsettings.json";
+                return "Configuration error: Missing Azure OpenAI information. Please check the AzureAI configuration in appsettings.json";
             }
 
             string endpoint = _openAIEndpoint;
@@ -497,23 +497,28 @@ CV:
 
             var requestBody = new
             {
-                model = modelName, // Sử dụng model name đã xác định
+                model = modelName,
                 messages = new[]
                 {
-                            new { role = "system", content = "Bạn là chuyên gia nhân sự có kinh nghiệm 10+ năm trong lĩnh vực tuyển dụng và đánh giá CV." +
-                            " Hãy phân tích CV một cách chi tiết và đưa ra các đề xuất chỉnh sửa cụ thể, chuyên nghiệp. Tập trung vào:\r\n\r\n1. Cấu trúc và bố cục CV\r\n2." +
-                            " Nội dung và cách trình bày\r\n3. Điểm mạnh cần nhấn mạnh\r\n4. Điểm yếu cần cải thiện\r\n5. Từ khóa và kỹ năng quan trọng\r\n6. Cách viết mô tả công việc\r\n7." +
-                            " Định dạng và trình bày\r\n\r\nHãy đưa ra nhận xét rõ ràng, cụ thể và có thể thực hiện được. " },
-
-                            new { role = "user", content = cvContent }
-                        },
+            new {
+                role = "system",
+                content = "You are a human resources expert with over 10 years of experience in recruitment and CV evaluation. Analyze the CV in detail and provide specific and professional suggestions. Focus on:\n\n" +
+                          "1. CV structure and layout\n" +
+                          "2. Content and presentation\n" +
+                          "3. Strengths to highlight\n" +
+                          "4. Weaknesses to improve\n" +
+                          "5. Important keywords and skills\n" +
+                          "6. Job description writing style\n" +
+                          "7. Formatting and visual presentation\n\n" +
+                          "Please give clear, specific, and actionable feedback."
+            },
+            new { role = "user", content = cvContent }
+        },
                 max_tokens = 2000,
                 temperature = 0.7
             };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            // Sử dụng endpoint đã xác định
 
             Console.WriteLine($"==== OpenAI Request ====");
             Console.WriteLine($"Endpoint: {endpoint}");
@@ -524,7 +529,7 @@ CV:
 
             if (response == null)
             {
-                return "Bạn đang gửi quá nhiều yêu cầu tới AI hoặc có lỗi mạng. Vui lòng thử lại sau vài phút.";
+                return "You are sending too many requests to the AI or there is a network error. Please try again in a few minutes.";
             }
 
             Console.WriteLine($"==== OpenAI Response Status: {response.StatusCode} ====");
@@ -534,22 +539,21 @@ CV:
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"==== OpenAI Error Response: {error} ====");
 
-                // Provide more specific error messages
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    return "Lỗi xác thực: API key không hợp lệ hoặc endpoint không đúng. Vui lòng kiểm tra cấu hình OpenAI trong appsettings.json";
+                    return "Authentication error: Invalid API key or incorrect endpoint. Please check the OpenAI configuration in appsettings.json";
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    return "Lỗi: Model hoặc deployment không tìm thấy. Vui lòng kiểm tra tên model/deployment trong cấu hình";
+                    return "Error: Model or deployment not found. Please check the model/deployment name in configuration.";
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
                 {
-                    return "Lỗi: Quá nhiều yêu cầu. Vui lòng thử lại sau vài phút";
+                    return "Error: Too many requests. Please try again in a few minutes.";
                 }
                 else
                 {
-                    return $"Lỗi OpenAI: {response.StatusCode} - {error}";
+                    return $"OpenAI Error: {response.StatusCode} - {error}";
                 }
             }
 
@@ -561,7 +565,7 @@ CV:
 
             if (string.IsNullOrEmpty(suggestion))
             {
-                return "Không thể nhận được đề xuất từ AI. Vui lòng thử lại.";
+                return "No suggestions were received from AI. Please try again.";
             }
 
             return suggestion;
@@ -571,39 +575,49 @@ CV:
         {
             if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
             {
-                return "Lỗi cấu hình: Thiếu thông tin Azure OpenAI. Vui lòng kiểm tra cấu hình AzureAI trong appsettings.json";
+                return "Configuration error: Missing Azure OpenAI information. Please check the AzureAI configuration in appsettings.json";
             }
+
             string endpoint = _openAIEndpoint;
             string apiKey = _openAIKey;
             string modelName = _openAIDeploymentName;
+
             var client = _httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(2);
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-            string prompt = $@"Bạn là chuyên gia nhân sự. Hãy chỉnh sửa lại CV dưới đây theo các đề xuất sau để tạo ra một bản CV hoàn chỉnh, chuyên nghiệp, tối ưu nhất. Chỉ trả về nội dung CV đã chỉnh sửa, không giải thích thêm.\n\nĐề xuất chỉnh sửa:\n{suggestions}\n\nCV gốc:\n{cvContent}";
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            string prompt = $@"You are an HR expert. Please revise the following CV according to the suggestions to create a complete, professional, and optimized version. Only return the edited CV content without any additional explanations.Edit suggestions: {suggestions} Original CV: {cvContent}";
+
             var requestBody = new
             {
                 model = modelName,
                 messages = new[]
                 {
-                    new { role = "system", content = "Bạn là chuyên gia nhân sự, hãy chỉnh sửa CV theo đề xuất." },
-                    new { role = "user", content = prompt }
-                },
+            new { role = "system", content = "You are an HR expert, please revise the CV based on the suggestions." },
+            new { role = "user", content = prompt }
+        },
                 max_tokens = 2000,
                 temperature = 0.5
             };
+
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
-            var content = new System.Net.Http.StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
             var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
             if (response == null)
-                return "Không nhận được phản hồi từ AI";
+                return "No response received from AI.";
+
             var responseString = await response.Content.ReadAsStringAsync();
-            var doc = Newtonsoft.Json.Linq.JObject.Parse(responseString);
+            var doc = JObject.Parse(responseString);
             var finalCV = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+
             if (string.IsNullOrEmpty(finalCV))
-                return "AI không trả về nội dung CV đã chỉnh sửa";
+                return "AI did not return the edited CV content.";
+
             return finalCV.Trim();
         }
+
 
         // Hàm retry request vô hạn
         private async Task<HttpResponseMessage?> SendWithRetryAsync(Func<Task<HttpResponseMessage>> sendRequest, int delayMs = 2000)
