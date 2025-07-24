@@ -20,6 +20,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using AI_CV_Analyze.Data;
 using System.Security.Claims;
+using System.Linq;
 
 namespace AI_CV_Analyze.Services
 {
@@ -410,69 +411,89 @@ CV:
 
 
 
-        public async Task<JobSuggestionResult> GetJobSuggestionsAsync(string skills)
+        public async Task<JobSuggestionResult> GetJobSuggestionsAsync(string skills, string workExperience)
         {
-            string extractedSkills = SkillExtractor.ExtractSkillsFromText(skills); // 'skills' is raw CV text
-
-            var requestData = new
+            // Use Azure OpenAI only
+            if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
             {
-                Inputs = new
-                {
-                    input1 = new[]
-                    {
-                                new { Skills = extractedSkills, JobCategory = "unknown" }
-                            }
-                }
-            };
-
-            var json = JsonConvert.SerializeObject(requestData);
-            Console.WriteLine("==== Job Recommendation Request JSON ====");
-            Console.WriteLine(json);
-            var client = new HttpClient();
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _jobRecommendationApiKey);
-
-            var response = await client.PostAsync(_jobRecommendationEndpoint, content);
-            var responseBody = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine($"==== Job Recommendation Response Status: {response.StatusCode} ====");
-            Console.WriteLine(responseBody);
-
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException($"AzureML Error: {response.StatusCode}\n\n{responseBody}");
-
-            var result = new JobSuggestionResult();
-            var parsed = JObject.Parse(responseBody);
-
-            // Compatibility: map WebServiceOutput0 to output1 if needed
-            var results = parsed["Results"] as JObject;
-            if (results != null && results["output1"] == null && results["WebServiceOutput0"] != null)
-            {
-                results["output1"] = results["WebServiceOutput0"];
+                return new JobSuggestionResult { ImprovementPlan = "Configuration error: Missing Azure OpenAI information. Please check the AzureAI configuration in appsettings.json" };
             }
 
-            // Parse response safely
-            var output = parsed["Results"]?["output1"] as JArray;
-            if (output == null || output.Count == 0)
-                throw new Exception("❌ Missing or invalid 'output1' in Azure ML response.");
+            string endpoint = _openAIEndpoint;
+            string apiKey = _openAIKey;
+            string modelName = _openAIDeploymentName;
 
-            var scores = output[0] as JObject;
-            if (scores == null)
-                throw new Exception("❌ Unexpected format: first item in 'output1' is not a JSON object.");
+            var client = _httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(2);
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
-            foreach (var prop in scores.Properties())
+            // Prompt for OpenAI
+            string prompt = $@"Given the following skills and work/project experience, recommend the most suitable job. Return only:\n- The recommended job title\n- The match percentage (integer, 0-100)\n- The most important skill to improve for a better match (if any; if none, say 'None' and percentage is 100%)\n\nFormat:\nRecommended Job: <job title>\nMatch Percentage: <number>%\nSkill to Improve: <skill or 'None'>\n\nSkills: {skills}\nWork/Project Experience: {workExperience}";
+
+            var requestBody = new
             {
-                if (prop.Name.StartsWith("Scored Probabilities_"))
+                model = modelName,
+                messages = new[]
                 {
-                    string jobTitle = prop.Name.Replace("Scored Probabilities_", "");
-                    double probability = prop.Value.Value<double>();
+                    new { role = "system", content = "You are an AI assistant specialized in resume analysis and job recommendation. Always provide structured, professional career advice with skill match percentage and improvement suggestions." },
+                    new { role = "user", content = prompt }
+                },
+                max_tokens = 1000,
+                temperature = 0.2
+            };
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    if (probability >= 0.1)
-                        result.Suggestions[jobTitle] = probability;
+            var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
+            if (response == null)
+            {
+                return new JobSuggestionResult { ImprovementPlan = "You are sending too many requests to the AI or there is a network error. Please try again in a few minutes." };
+            }
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            var doc = JObject.Parse(responseString);
+            var answer = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+            if (string.IsNullOrWhiteSpace(answer))
+            {
+                return new JobSuggestionResult { ImprovementPlan = "No suggestions were received from AI. Please try again." };
+            }
+
+            // Parse the answer using regex or simple string parsing
+            var result = new JobSuggestionResult();
+            try
+            {
+                // Recommended Job
+                var jobMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Recommended Job:\s*(.+)");
+                if (jobMatch.Success) result.RecommendedJob = jobMatch.Groups[1].Value.Trim();
+
+                // Match Percentage
+                var percentMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Match Percentage:\s*(\d+)%");
+                if (percentMatch.Success) result.MatchPercentage = int.Parse(percentMatch.Groups[1].Value);
+
+                // Skill to Improve
+                var skillImproveMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Skill to Improve:\s*(.+)");
+                if (skillImproveMatch.Success)
+                {
+                    var skillImprove = skillImproveMatch.Groups[1].Value.Trim();
+                    if (!string.Equals(skillImprove, "None", StringComparison.OrdinalIgnoreCase))
+                        result.MissingSkills = new List<string> { skillImprove };
+                    else
+                        result.MissingSkills = new List<string>();
                 }
+                else
+                {
+                    result.MissingSkills = new List<string>();
+                }
+                // MatchedSkills is not used in this simple output
+                result.MatchedSkills = null;
+                // ImprovementPlan is not used in this simple output
+                result.ImprovementPlan = null;
+            }
+            catch
+            {
+                // Fallback: just return the raw answer in ImprovementPlan
+                result.ImprovementPlan = answer;
             }
 
             return result;

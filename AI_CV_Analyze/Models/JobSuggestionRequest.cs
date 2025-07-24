@@ -4,5 +4,6 @@ namespace AI_CV_Analyze.Models
     {
         public string Skills { get; set; }
         public string JobCategory { get; set; } = "Unknown";
+        public string WorkExperience { get; set; } // New: work/project experience
     }
 } 
