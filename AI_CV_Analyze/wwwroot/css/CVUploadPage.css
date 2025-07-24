@@ -1,5 +1,5 @@
 ﻿/* Animation keyframes */
-@@keyframes fadeInUp {
+@keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -11,7 +11,7 @@
     }
 }
 
-@@keyframes fadeIn {
+@keyframes fadeIn {
     from {
         opacity: 0;
     }
@@ -21,7 +21,7 @@
     }
 }
 
-@@keyframes blob {
+@keyframes blob {
     0% {
         transform: translate(0px, 0px) scale(1);
     }
@@ -39,7 +39,7 @@
     }
 }
 
-@@keyframes progress {
+@keyframes progress {
     0% {
         width: 0%;
     }
@@ -88,12 +88,13 @@
     border-radius: 16px;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     background-color: rgba(59, 130, 246, 0.03);
-    min-height: 300px;
+    min-height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    padding: 2rem;
 }
 
     .dropzone.active {
@@ -123,22 +124,6 @@
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
     }
 
-    .file-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .file-card:hover::before {
-        opacity: 1;
-    }
-
 /* Button hover effects */
 .btn-primary:hover {
     transform: translateY(-4px);
@@ -146,9 +131,9 @@
 }
 
 /* Responsive adjustments */
-@@media (max-width: 640px) {
+@media (max-width: 640px) {
     .dropzone {
-        min-height: 250px;
+        min-height: 220px;
         padding: 1.5rem;
     }
 
@@ -156,4 +141,18 @@
         width: 16px;
         height: 16px;
     }
+}
+
+/* Fix for overlapping sections */
+#upload-instructions,
+#analyze-section {
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+#analyze-section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

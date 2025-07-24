@@ -16,8 +16,12 @@ const progressBar = document.getElementById('progressBar');
 let formSubmitting = false;
 let abortController;
 
-// =============== CV UPLOAD LOGIC ===============
+// Initialize the form
 document.addEventListener('DOMContentLoaded', function () {
+    // Set initial states
+    uploadInstructions.style.display = 'block';
+    analyzeSection.style.display = 'none';
+
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropzone.addEventListener(eventName, preventDefaults, false);
@@ -40,14 +44,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function highlight() {
         dropzone.classList.add('active');
-        // Add pulse animation
-        dropzone.style.animation = 'pulse 1.5s infinite';
     }
 
     function unhighlight() {
         dropzone.classList.remove('active');
-        // Remove pulse animation
-        dropzone.style.animation = '';
     }
 
     // Handle dropped files
@@ -92,11 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
             hideError();
             displayFileInfo(file);
             fileInput.files = files; // Set files to input for form submission
-
-            // Add success animation
-            dropzone.style.animation = 'none';
-            dropzone.offsetHeight; // Trigger reflow
-            dropzone.style.animation = 'successPulse 1s ease';
         }
     }
 
@@ -106,11 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fileSize.textContent = formatFileSize(file.size);
         uploadInstructions.style.display = 'none';
         analyzeSection.style.display = 'block';
-
-        // Add file info animation
-        analyzeSection.style.animation = 'none';
-        analyzeSection.offsetHeight; // Trigger reflow
-        analyzeSection.style.animation = 'fadeInUp 0.6s ease-out';
     }
 
     // Remove file and reset to upload state
@@ -119,11 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadInstructions.style.display = 'block';
         analyzeSection.style.display = 'none';
         hideError();
-
-        // Add reset animation
-        uploadInstructions.style.animation = 'none';
-        uploadInstructions.offsetHeight; // Trigger reflow
-        uploadInstructions.style.animation = 'fadeIn 0.4s ease-out';
     });
 
     // Format file size
@@ -139,11 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function showError(message) {
         errorText.textContent = message;
         errorMessage.classList.remove('hidden');
-
-        // Add error animation
-        errorMessage.style.animation = 'none';
-        errorMessage.offsetHeight; // Trigger reflow
-        errorMessage.style.animation = 'shake 0.5s ease';
     }
 
     // Hide error message
@@ -246,25 +226,5 @@ document.addEventListener('DOMContentLoaded', function () {
         if (abortController) abortController.abort();
         loadingModal.classList.add('hidden');
         formSubmitting = false;
-    });
-
-    // Add shake animation for errors
-    const shakeKeyframes = [
-        { transform: 'translateX(0)' },
-        { transform: 'translateX(-10px)' },
-        { transform: 'translateX(10px)' },
-        { transform: 'translateX(-10px)' },
-        { transform: 'translateX(10px)' },
-        { transform: 'translateX(-10px)' },
-        { transform: 'translateX(0)' }
-    ];
-
-    const shakeTiming = {
-        duration: 500,
-        iterations: 1
-    };
-
-    errorMessage.addEventListener('animationend', function () {
-        this.style.animation = '';
     });
 });
