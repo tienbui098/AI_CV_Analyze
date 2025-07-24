@@ -110,13 +110,29 @@ namespace AI_CV_Analyze.Controllers
             }
             // Nếu vẫn chưa có result, thử lấy ResumeId từ query/session
             int rid = result?.ResumeId ?? resumeId ?? 0;
-            // Lấy lại gợi ý công việc nếu có
-            var jobRecsJson = HttpContext.Session.GetString("JobRecommendations");
-            if (!string.IsNullOrEmpty(jobRecsJson))
+
+            // Always generate job recommendations from extracted sections
+            string skills = null;
+            string workExp = null;
+            if (result != null)
             {
-                var jobSuggestions = JsonConvert.DeserializeObject<Dictionary<string, double>>(jobRecsJson);
-                ViewBag.JobRecommendations = jobSuggestions;
+                var skillsList = new List<string>();
+                if (!string.IsNullOrWhiteSpace(result.Skills)) skillsList.Add(result.Skills);
+                if (!string.IsNullOrWhiteSpace(result.LanguageProficiency)) skillsList.Add(result.LanguageProficiency);
+                skills = string.Join(", ", skillsList);
+                var workList = new List<string>();
+                if (!string.IsNullOrWhiteSpace(result.Experience)) workList.Add(result.Experience);
+                if (!string.IsNullOrWhiteSpace(result.Project)) workList.Add(result.Project);
+                workExp = string.Join("\n", workList);
             }
+            JobSuggestionResult jobSuggestionResult = null;
+            if (!string.IsNullOrWhiteSpace(skills))
+            {
+                // Synchronously call the async method for job suggestions (since this is an action method)
+                jobSuggestionResult = _resumeAnalysisService.GetJobSuggestionsAsync(skills, workExp).GetAwaiter().GetResult();
+            }
+            ViewBag.JobRecommendations = jobSuggestionResult;
+
             // Lấy điểm từng tiêu chí từ bảng ResumeAnalysis
             bool hasDbScore = false;
             if (rid > 0)
@@ -161,12 +177,13 @@ namespace AI_CV_Analyze.Controllers
         {
             ViewBag.ErrorMessage = null;
             var skills = HttpContext.Session.GetString("JobSuggestionSkills");
-            var resultsJson = HttpContext.Session.GetString("JobSuggestionResult");
-            var model = new JobSuggestionRequest { Skills = skills };
-            if (!string.IsNullOrEmpty(resultsJson))
+            var workExp = HttpContext.Session.GetString("JobSuggestionWorkExperience");
+            var resultJson = HttpContext.Session.GetString("JobSuggestionResult");
+            var model = new JobSuggestionRequest { Skills = skills, WorkExperience = workExp };
+            if (!string.IsNullOrEmpty(resultJson))
             {
-                var results = JsonConvert.DeserializeObject<Dictionary<string, double>>(resultsJson);
-                ViewBag.Results = results;
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<AI_CV_Analyze.Models.JobSuggestionResult>(resultJson);
+                ViewBag.JobSuggestionResult = result;
             }
             return View(model);
         }
@@ -182,11 +199,12 @@ namespace AI_CV_Analyze.Controllers
 
             try
             {
-                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(model.Skills);
-                ViewBag.Results = result.Suggestions;
-                // Lưu kết quả gợi ý công việc vào Session
-                HttpContext.Session.SetString("JobSuggestionResult", JsonConvert.SerializeObject(result.Suggestions));
+                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(model.Skills, model.WorkExperience);
+                ViewBag.JobSuggestionResult = result;
+                // Save the full result for GET reload
+                HttpContext.Session.SetString("JobSuggestionResult", Newtonsoft.Json.JsonConvert.SerializeObject(result));
                 HttpContext.Session.SetString("JobSuggestionSkills", model.Skills);
+                HttpContext.Session.SetString("JobSuggestionWorkExperience", model.WorkExperience);
                 return View(model);
             }
             catch (Exception ex)
@@ -205,9 +223,9 @@ namespace AI_CV_Analyze.Controllers
             }
             try
             {
-                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(request.Skills);
-                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result.Suggestions));
-                return Json(result.Suggestions);
+                var result = await _resumeAnalysisService.GetJobSuggestionsAsync(request.Skills, request.WorkExperience);
+                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result));
+                return Json(result);
             }
             catch (Exception ex)
             {
