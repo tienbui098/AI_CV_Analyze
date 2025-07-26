@@ -55,27 +55,295 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Overall Analysis -->
-            @if (!string.IsNullOrEmpty(Model.OverallAnalysis))
+    <!-- PHẦN GRID 3 CỘT -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+        <!-- CỘT TRÁI: CV Scoring + Job Recommendation -->
+        <div class="space-y-6 order-1 md:order-1 md:col-span-3">
+            <!-- CV Scoring Block -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6" id="cv-score-block">
+                <div class="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-star text-yellow-500 mr-3"></i> CV Scoring (AI)
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <button id="btnScoreCV" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition" data-resumeid="@Model.ResumeId" @(hasScore ? "style='display:none'" : "")>
+                        <i class="fas fa-magic mr-2"></i> CV Scoring
+                    </button>
+                    <div id="cv-score-table" @(hasScore ? "" : "style='display:none'")>
+                        <table class="min-w-full text-sm text-gray-700">
+                            <tbody>
+                                <tr>
+                                    <td class="font-medium py-2 pr-4">Layout and presentation</td>
+                                    <td class="text-right py-2" id="score-layout">@layoutScore / 10</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium py-2 pr-4">Skill</td>
+                                    <td class="text-right py-2" id="score-skill">@skillScore / 10</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium py-2 pr-4">Experience/Project</td>
+                                    <td class="text-right py-2" id="score-experience">@experienceScore / 10</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium py-2 pr-4">Education</td>
+                                    <td class="text-right py-2" id="score-education">@educationScore / 10</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium py-2 pr-4">Relevant Keywords</td>
+                                    <td class="text-right py-2" id="score-keyword">@keywordScore / 10</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium py-2 pr-4">Form/Format</td>
+                                    <td class="text-right py-2" id="score-format">@formatScore / 10</td>
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="font-bold py-2 pr-4">Total score</td>
+                                    <td class="text-right py-2 font-bold text-blue-600 text-lg" id="score-total">@totalScore / 60</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="score-loading" style="display:none" class="text-center text-blue-600 mt-2"><i class="fas fa-spinner fa-spin"></i> Scoring...</div>
+                    <div id="score-error" style="display:none" class="text-center text-red-600 mt-2"></div>
+                </div>
+            </div>
+            <!-- Job Recommendation Block -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-briefcase text-blue-500 mr-3"></i>Suitable Jobs
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="text-center py-6">
+                        <div id="jobRecommendResult" class="mb-4">
+                            @{
+                                var jobRecs = ViewBag.JobRecommendations as Dictionary<string, double>;
+                            }
+                            @if (jobRecs != null && jobRecs.Any())
+                            {
+                                <div class="space-y-4">
+                                    <p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following positions:</p>
+                                    @foreach (var job in jobRecs.OrderByDescending(x => x.Value).Take(3))
+                                    {
+                                        var percent = (job.Value * 100).ToString("F1");
+                                        <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
+                                            <div class="flex items-start">
+                                                <div class="flex-grow">
+                                                    <h3 class="font-bold text-gray-900">@job.Key</h3>
+                                                    <div class="flex items-center mt-2">
+                                                        <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
+                                                            <div class="bg-green-500 h-2 rounded-full" style="width: @percent%"></div>
+                                                        </div>
+                                                        <span class="text-xs text-gray-600">@percent%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="circular-chart w-12 h-12">
+                                                        <svg viewBox="0 0 36 36">
+                                                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                            <path class="circle" stroke="#10b981" stroke-dasharray="@percent, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                            <text x="18" y="20.35" class="percentage">@((int)(job.Value * 100))%</text>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class="fas fa-search mr-2"></i>View more jobs</a>
+                            }
+                        </div>
+                        <button id="btnJobRecommend" type="button" class=" w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                            <i class="fas fa-magic mr-2"></i> Job Recommendation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- CỘT GIỮA: Nhận gợi ý chỉnh sửa + nội dung đề xuất chỉnh sửa -->
+        <div class="order-2 md:order-2 md:col-span-6 flex flex-col items-center">
+            <div class="w-full max-w-2xl mx-auto">
+                <!-- AI Recommendation -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-robot text-blue-500 mr-3"></i> AI Recommendation
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-yellow-800">Click to view detailed edit suggestions from AI</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nút nhận gợi ý chỉnh sửa -->
+                        <form id="editSuggestionsForm" method="post" asp-action="GetEditSuggestions" class="space-y-4 mb-6">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="Content" value="@(Model.Content ?? (ViewBag.CVContent ?? ""))" />
+                            <button type="submit" class="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                                <i class="fas fa-magic mr-2"></i> Nhận gợi ý chỉnh sửa CV từ AI
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Error Message -->
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                {
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-8">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    @ViewBag.ErrorMessage
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Suggestions Card -->
+                <div class="suggestion-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center mb-6">
+                        <div class="ai-icon bg-blue-50 text-blue-600 p-3 rounded-xl mr-4">
+                            <i class="fas fa-robot text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Edit suggestions from AI</h2>
+                        <!-- Copy button phía trên nội dung gợi ý -->
+                        <div class="flex justify-end mb-4">
+                            <button id="copy-btn" class="copy-btn flex items-center">
+                                <i class="far fa-copy mr-2"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="suggestion-content bg-gray-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                        <!-- Format sections with proper spacing and styling -->
+                        <div class="ai-suggestion-text space-y-6">
+                            @if (!string.IsNullOrEmpty(ViewBag.Suggestions))
+                            {
+                                @* <p class="text-green-600 mb-4">Debug: Suggestions found! Length: @ViewBag.Suggestions.ToString().Length</p> *@
+                                var sections = ViewBag.Suggestions.ToString().Split(new[] { "##" }, StringSplitOptions.RemoveEmptyEntries);
+                                @* <p class="text-blue-600 mb-4">Debug: Number of sections: @sections.Length</p> *@
+                                foreach (var section in sections)
+                                {
+                                    var parts = section.Trim().Split(new[] { '\n' }, 2);
+                                    if (parts.Length > 0)
+                                    {
+                                        <div class="section-block">
+                                            @if (parts.Length > 1)
+                                            {
+                                                <h3 class="text-xl font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">@parts[0].Trim()</h3>
+                                                <div class="section-content text-gray-700 leading-relaxed">
+                                                    @Html.Raw(parts[1].Trim().Replace("\n", "<br>"))
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="section-content text-gray-700 leading-relaxed">
+                                                    @Html.Raw(parts[0].Trim().Replace("\n", "<br>"))
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-red-600 mb-4">Debug: No suggestions found. ViewBag.Suggestions is null or empty.</p>
+                                <p class="text-gray-500">No suggestions found.</p>
+                            }
+                        </div>
+                    </div>
+
+                    @if (ViewBag.Suggestions != null && ViewBag.CVContent != null)
+                    {
+                        <form id="generateFinalCVForm" method="post" asp-action="GenerateFinalCV">
+                            <input type="hidden" name="cvContent" value="@ViewBag.CVContent" />
+                            <input type="hidden" name="suggestions" value="@ViewBag.Suggestions" />
+                            <button type="submit" class="btn btn-success mt-4">Tạo CV hoàn chỉnh theo đề xuất</button>
+                        </form>
+                    }
+
+                    <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
+                        <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-100 transition">
+                            <i class="fas fa-arrow-left mr-3"></i> Analysis Result
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn-primary bg-blue-600 text-white font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-blue-700 transition">
+                            <i class="fas fa-home mr-3"></i> Home
+                        </a>
+                    </div>
+                </div>
+             </div>
+        </div>
+        <!-- CỘT PHẢI -->
+        <div class="space-y-6 order-3 md:order-3 md:col-span-3">
+            @{
+                // Khai báo tất cả biến cần thiết ở đầu
+                var hasOverall = !string.IsNullOrEmpty(Model.OverallAnalysis);
+                var overviewText = hasOverall ? Model.OverallAnalysis.Replace("\n", " ").Replace("<br>", " ") : "";
+                var isLongOverview = hasOverall && overviewText.Length > 150;
+                var overviewSummary = isLongOverview ? overviewText.Substring(0, 150) + "..." : overviewText;
+                
+                var hasEducation = !string.IsNullOrEmpty(Model.Education) || !string.IsNullOrEmpty(Model.Course) || !string.IsNullOrEmpty(Model.Certificate);
+                var educationText = "";
+                if (hasEducation)
+                {
+                    if (!string.IsNullOrEmpty(Model.Education)) educationText += Model.Education + "\n";
+                    if (!string.IsNullOrEmpty(Model.Course)) educationText += Model.Course + "\n";
+                    if (!string.IsNullOrEmpty(Model.Certificate)) educationText += Model.Certificate;
+                }
+                var isLongEducation = hasEducation && educationText.Length > 150;
+                var educationSummary = isLongEducation ? educationText.Substring(0, 150) + "..." : educationText;
+                
+                var hasAchievement = !string.IsNullOrEmpty(Model.Achievement);
+                var achievementText = hasAchievement ? Model.Achievement.Replace("\n", " ").Replace("\r\n", " ") : "";
+                var isLongAchievement = hasAchievement && achievementText.Length > 150;
+                var achievementSummary = isLongAchievement ? achievementText.Substring(0, 150) + "..." : achievementText;
+                
+                var hasExperience = !string.IsNullOrEmpty(Model.Experience);
+                var experienceText = hasExperience ? Model.Experience.Replace("\n", " ").Replace("\r\n", " ") : "";
+                var isLongExperience = hasExperience && experienceText.Length > 150;
+                var experienceSummary = isLongExperience ? experienceText.Substring(0, 150) + "..." : experienceText;
+                
+                var hasProject = !string.IsNullOrEmpty(Model.Project);
+                var projectText = hasProject ? Model.Project.Replace("\n", " ").Replace("<br>", " ") : "";
+                var isLongProject = hasProject && projectText.Length > 150;
+                var projectSummary = isLongProject ? projectText.Substring(0, 150) + "..." : projectText;
+            }
+            
+            @if (hasOverall)
             {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
+                     data-full-content="@Html.Raw(Model.OverallAnalysis.Replace("\n", "<br>"))" 
+                     data-title="Profile Overview">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-chart-pie text-blue-500 mr-3"></i> Profile Overview
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="prose max-w-none text-gray-700">
-                            @Html.Raw(Model.OverallAnalysis.Replace("\n", "<br>"))
+                        <div class="content-summary prose max-w-none text-gray-700">
+                            @Html.Raw(overviewSummary)
                         </div>
+                        @if (isLongOverview)
+                        {
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
+                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            </button>
+                        }
                     </div>
                 </div>
             }
-
-            <!-- Name Section -->
             @if (!string.IsNullOrEmpty(Model.Name))
             {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -96,8 +364,6 @@
                     </div>
                 </div>
             }
-
-            <!-- Email Section -->
             @if (!string.IsNullOrEmpty(Model.Email))
             {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -118,8 +384,6 @@
                     </div>
                 </div>
             }
-
-            <!-- Combined Skills & Language Section -->
             @if (!string.IsNullOrEmpty(Model.Skills) || !string.IsNullOrEmpty(Model.LanguageProficiency))
             {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -129,7 +393,6 @@
                         </h2>
                     </div>
                     <div class="p-6 space-y-6">
-                        <!-- Skills Subsection -->
                         @if (!string.IsNullOrEmpty(Model.Skills))
                         {
                             <div>
@@ -144,8 +407,6 @@
                                 </div>
                             </div>
                         }
-
-                        <!-- Languages Subsection -->
                         @if (!string.IsNullOrEmpty(Model.LanguageProficiency))
                         {
                             <div>
@@ -163,371 +424,98 @@
                     </div>
                 </div>
             }
-
-            <!-- Combined Education, Courses & Certificates Section -->
-            @if (!string.IsNullOrEmpty(Model.Education) || !string.IsNullOrEmpty(Model.Course) || !string.IsNullOrEmpty(Model.Certificate))
+            @if (hasEducation)
             {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
+                     data-full-content="@educationText.Replace("\n", "<br>")" 
+                     data-title="Education & Qualifications">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-graduation-cap text-blue-500 mr-3"></i> Education & Qualifications
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-6">
-                            <!-- Education Subsection -->
-                            @if (!string.IsNullOrEmpty(Model.Education))
-                            {
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Education</h3>
-                                    <div class="space-y-4">
-                                        @foreach (var edu in Model.Education.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-                                        {
-                                            <div class="timeline-item pl-6 relative">
-                                                <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
-                                                <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                                    @edu
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
-
-                            <!-- Courses Subsection -->
-                            @if (!string.IsNullOrEmpty(Model.Course))
-                            {
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Course</h3>
-                                    <div class="space-y-4">
-                                        @foreach (var edu in Model.Course.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-                                        {
-                                            <div class="timeline-item pl-6 relative">
-                                                <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
-                                                <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                                    @edu
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
-
-                            <!-- Certificates Subsection -->
-                            @if (!string.IsNullOrEmpty(Model.Certificate))
-                            {
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Certification</h3>
-                                    <div class="space-y-4">
-                                        @foreach (var edu in Model.Certificate.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-                                        {
-                                            <div class="timeline-item pl-6 relative">
-                                                <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
-                                                <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                                    @edu
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
+                        <div class="content-summary text-gray-700">
+                            @educationSummary.Replace("\n", "<br>")
                         </div>
+                        @if (isLongEducation)
+                        {
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
+                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            </button>
+                        }
                     </div>
                 </div>
             }
-
-            <!-- Achievements Section -->
-            @if (!string.IsNullOrEmpty(Model.Achievement))
+            @if (hasAchievement)
             {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
+                     data-full-content="@Model.Achievement.Replace("\n", "<br>")" 
+                     data-title="Achievements">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-trophy text-blue-500 mr-3"></i> Achievements
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-4">
-                            @foreach (var achievement in Model.Achievement.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-                            {
-                                <div class="flex items-start">
-                                    <i class="fas fa-star text-yellow-400 mt-1 mr-3"></i>
-                                    <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100 flex-1">
-                                        @achievement
-                                    </div>
-                                </div>
-                            }
+                        <div class="content-summary text-gray-700">
+                            @achievementSummary
                         </div>
+                        @if (isLongAchievement)
+                        {
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
+                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            </button>
+                        }
                     </div>
                 </div>
             }
-
-            <!-- Experience Section -->
-            @if (!string.IsNullOrEmpty(Model.Experience))
+            @if (hasExperience)
             {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
+                     data-full-content="@Model.Experience.Replace("\n", "<br>")" 
+                     data-title="Experience">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-briefcase text-blue-500 mr-3"></i> Experience
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-4">
-                            @foreach (var exp in Model.Experience.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-                            {
-                                <div class="timeline-item pl-6 relative">
-                                    <div class="absolute left-0 top-2 w-3 h-3 rounded-full bg-blue-500 border-4 border-blue-100"></div>
-                                    <div class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                        @exp
-                                    </div>
-                                </div>
-                            }
+                        <div class="content-summary text-gray-700">
+                            @experienceSummary
                         </div>
+                        @if (isLongExperience)
+                        {
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
+                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            </button>
+                        }
                     </div>
                 </div>
             }
-
-            <!-- Projects Section -->
-            @if (!string.IsNullOrEmpty(Model.Project))
+            @if (hasProject)
             {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
+                     data-full-content="@Html.Raw(Model.Project.Replace("\n", "<br>"))" 
+                     data-title="Projects">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-briefcase text-blue-500 mr-3"></i> Projects
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="prose max-w-none text-gray-700">
-                            @Html.Raw(Model.Project.Replace("\n", "<br>"))
+                        <div class="content-summary text-gray-700">
+                            @projectSummary
                         </div>
+                        @if (isLongProject)
+                        {
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
+                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            </button>
+                        }
                     </div>
                 </div>
             }
-        </div>
-
-        <!-- Right Sidebar - Sticky -->
-        <div class="lg:col-span-1">
-            <div class="sticky-sidebar space-y-6">
-                <!-- AI Suggestions -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-robot text-blue-500 mr-3"></i> AI Recommendation
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
-                                </div>
-                                <div class="ml-3">
-                                    <h3 class="text-sm font-medium text-yellow-800">Click to view detailed edit suggestions from AI</h3>
-                                </div>
-                            </div>
-                        </div>
-
-                        <form asp-action="GetEditSuggestions" method="post" id="editSuggestionsForm" class="space-y-4">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="Content" value="@(Model.Content ?? (ViewBag.CVContent ?? ""))" />
-                            <button type="submit" class="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                                <i class="fas fa-magic mr-2"></i> CV Edit Suggestions
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- CV Scoring Table + Button -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6" id="cv-score-block">
-                    <div class="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-star text-yellow-500 mr-3"></i> CV Scoring (AI)
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <button id="btnScoreCV" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition" data-resumeid="@Model.ResumeId" @(hasScore ? "style='display:none'" : "")>
-                            <i class="fas fa-magic mr-2"></i> CV Scoring
-                        </button>
-                        <div id="cv-score-table" @(hasScore ? "" : "style='display:none'")>
-                            <table class="min-w-full text-sm text-gray-700">
-                                <tbody>
-                                    <tr>
-                                        <td class="font-medium py-2 pr-4">Layout and presentation</td>
-                                        <td class="text-right py-2" id="score-layout">@layoutScore / 10</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium py-2 pr-4">Skill</td>
-                                        <td class="text-right py-2" id="score-skill">@skillScore / 10</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium py-2 pr-4">Experience/Project</td>
-                                        <td class="text-right py-2" id="score-experience">@experienceScore / 10</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium py-2 pr-4">Education</td>
-                                        <td class="text-right py-2" id="score-education">@educationScore / 10</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium py-2 pr-4">Relevant Keywords</td>
-                                        <td class="text-right py-2" id="score-keyword">@keywordScore / 10</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium py-2 pr-4">Form/Format</td>
-                                        <td class="text-right py-2" id="score-format">@formatScore / 10</td>
-                                    </tr>
-                                    <tr class="border-t">
-                                        <td class="font-bold py-2 pr-4">Total score</td>
-                                        <td class="text-right py-2 font-bold text-blue-600 text-lg" id="score-total">@totalScore / 60</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="score-loading" style="display:none" class="text-center text-blue-600 mt-2"><i class="fas fa-spinner fa-spin"></i> Scoring...</div>
-                        <div id="score-error" style="display:none" class="text-center text-red-600 mt-2"></div>
-                    </div>
-                </div>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var btn = document.getElementById('btnScoreCV');
-                        var cvScoreLoadingModal = document.getElementById('cvScoreLoadingModal');
-                        if (btn) {
-                            btn.addEventListener('click', function () {
-                                var resumeId = btn.getAttribute('data-resumeid');
-                                var loading = document.getElementById('score-loading');
-                                var error = document.getElementById('score-error');
-                                var table = document.getElementById('cv-score-table');
-                                btn.style.display = 'none';
-                                error.style.display = 'none';
-                                loading.style.display = 'block';
-                                if (cvScoreLoadingModal) {
-                                    cvScoreLoadingModal.classList.remove('hidden');
-                                    cvScoreLoadingModal.style.display = 'flex';
-                                }
-                                fetch('/CVAnalysis/ScoreCV', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                        'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
-                                    },
-                                    body: 'resumeId=' + encodeURIComponent(resumeId) + '&cvContent=' + encodeURIComponent('@(Model.Content ?? "")')
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    loading.style.display = 'none';
-                                    if (cvScoreLoadingModal) {
-                                        cvScoreLoadingModal.classList.add('hidden');
-                                        cvScoreLoadingModal.style.display = 'none';
-                                    }
-                                    if (data.success) {
-                                        table.style.display = 'block';
-                                        btn.style.display = 'none';
-                                        // Hiển thị điểm vừa chấm lên bảng điểm (kể cả khách)
-                                        document.getElementById('score-layout').textContent = data.layout + ' / 10';
-                                        document.getElementById('score-skill').textContent = data.skill + ' / 10';
-                                        document.getElementById('score-experience').textContent = data.experience + ' / 10';
-                                        document.getElementById('score-education').textContent = data.education + ' / 10';
-                                        document.getElementById('score-keyword').textContent = data.keyword + ' / 10';
-                                        document.getElementById('score-format').textContent = data.format + ' / 10';
-                                        document.getElementById('score-total').textContent = data.total + ' / 60';
-                                    } else {
-                                        btn.style.display = 'block';
-                                        error.style.display = 'block';
-                                        error.textContent = data.error || 'An error occurred while scoring the CV.';
-                                    }
-                                })
-                                .catch(err => {
-                                    loading.style.display = 'none';
-                                    if (cvScoreLoadingModal) {
-                                        cvScoreLoadingModal.classList.add('hidden');
-                                        cvScoreLoadingModal.style.display = 'none';
-                                    }
-                                    btn.style.display = 'block';
-                                    error.style.display = 'block';
-                                    error.textContent = 'An error occurred while connecting to the server.';
-                                });
-                            });
-                        }
-                    });
-                </script>
-
-                <!-- Job Recommendations -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-briefcase text-blue-500 mr-3"></i>Suitable Jobs
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-center py-6">
-                            <div id="jobRecommendResult" class="mb-4">
-                                @{
-                                    var jobRecsObj = ViewBag.JobRecommendations;
-                                }
-                                @if (jobRecsObj is AI_CV_Analyze.Models.JobSuggestionResult jobResult && !string.IsNullOrEmpty(jobResult.RecommendedJob))
-                                {
-                                    <div class="space-y-4">
-                                        <p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following position:</p>
-                                        <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
-                                            <div class="flex items-start">
-                                                <div class="flex-grow">
-                                                    <h3 class="font-bold text-gray-900">@jobResult.RecommendedJob</h3>
-                                                    <div class="flex items-center mt-2">
-                                                        <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
-                                                            <div class="bg-green-500 h-2 rounded-full" style="width: @jobResult.MatchPercentage%"></div>
-                                                        </div>
-                                                        <span class="text-xs text-gray-600">@jobResult.MatchPercentage%</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @if (jobResult.MatchedSkills != null && jobResult.MatchedSkills.Any())
-                                            {
-                                                <div class="mb-2">
-                                                    <span class="font-semibold text-green-700">Matched Skills (@jobResult.MatchPercentage%):</span>
-                                                    <ul class="list-disc ml-6">
-                                                        @foreach (var skill in jobResult.MatchedSkills)
-                                                        {
-                                                            <li>@skill</li>
-                                                        }
-                                                    </ul>
-                                                </div>
-                                            }
-                                            @if (jobResult.MissingSkills != null && jobResult.MissingSkills.Any())
-                                            {
-                                                <div class="mb-2">
-                                                    <span class="font-semibold text-red-700">Missing Skills (@(100 - jobResult.MatchPercentage)%):</span>
-                                                    <ul class="list-disc ml-6">
-                                                        @foreach (var skill in jobResult.MissingSkills)
-                                                        {
-                                                            <li>@skill</li>
-                                                        }
-                                                    </ul>
-                                                </div>
-                                            }
-                                            @if (!string.IsNullOrEmpty(jobResult.ImprovementPlan))
-                                            {
-                                                <div class="mb-2">
-                                                    <span class="font-semibold text-blue-700">Improvement Plan:</span>
-                                                    <div class="whitespace-pre-line text-gray-800">@jobResult.ImprovementPlan</div>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                    <a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class="fas fa-search mr-2"></i>View more jobs</a>
-                                }
-                                else
-                                {
-                                    <div class="text-gray-500">No job recommendations available.</div>
-                                }
-                            </div>
-                            <form method="post" asp-action="AnalysisResult" class="mt-4">
-                                <input type="hidden" name="resumeId" value="@Model.ResumeId" />
-                                <button type="submit" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                                    <i class="fas fa-magic mr-2"></i> Job Recommend
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -542,20 +530,34 @@
     </div>
 </div>
 
-<!-- Loading Modal -->
-<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 hidden">
-    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
-        <div id="loadingSpinner" class="mb-4">
-            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-            </svg>
+<!-- Enhanced Loading Modal with Progress Animation -->
+<div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-fade-in-up w-80 max-w-[90vw]">
+        <!-- Animated spinner with gradient -->
+        <div id="loadingSpinner" class="mb-6 relative w-16 h-16">
+            <div class="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-blue-600 animate-spin"></div>
+            <div class="absolute inset-1 rounded-full bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+                <i class="fas fa-file-alt text-blue-500 text-xl"></i>
+            </div>
         </div>
-        <div id="loadingText" class="font-semibold text-lg text-center">
-            The AI system is processing and generating edit suggestions. Please wait a moment...
+
+        <!-- Progress text with animation -->
+        <div id="loadingText" class="font-semibold text-lg text-center mb-4">
+            <div class="text-gray-800">Analyzing your CV...</div>
+            <div class="text-sm text-gray-500 mt-1 animate-pulse">This may take a few moments</div>
         </div>
-        <div class="mt-4">
-            <button type="button" id="cancelAnalyzeBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Cancel</button>
+
+        <!-- Animated progress bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full animate-progress"></div>
+        </div>
+
+        <!-- Cancel button with enhanced styling -->
+        <div class="mt-2">
+            <button type="button" id="cancelAnalyzeBtn" class="px-5 py-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-lg hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                Cancel Analysis
+            </button>
         </div>
     </div>
 </div>
@@ -615,18 +617,16 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        document.getElementById('btnBackEditSuggestions').addEventListener('click', function() {
-            fetch('@Url.Action("HasEditSuggestions", "CVAnalysis")', { method: 'GET' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.hasSuggestions) {
-                        window.location.href = '@Url.Action("EditSuggestions", "CVAnalysis")';
-                    } else {
-                        alert('You have not used the CV edit suggestion feature yet!');
-                    }
-                });
-        });
-    </script>
-}
+<!-- Content Detail Modal -->
+<div id="contentDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 id="modalTitle" class="text-xl font-bold text-gray-900"></h3>
+            <button id="closeContentModal" class="text-gray-400 hover:text-gray-500">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="modalContent" class="prose max-w-none text-gray-700">
+        </div>
+    </div>
+</div>

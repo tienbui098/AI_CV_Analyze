@@ -183,6 +183,9 @@ body {
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 50;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
 }
 
 #loadingModal.show {
@@ -190,14 +193,58 @@ body {
 }
 
 #loadingModal > div {
-    transform: scale(0.95);
+    transform: scale(0.97);
     opacity: 0;
     transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 6px rgba(59,130,246,0.08);
+    border-radius: 1.25rem;
+    background: #fff;
 }
 
 #loadingModal.show > div {
     transform: scale(1);
     opacity: 1;
+}
+
+#loadingSpinner {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+#loadingSpinner .absolute {
+    position: absolute;
+}
+#loadingSpinner .rounded-full {
+    border-radius: 9999px;
+}
+#loadingSpinner .animate-spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+#progressBar {
+    transition: width 0.4s cubic-bezier(0.25,0.8,0.25,1);
+}
+
+/* Cancel button style for loading modal */
+#cancelAnalyzeBtn {
+    background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+    color: #374151;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    transition: all 0.2s;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+#cancelAnalyzeBtn:hover, #cancelAnalyzeBtn:focus {
+    background: linear-gradient(to right, #e5e7eb, #f3f4f6);
+    box-shadow: 0 4px 12px rgba(59,130,246,0.08);
+    transform: translateY(-2px) scale(1.03);
 }
 
 /* Animations */
@@ -262,4 +309,137 @@ body {
     .grid-container {
         grid-template-columns: 2fr 1fr;
     }
+}
+
+/* --- Suggestions Card Styles --- */
+.suggestion-card {
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid var(--gray-light);
+    background: white;
+    margin-bottom: 1.5rem;
+}
+.ai-suggestion-text {
+    font-size: 1rem;
+    color: var(--dark);
+}
+.section-block {
+    margin-bottom: 1.5rem;
+}
+.section-content {
+    background: var(--light);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid var(--gray-light);
+}
+.copy-btn {
+    background: var(--primary);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    transition: background 0.2s;
+    font-weight: 500;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+.copy-btn:hover, .copy-btn:focus {
+    background: var(--primary-dark);
+    color: white;
+}
+@media (max-width: 1023px) {
+    .suggestion-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* --- Loading Modal Animations & Styles --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes progress {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+.animate-progress {
+    animation: progress 2s infinite ease-in-out;
+}
+
+/* --- Content Card Styles --- */
+.content-card {
+    transition: all 0.3s ease;
+}
+
+.content-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.content-summary {
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+
+.show-more-btn {
+    transition: all 0.2s ease;
+}
+
+.show-more-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* --- Content Detail Modal Styles --- */
+#contentDetailModal {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#contentDetailModal.show {
+    opacity: 1;
+}
+
+#contentDetailModal > div {
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+#contentDetailModal.show > div {
+    transform: scale(1);
+    opacity: 1;
+}
+
+#modalContent {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#modalContent::-webkit-scrollbar {
+    width: 6px;
+}
+
+#modalContent::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+#modalContent::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 10px;
+}
+
+#modalContent::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
 }
