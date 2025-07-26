@@ -123,6 +123,12 @@ namespace AI_CV_Analyze.Services
             if (string.IsNullOrWhiteSpace(cvContent))
                 return (0, 0, 0, 0, 0, 0, "");
 
+            // Check if OpenAI configuration is available
+            if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
+            {
+                return (0, 0, 0, 0, 0, 0, "Configuration error: Missing Azure OpenAI information");
+            }
+
             string endpoint = _openAIEndpoint;
             string apiKey = _openAIKey;
             string modelName = _openAIDeploymentName;
@@ -159,28 +165,58 @@ CV:
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
-            if (response == null)
-                throw new Exception("Không nhận được phản hồi từ AI");
-            var responseString = await response.Content.ReadAsStringAsync();
-            var doc = JObject.Parse(responseString);
-            var answer = doc["choices"]?[0]?["message"]?["content"]?.ToString();
-            if (string.IsNullOrWhiteSpace(answer))
-                throw new Exception("AI không trả về kết quả chấm điểm");
-            // Tìm JSON trong answer
-            string jsonScore = answer.Trim();
-            int start = jsonScore.IndexOf('{');
-            int end = jsonScore.LastIndexOf('}');
-            if (start >= 0 && end > start)
-                jsonScore = jsonScore.Substring(start, end - start + 1);
-            var scoreObj = JObject.Parse(jsonScore);
-            int layout = scoreObj.Value<int?>("layout") ?? 0;
-            int skill = scoreObj.Value<int?>("skill") ?? 0;
-            int experience = scoreObj.Value<int?>("experience") ?? 0;
-            int education = scoreObj.Value<int?>("education") ?? 0;
-            int keyword = scoreObj.Value<int?>("keyword") ?? 0;
-            int format = scoreObj.Value<int?>("format") ?? 0;
-            return (layout, skill, experience, education, keyword, format, jsonScore);
+            try
+            {
+                var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
+                if (response == null)
+                    return (0, 0, 0, 0, 0, 0, "Không nhận được phản hồi từ AI");
+                    
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(responseString))
+                    return (0, 0, 0, 0, 0, 0, "Phản hồi từ AI rỗng");
+                    
+                JObject doc;
+                try
+                {
+                    doc = JObject.Parse(responseString);
+                }
+                catch (JsonReaderException)
+                {
+                    return (0, 0, 0, 0, 0, 0, "Lỗi parsing JSON từ AI");
+                }
+                
+                var answer = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+                if (string.IsNullOrWhiteSpace(answer))
+                    return (0, 0, 0, 0, 0, 0, "AI không trả về kết quả chấm điểm");
+                    
+                // Tìm JSON trong answer
+                string jsonScore = answer.Trim();
+                int start = jsonScore.IndexOf('{');
+                int end = jsonScore.LastIndexOf('}');
+                if (start >= 0 && end > start)
+                    jsonScore = jsonScore.Substring(start, end - start + 1);
+                    
+                JObject scoreObj;
+                try
+                {
+                    scoreObj = JObject.Parse(jsonScore);
+                }
+                catch (JsonReaderException)
+                {
+                    return (0, 0, 0, 0, 0, 0, "Lỗi parsing JSON điểm từ AI");
+                }
+                int layout = scoreObj.Value<int?>("layout") ?? 0;
+                int skill = scoreObj.Value<int?>("skill") ?? 0;
+                int experience = scoreObj.Value<int?>("experience") ?? 0;
+                int education = scoreObj.Value<int?>("education") ?? 0;
+                int keyword = scoreObj.Value<int?>("keyword") ?? 0;
+                int format = scoreObj.Value<int?>("format") ?? 0;
+                return (layout, skill, experience, education, keyword, format, jsonScore);
+            }
+            catch (Exception ex)
+            {
+                return (0, 0, 0, 0, 0, 0, $"Lỗi khi chấm điểm: {ex.Message}");
+            }
         }
 
         public async Task<ResumeAnalysisResult> AnalyzeResume(IFormFile cvFile, int userId, bool skipDb = false)
@@ -305,6 +341,9 @@ CV:
 
             foreach (var field in document.Fields)
             {
+                if (field.Key == null)
+                    continue;
+                    
                 string value = GetFieldValue(field.Value);
                 float? confidence = field.Value?.Confidence;
 
@@ -384,13 +423,17 @@ CV:
                 switch (field.FieldType)
                 {
                     case DocumentFieldType.String:
-                        return field.Value.AsString();
+                        return field.Value?.AsString() ?? "";
 
                     case DocumentFieldType.List:
                         var sb = new StringBuilder();
                         foreach (var item in field.Value.AsList())
                         {
-                            sb.AppendLine(GetFieldValue(item));
+                            var fieldValue = GetFieldValue(item);
+                            if (!string.IsNullOrEmpty(fieldValue))
+                            {
+                                sb.AppendLine(fieldValue);
+                            }
                         }
                         return sb.ToString().Trim();
 
@@ -419,6 +462,11 @@ CV:
                 return new JobSuggestionResult { ImprovementPlan = "Configuration error: Missing Azure OpenAI information. Please check the AzureAI configuration in appsettings.json" };
             }
 
+            if (string.IsNullOrWhiteSpace(skills))
+            {
+                return new JobSuggestionResult { ImprovementPlan = "Error: Skills parameter is required." };
+            }
+
             string endpoint = _openAIEndpoint;
             string apiKey = _openAIKey;
             string modelName = _openAIDeploymentName;
@@ -429,7 +477,7 @@ CV:
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
             // Prompt for OpenAI
-            string prompt = $@"Given the following skills and work/project experience, recommend the most suitable job. Return only:\n- The recommended job title\n- The match percentage (integer, 0-100)\n- The most important skill to improve for a better match (if any; if none, say 'None' and percentage is 100%)\n\nFormat:\nRecommended Job: <job title>\nMatch Percentage: <number>%\nSkill to Improve: <skill or 'None'>\n\nSkills: {skills}\nWork/Project Experience: {workExperience}";
+            string prompt = $@"Given the following skills and work/project experience, recommend the most suitable job. Return only:\n- The recommended job title\n- The match percentage (integer, 0-100)\n- The most important skill to improve for a better match (if any; if none, say 'None' and percentage is 100%)\n\nFormat:\nRecommended Job: <job title>\nMatch Percentage: <number>%\nSkill to Improve: <skill or 'None'>\n\nSkills: {skills}\nWork/Project Experience: {workExperience ?? "None"}";
 
             var requestBody = new
             {
@@ -442,61 +490,83 @@ CV:
                 max_tokens = 1000,
                 temperature = 0.2
             };
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
-            if (response == null)
-            {
-                return new JobSuggestionResult { ImprovementPlan = "You are sending too many requests to the AI or there is a network error. Please try again in a few minutes." };
-            }
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            var doc = JObject.Parse(responseString);
-            var answer = doc["choices"]?[0]?["message"]?["content"]?.ToString();
-            if (string.IsNullOrWhiteSpace(answer))
-            {
-                return new JobSuggestionResult { ImprovementPlan = "No suggestions were received from AI. Please try again." };
-            }
-
-            // Parse the answer using regex or simple string parsing
-            var result = new JobSuggestionResult();
             try
             {
-                // Recommended Job
-                var jobMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Recommended Job:\s*(.+)");
-                if (jobMatch.Success) result.RecommendedJob = jobMatch.Groups[1].Value.Trim();
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // Match Percentage
-                var percentMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Match Percentage:\s*(\d+)%");
-                if (percentMatch.Success) result.MatchPercentage = int.Parse(percentMatch.Groups[1].Value);
-
-                // Skill to Improve
-                var skillImproveMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Skill to Improve:\s*(.+)");
-                if (skillImproveMatch.Success)
+                var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
+                if (response == null)
                 {
-                    var skillImprove = skillImproveMatch.Groups[1].Value.Trim();
-                    if (!string.Equals(skillImprove, "None", StringComparison.OrdinalIgnoreCase))
-                        result.MissingSkills = new List<string> { skillImprove };
+                    return new JobSuggestionResult { ImprovementPlan = "You are sending too many requests to the AI or there is a network error. Please try again in a few minutes." };
+                }
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(responseString))
+                {
+                    return new JobSuggestionResult { ImprovementPlan = "Empty response received from AI." };
+                }
+
+                JObject doc;
+                try
+                {
+                    doc = JObject.Parse(responseString);
+                }
+                catch (JsonReaderException)
+                {
+                    return new JobSuggestionResult { ImprovementPlan = "Error parsing JSON response from AI." };
+                }
+                
+                var answer = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+                if (string.IsNullOrWhiteSpace(answer))
+                {
+                    return new JobSuggestionResult { ImprovementPlan = "No suggestions were received from AI. Please try again." };
+                }
+
+                // Parse the answer using regex or simple string parsing
+                var result = new JobSuggestionResult();
+                try
+                {
+                    // Recommended Job
+                    var jobMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Recommended Job:\s*(.+)");
+                    if (jobMatch.Success) result.RecommendedJob = jobMatch.Groups[1].Value.Trim();
+
+                    // Match Percentage
+                    var percentMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Match Percentage:\s*(\d+)%");
+                    if (percentMatch.Success) result.MatchPercentage = int.Parse(percentMatch.Groups[1].Value);
+
+                    // Skill to Improve
+                    var skillImproveMatch = System.Text.RegularExpressions.Regex.Match(answer, @"Skill to Improve:\s*(.+)");
+                    if (skillImproveMatch.Success)
+                    {
+                        var skillImprove = skillImproveMatch.Groups[1].Value.Trim();
+                        if (!string.Equals(skillImprove, "None", StringComparison.OrdinalIgnoreCase))
+                            result.MissingSkills = new List<string> { skillImprove };
+                        else
+                            result.MissingSkills = new List<string>();
+                    }
                     else
+                    {
                         result.MissingSkills = new List<string>();
+                    }
+                    // MatchedSkills is not used in this simple output
+                    result.MatchedSkills = null;
+                    // ImprovementPlan is not used in this simple output
+                    result.ImprovementPlan = null;
                 }
-                else
+                catch
                 {
-                    result.MissingSkills = new List<string>();
+                    // Fallback: just return the raw answer in ImprovementPlan
+                    result.ImprovementPlan = answer;
                 }
-                // MatchedSkills is not used in this simple output
-                result.MatchedSkills = null;
-                // ImprovementPlan is not used in this simple output
-                result.ImprovementPlan = null;
-            }
-            catch
-            {
-                // Fallback: just return the raw answer in ImprovementPlan
-                result.ImprovementPlan = answer;
-            }
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new JobSuggestionResult { ImprovementPlan = $"Error getting job suggestions: {ex.Message}" };
+            }
         }
 
         public async Task<string> GetCVEditSuggestions(string cvContent)
@@ -505,6 +575,11 @@ CV:
             if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
             {
                 return "Configuration error: Missing Azure OpenAI information. Please check the AzureAI configuration in appsettings.json";
+            }
+
+            if (string.IsNullOrWhiteSpace(cvContent))
+            {
+                return "Error: CV content is empty or null.";
             }
 
             string endpoint = _openAIEndpoint;
@@ -521,75 +596,97 @@ CV:
                 model = modelName,
                 messages = new[]
                 {
-            new {
-                role = "system",
-                content = "You are a human resources expert with over 10 years of experience in recruitment and CV evaluation. Analyze the CV in detail and provide specific and professional suggestions. Focus on:\n\n" +
-                          "1. CV structure and layout\n" +
-                          "2. Content and presentation\n" +
-                          "3. Strengths to highlight\n" +
-                          "4. Weaknesses to improve\n" +
-                          "5. Important keywords and skills\n" +
-                          "6. Job description writing style\n" +
-                          "7. Formatting and visual presentation\n\n" +
-                          "Please give clear, specific, and actionable feedback."
-            },
-            new { role = "user", content = cvContent }
-        },
+                    new {
+                        role = "system",
+                        content = "You are a human resources expert with over 10 years of experience in recruitment and CV evaluation. Analyze the CV in detail and provide specific and professional suggestions. Focus on:\n\n" +
+                                  "1. CV structure and layout\n" +
+                                  "2. Content and presentation\n" +
+                                  "3. Strengths to highlight\n" +
+                                  "4. Weaknesses to improve\n" +
+                                  "5. Important keywords and skills\n" +
+                                  "6. Job description writing style\n" +
+                                  "7. Formatting and visual presentation\n\n" +
+                                  "Please give clear, specific, and actionable feedback."
+                    },
+                    new { role = "user", content = cvContent }
+                },
                 max_tokens = 2000,
                 temperature = 0.7
             };
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Console.WriteLine($"==== OpenAI Request ====");
-            Console.WriteLine($"Endpoint: {endpoint}");
-            Console.WriteLine($"Model: {modelName}");
-            Console.WriteLine($"Request JSON: {json}");
-
-            var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
-
-            if (response == null)
+            try
             {
-                return "You are sending too many requests to the AI or there is a network error. Please try again in a few minutes.";
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                Console.WriteLine($"==== OpenAI Request ====");
+                Console.WriteLine($"Endpoint: {endpoint}");
+                Console.WriteLine($"Model: {modelName}");
+                Console.WriteLine($"Request JSON: {json}");
+
+                var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
+
+                if (response == null)
+                {
+                    return "You are sending too many requests to the AI or there is a network error. Please try again in a few minutes.";
+                }
+
+                Console.WriteLine($"==== OpenAI Response Status: {response.StatusCode} ====");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"==== OpenAI Error Response: {error} ====");
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    {
+                        return "Authentication error: Invalid API key or incorrect endpoint. Please check the OpenAI configuration in appsettings.json";
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        return "Error: Model or deployment not found. Please check the model/deployment name in configuration.";
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    {
+                        return "Error: Too many requests. Please try again in a few minutes.";
+                    }
+                    else
+                    {
+                        return $"OpenAI Error: {response.StatusCode} - {error}";
+                    }
+                }
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(responseString))
+                {
+                    return "Empty response received from AI.";
+                }
+
+                Console.WriteLine($"==== OpenAI Success Response: {responseString} ====");
+
+                JObject doc;
+                try
+                {
+                    doc = JObject.Parse(responseString);
+                }
+                catch (JsonReaderException)
+                {
+                    return "Error parsing JSON response from AI.";
+                }
+                
+                var suggestion = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+
+                if (string.IsNullOrEmpty(suggestion))
+                {
+                    return "No suggestions were received from AI. Please try again.";
+                }
+
+                return suggestion;
             }
-
-            Console.WriteLine($"==== OpenAI Response Status: {response.StatusCode} ====");
-
-            if (!response.IsSuccessStatusCode)
+            catch (Exception ex)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"==== OpenAI Error Response: {error} ====");
-
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    return "Authentication error: Invalid API key or incorrect endpoint. Please check the OpenAI configuration in appsettings.json";
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    return "Error: Model or deployment not found. Please check the model/deployment name in configuration.";
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-                {
-                    return "Error: Too many requests. Please try again in a few minutes.";
-                }
-                else
-                {
-                    return $"OpenAI Error: {response.StatusCode} - {error}";
-                }
+                return $"Error getting CV edit suggestions: {ex.Message}";
             }
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"==== OpenAI Success Response: {responseString} ====");
-
-            var doc = JObject.Parse(responseString);
-            var suggestion = doc["choices"]?[0]?["message"]?["content"]?.ToString();
-
-            if (string.IsNullOrEmpty(suggestion))
-            {
-                return "No suggestions were received from AI. Please try again.";
-            }
-
-            return suggestion;
         }
 
         public async Task<string> GenerateFinalCV(string cvContent, string suggestions)
@@ -597,6 +694,16 @@ CV:
             if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
             {
                 return "Configuration error: Missing Azure OpenAI information. Please check the AzureAI configuration in appsettings.json";
+            }
+
+            if (string.IsNullOrWhiteSpace(cvContent))
+            {
+                return "Error: CV content is empty or null.";
+            }
+
+            if (string.IsNullOrWhiteSpace(suggestions))
+            {
+                return "Error: Suggestions are empty or null.";
             }
 
             string endpoint = _openAIEndpoint;
@@ -615,28 +722,47 @@ CV:
                 model = modelName,
                 messages = new[]
                 {
-            new { role = "system", content = "You are an HR expert, please revise the CV based on the suggestions." },
-            new { role = "user", content = prompt }
-        },
+                    new { role = "system", content = "You are an HR expert, please revise the CV based on the suggestions." },
+                    new { role = "user", content = prompt }
+                },
                 max_tokens = 2000,
                 temperature = 0.5
             };
 
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            try
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
-            if (response == null)
-                return "No response received from AI.";
+                var response = await SendWithRetryAsync(() => client.PostAsync(endpoint, content));
+                if (response == null)
+                    return "No response received from AI.";
 
-            var responseString = await response.Content.ReadAsStringAsync();
-            var doc = JObject.Parse(responseString);
-            var finalCV = doc["choices"]?[0]?["message"]?["content"]?.ToString();
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(responseString))
+                    return "Empty response received from AI.";
 
-            if (string.IsNullOrEmpty(finalCV))
-                return "AI did not return the edited CV content.";
+                JObject doc;
+                try
+                {
+                    doc = JObject.Parse(responseString);
+                }
+                catch (JsonReaderException)
+                {
+                    return "Error parsing JSON response from AI.";
+                }
+                
+                var finalCV = doc["choices"]?[0]?["message"]?["content"]?.ToString();
 
-            return finalCV.Trim();
+                if (string.IsNullOrEmpty(finalCV))
+                    return "AI did not return the edited CV content.";
+
+                return finalCV.Trim();
+            }
+            catch (Exception ex)
+            {
+                return $"Error generating final CV: {ex.Message}";
+            }
         }
 
 
