@@ -246,86 +246,101 @@
             if (loadingText) loadingText.textContent = 'AI system is processing and giving suitable jobs based on your CV. Please wait a moment...';
             loadingModal.show();
             abortController = new AbortController();
-            // Lấy kỹ năng từ input ẩn hoặc data attribute
-            const skillsInput = document.querySelector('input[name="Skills"]');
-            let skills = '';
-            if (skillsInput) {
-                skills = skillsInput.value;
-            } else if (window.CV_SKILLS) {
-                skills = window.CV_SKILLS;
-            } else {
-                // fallback: lấy từ thẻ có id="jobRecommendResult" nếu có data-skills
-                const jobRecDiv = document.getElementById('jobRecommendResult');
-                if (jobRecDiv && jobRecDiv.dataset.skills) skills = jobRecDiv.dataset.skills;
+            
+            // Get skills and work experience from hidden fields (Model data)
+            const skills = document.getElementById('cvSkills').value || '';
+            const experience = document.getElementById('cvExperience').value || '';
+            const project = document.getElementById('cvProject').value || '';
+            
+            // Combine experience and project (either can be null)
+            let workExperience = '';
+            if (experience && project) {
+                workExperience = experience + '\n\n' + project;
+            } else if (experience) {
+                workExperience = experience;
+            } else if (project) {
+                workExperience = project;
             }
+            
             fetch('/CVAnalysis/RecommendJobs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || ''
                 },
-                body: JSON.stringify({ skills }),
+                body: JSON.stringify({ 
+                    skills: skills,
+                    workExperience: workExperience 
+                }),
                 signal: abortController.signal
             })
             .then(response => response.json())
             .then(data => {
                 let html = '';
-                let jobs = [];
-                if (data && !Array.isArray(data)) {
-                    jobs = Object.entries(data).map(([title, score]) => ({ title, score }));
-                } else if (Array.isArray(data)) {
-                    jobs = data;
-                }
-                if (jobs.length > 0) {
-                    jobs.sort((a, b) => b.score - a.score);
+                
+                if (data && data.recommendedJob && data.matchPercentage) {
+                    // New OpenAI-based format
                     html = '<div class="space-y-4">';
-                    html += '<p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend the following positions:</p>';
-                    jobs.slice(0, 3).forEach(job => {
-                        const percent = (job.score * 100).toFixed(1);
-                        html += `
-                            <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
-                                <div class="flex items-start">
-                                    <div class="flex-grow">
-                                        <h3 class="font-bold text-gray-900">${job.title}</h3>
-                                        <div class="flex items-center mt-2">
-                                            <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
-                                                <div class="bg-green-500 h-2 rounded-full" style="width: ${percent}%"></div>
-                                            </div>
-                                            <span class="text-xs text-gray-600">${percent}%</span>
+                    html += '<p class="text-sm text-gray-600 mb-4">Based on your skills and experience, we recommend:</p>';
+                    html += `
+                        <div class="job-card p-4 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-md transition">
+                            <div class="flex items-start">
+                                <div class="flex-grow">
+                                    <h3 class="font-bold text-gray-900">${data.recommendedJob}</h3>
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: ${data.matchPercentage}%"></div>
                                         </div>
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="circular-chart w-12 h-12">
-                                            <svg viewBox="0 0 36 36">
-                                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <path class="circle" stroke="#10b981" stroke-dasharray="${percent}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <text x="18" y="20.35" class="percentage">${parseInt(percent)}%</text>
-                                            </svg>
+                                    ${data.missingSkills && data.missingSkills.length > 0 ? `
+                                        <div class="mt-3">
+                                            <p class="text-xs text-red-600 mb-1">Skills to improve:</p>
+                                            <div class="flex flex-wrap gap-1">
+                                                ${data.missingSkills.map(skill => `<span class="text-red-600 font-semibold">${skill}</span>`).join('')}
+                                            </div>
                                         </div>
+                                    ` : ''}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="circular-chart w-12 h-12">
+                                        <svg viewBox="0 0 36 36">
+                                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path class="circle" stroke="#10b981" stroke-dasharray="${data.matchPercentage}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <text x="18" y="20.35" class="percentage">${data.matchPercentage}%</text>
+                                        </svg>
                                     </div>
                                 </div>
                             </div>
-                        `;
-                    });
+                        </div>
+                    `;
                     html += '</div>';
-                    html += `<a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class=\"fas fa-search mr-2\"></i>View more jobs</a>`;
+                    html += `<a href="/CVAnalysis/JobPrediction" class="mt-6 w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"><i class="fas fa-search mr-2"></i>View more jobs</a>`;
+                } else if (data && data.improvementPlan) {
+                    // Error or improvement plan message
+                    html = `<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                            <span class="text-sm text-yellow-700">${data.improvementPlan}</span>
+                        </div>
+                    </div>`;
                 } else {
                     html = '<div class="text-gray-500">No recommendations found.</div>';
                 }
+                
                 document.getElementById('jobRecommendResult').innerHTML = html;
             })
             .catch((err) => {
                 if (err.name === 'AbortError') {
-                    document.getElementById('jobRecommendResult').innerHTML = '<div class="text-gray-500">Đã hủy yêu cầu.</div>';
+                    document.getElementById('jobRecommendResult').innerHTML = '<div class="text-gray-500">Request cancelled.</div>';
                 } else {
                     document.getElementById('jobRecommendResult').innerHTML = '<div class="text-red-500">Error fetching recommendations.</div>';
                 }
             })
             .finally(() => {
                 btnJobRecommend.disabled = false;
-                btnJobRecommend.textContent = 'Job Recommend';
+                btnJobRecommend.innerHTML = '<i class="fas fa-magic mr-2"></i> Job Recommendation';
                 loadingModal.hide();
-                if (loadingText) loadingText.textContent = 'The AI system is processing and generating edit suggestions. Please wait a moment...';
+                if (loadingText) loadingText.innerHTML = '<div class="text-gray-800">Analyzing your CV...</div><div class="text-sm text-gray-500 mt-1 animate-pulse">This may take a few moments</div>';
             });
         });
     }
