@@ -402,10 +402,10 @@ namespace AI_CV_Analyze.Controllers
                         {
                             col.Item().PaddingBottom(20).Text("CV Hoàn Chỉnh").FontSize(18).Bold().AlignCenter();
                             // Hiển thị nội dung CV, giữ định dạng xuống dòng
-                            var lines = finalCV.Split('\n');
+                            var lines = (finalCV ?? "").Split('\n');
                             foreach (var line in lines)
                             {
-                                col.Item().Text(line);
+                                col.Item().Text(line ?? "");
                             }
                         });
                 });
