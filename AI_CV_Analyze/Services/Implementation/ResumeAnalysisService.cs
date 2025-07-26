@@ -27,7 +27,7 @@ namespace AI_CV_Analyze.Services
     public class ResumeAnalysisService : IResumeAnalysisService
     {
         private readonly IConfiguration _configuration;
-        private readonly DocumentAnalysisClient _formRecognizerClient;
+        private readonly DocumentAnalysisClient? _formRecognizerClient;
         private readonly string _formRecognizerEndpoint;
         private readonly string _formRecognizerKey;
         private readonly string _customModelId;
@@ -45,7 +45,6 @@ namespace AI_CV_Analyze.Services
             _configuration = configuration;
             _formRecognizerEndpoint = _configuration["AzureAI:FormRecognizerEndpoint"];
             _formRecognizerKey = _configuration["AzureAI:FormRecognizerKey"];
-            _formRecognizerClient = new DocumentAnalysisClient(new Uri(_formRecognizerEndpoint), new AzureKeyCredential(_formRecognizerKey));
             _openAIEndpoint = _configuration["AzureAI:OpenAIEndpoint"];
             _openAIKey = _configuration["AzureAI:OpenAIKey"];
             _openAIDeploymentName = _configuration["AzureAI:OpenAIDeploymentName"];
@@ -54,6 +53,17 @@ namespace AI_CV_Analyze.Services
             _jobRecommendationEndpoint = _configuration["JobRecommendation:Endpoint"];
             _jobRecommendationApiKey = _configuration["JobRecommendation:ApiKey"];
             _dbContext = dbContext;
+
+            // Initialize FormRecognizer client only if configuration is available
+            if (!string.IsNullOrEmpty(_formRecognizerEndpoint) && !string.IsNullOrEmpty(_formRecognizerKey))
+            {
+                _formRecognizerClient = new DocumentAnalysisClient(new Uri(_formRecognizerEndpoint), new AzureKeyCredential(_formRecognizerKey));
+            }
+            else
+            {
+                Console.WriteLine("Warning: FormRecognizer configuration is incomplete. Please check your appsettings.json");
+                _formRecognizerClient = null;
+            }
 
             // Validate OpenAI configuration
             if (string.IsNullOrEmpty(_openAIEndpoint) || string.IsNullOrEmpty(_openAIKey) || string.IsNullOrEmpty(_openAIDeploymentName))
@@ -66,9 +76,11 @@ namespace AI_CV_Analyze.Services
         {
             public static async Task<Stream> ConvertMultiPagePdfToSingleImageAsync(Stream pdfStream)
             {
-                // Load PDF
-                using var pdfDocument = PdfDocument.Load(pdfStream);
-                int pageCount = pdfDocument.PageCount;
+                try
+                {
+                    // Load PDF
+                    using var pdfDocument = PdfDocument.Load(pdfStream);
+                    int pageCount = pdfDocument.PageCount;
 
                 if (pageCount == 1)
                 {
@@ -114,6 +126,11 @@ namespace AI_CV_Analyze.Services
                 outputStream.Position = 0;
 
                 return outputStream;
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Error processing PDF: {ex.Message}", ex);
+                }
             }
         }
 
@@ -225,7 +242,8 @@ CV:
                 throw new ArgumentException("CV file is null or empty.", nameof(cvFile));
 
             var supportedTypes = new[] { "application/pdf", "image/png", "image/jpeg" };
-            if (!supportedTypes.Contains(cvFile.ContentType.ToLowerInvariant()))
+            string contentType = cvFile.ContentType ?? "";
+            if (!supportedTypes.Contains(contentType.ToLowerInvariant()))
                 throw new ArgumentException($"Unsupported file type. Supported types are: {string.Join(", ", supportedTypes)}", nameof(cvFile));
 
             // Đọc file thành byte[]
@@ -237,7 +255,8 @@ CV:
             }
 
             // Xác định loại file (PDF/JPG/PNG)
-            string ext = Path.GetExtension(cvFile.FileName)?.ToLower();
+            string fileName = cvFile.FileName ?? "unknown_file";
+            string ext = Path.GetExtension(fileName)?.ToLower();
             string fileType = "PDF";
             if (ext == ".jpg" || ext == ".jpeg") fileType = "JPG";
             else if (ext == ".png") fileType = "PNG";
@@ -250,7 +269,7 @@ CV:
                 resume = new Resume
                 {
                     UserId = userId,
-                    FileName = cvFile.FileName,
+                    FileName = fileName,
                     FileType = fileType,
                     FileData = fileBytes,
                     UploadDate = DateTime.UtcNow,
@@ -263,26 +282,55 @@ CV:
             }
 
             Stream processedStream;
-            if (cvFile.ContentType == "application/pdf")
+            try
             {
-                using var originalStream = new MemoryStream(fileBytes);
-                processedStream = await PdfPreprocessor.ConvertMultiPagePdfToSingleImageAsync(originalStream);
+                if (contentType == "application/pdf")
+                {
+                    using var originalStream = new MemoryStream(fileBytes);
+                    processedStream = await PdfPreprocessor.ConvertMultiPagePdfToSingleImageAsync(originalStream);
+                }
+                else
+                {
+                    processedStream = new MemoryStream(fileBytes);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                processedStream = new MemoryStream(fileBytes);
+                var errorResult = new ResumeAnalysisResult
+                {
+                    AnalysisDate = DateTime.UtcNow,
+                    FileName = fileName,
+                    AnalysisStatus = "Failed",
+                    ErrorMessage = $"Error processing file: {ex.Message}",
+                    ResumeId = resumeId
+                };
+                return errorResult;
             }
 
             var analysisResult = new ResumeAnalysisResult
             {
                 AnalysisDate = DateTime.UtcNow,
-                FileName = cvFile.FileName,
+                FileName = fileName,
                 AnalysisStatus = "Pending",
                 ResumeId = resumeId // Gán ResumeId nếu có, nếu không thì = 0
             };
 
             try
             {
+                if (_formRecognizerClient == null)
+                {
+                    analysisResult.AnalysisStatus = "Failed";
+                    analysisResult.ErrorMessage = "FormRecognizer client is not configured. Please check your Azure AI configuration in appsettings.json";
+                    return analysisResult;
+                }
+
+                if (string.IsNullOrEmpty(_customModelId))
+                {
+                    analysisResult.AnalysisStatus = "Failed";
+                    analysisResult.ErrorMessage = "Custom model ID is not configured. Please check your Azure AI configuration in appsettings.json";
+                    return analysisResult;
+                }
+
                 var operation = await _formRecognizerClient.AnalyzeDocumentAsync(WaitUntil.Completed, _customModelId, processedStream);
                 var result = operation.Value;
 
