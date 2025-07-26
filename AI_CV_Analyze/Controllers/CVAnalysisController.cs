@@ -38,15 +38,15 @@ namespace AI_CV_Analyze.Controllers
         [HttpPost]
         public async Task<IActionResult> AnalyzeCV(IFormFile cvFile)
         {
-            // Xóa dữ liệu session liên quan đến CV cũ
-            HttpContext.Session.Remove("ResumeAnalysisResult");
-            HttpContext.Session.Remove("CVContent");
-            HttpContext.Session.Remove("EditSuggestionsContent");
-            HttpContext.Session.Remove("CVScoreResult");
-            HttpContext.Session.Remove("JobRecommendations");
-            HttpContext.Session.Remove("JobSuggestionResult");
-            HttpContext.Session.Remove("JobSuggestionSkills");
-            HttpContext.Session.Remove("FinalCVContent");
+            //// Xóa dữ liệu session liên quan đến CV cũ
+            //HttpContext.Session.Remove("ResumeAnalysisResult");
+            //HttpContext.Session.Remove("CVContent");
+            //HttpContext.Session.Remove("EditSuggestionsContent");
+            //HttpContext.Session.Remove("CVScoreResult");
+            //HttpContext.Session.Remove("JobRecommendations");
+            //HttpContext.Session.Remove("JobSuggestionResult");
+            //HttpContext.Session.Remove("JobSuggestionSkills");
+            //HttpContext.Session.Remove("FinalCVContent");
 
             if (cvFile == null || cvFile.Length == 0)
             {
