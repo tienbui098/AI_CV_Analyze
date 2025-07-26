@@ -38,6 +38,16 @@ namespace AI_CV_Analyze.Controllers
         [HttpPost]
         public async Task<IActionResult> AnalyzeCV(IFormFile cvFile)
         {
+            // Xóa dữ liệu session liên quan đến CV cũ
+            HttpContext.Session.Remove("ResumeAnalysisResult");
+            HttpContext.Session.Remove("CVContent");
+            HttpContext.Session.Remove("EditSuggestionsContent");
+            HttpContext.Session.Remove("CVScoreResult");
+            HttpContext.Session.Remove("JobRecommendations");
+            HttpContext.Session.Remove("JobSuggestionResult");
+            HttpContext.Session.Remove("JobSuggestionSkills");
+            HttpContext.Session.Remove("FinalCVContent");
+
             if (cvFile == null || cvFile.Length == 0)
             {
                 return BadRequest("No file uploaded");
@@ -86,10 +96,22 @@ namespace AI_CV_Analyze.Controllers
                 var suggestions = await _resumeAnalysisService.GetCVEditSuggestions(Content);
                 ViewBag.Suggestions = suggestions;
                 ViewBag.CVContent = Content;
-                // Lưu đề xuất chỉnh sửa vào Session
+                // Lưu đề xuất chỉnh sửa vào Session (nếu cần dùng lại)
                 HttpContext.Session.SetString("EditSuggestions", JsonConvert.SerializeObject(suggestions));
                 HttpContext.Session.SetString("EditSuggestionsContent", Content);
-                return RedirectToAction("EditSuggestions");
+                // Lấy lại result từ session (hoặc DB nếu cần)
+                var resultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
+                ResumeAnalysisResult result = null;
+                if (!string.IsNullOrEmpty(resultJson))
+                {
+                    result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
+                }
+                
+                // Debug: Kiểm tra xem suggestions có được lấy không
+                System.Diagnostics.Debug.WriteLine($"Suggestions: {suggestions}");
+                System.Diagnostics.Debug.WriteLine($"Content: {Content}");
+                
+                return View("AnalysisResult", result);
             }
             catch (Exception ex)
             {
@@ -149,6 +171,27 @@ namespace AI_CV_Analyze.Controllers
                     ViewBag.FormatScore = (int?)score.format ?? 0;
                     ViewBag.TotalScore = (int?)score.total ?? 0;
                 }
+            }
+            // Lấy suggestions và cvContent nếu có (từ session hoặc ViewBag)
+            var suggestionsJson = HttpContext.Session.GetString("EditSuggestions");
+            var content = HttpContext.Session.GetString("EditSuggestionsContent");
+            if (!string.IsNullOrEmpty(suggestionsJson))
+            {
+                try
+                {
+                    // Thử deserialize từ JSON string
+                    ViewBag.Suggestions = JsonConvert.DeserializeObject<string>(suggestionsJson);
+                }
+                catch
+                {
+                    // Nếu không phải JSON, lấy trực tiếp
+                    ViewBag.Suggestions = suggestionsJson;
+                }
+                ViewBag.CVContent = content;
+                
+                // Debug: Kiểm tra ViewBag
+                System.Diagnostics.Debug.WriteLine($"ViewBag.Suggestions: {ViewBag.Suggestions}");
+                System.Diagnostics.Debug.WriteLine($"ViewBag.CVContent: {ViewBag.CVContent}");
             }
             return View(result);
         }
@@ -353,31 +396,19 @@ namespace AI_CV_Analyze.Controllers
             return File(pdfBytes, "application/pdf", "CV_Hoan_Chinh.pdf");
         }
 
-        [HttpGet]
-        public IActionResult EditSuggestions()
-        {
-            var suggestionsJson = HttpContext.Session.GetString("EditSuggestions");
-            var content = HttpContext.Session.GetString("EditSuggestionsContent");
-            if (!string.IsNullOrEmpty(suggestionsJson))
-            {
-                ViewBag.Suggestions = JsonConvert.DeserializeObject<string>(suggestionsJson);
-                ViewBag.CVContent = content;
-            }
-            else
-            {
-                ViewBag.Suggestions = null;
-                ViewBag.CVContent = null;
-                ViewBag.ErrorMessage = "You have not used the CV edit suggestion feature yet.";
-            }
-            return View();
-        }
+        //// Xóa hoặc chuyển hướng các action liên quan đến EditSuggestions
+        //[HttpGet]
+        //public IActionResult EditSuggestions()
+        //{
+        //    // Chuyển hướng sang AnalysisResult
+        //    return RedirectToAction("AnalysisResult");
+        //}
 
-        [HttpGet]
-        public IActionResult HasEditSuggestions()
-        {
-            var suggestionsJson = HttpContext.Session.GetString("EditSuggestions");
-            bool hasSuggestions = !string.IsNullOrEmpty(suggestionsJson);
-            return Json(new { hasSuggestions });
-        }
+        //[HttpGet]
+        //public IActionResult HasEditSuggestions()
+        //{
+        //    // Có thể bỏ hoặc trả về false luôn
+        //    return Json(new { hasSuggestions = false });
+        //}
     }
 }
