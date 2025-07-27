@@ -17,99 +17,121 @@
 }
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Breadcrumb và navigation -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <!-- Breadcrumb and navigation with enhanced hover -->
+    <div class="flex flex-col sm:flex-row justify-end items-start sm:items-center mb-6 gap-4">
         <div class="flex gap-3">
-            <a asp-controller="CVAnalysis" asp-action="JobPrediction" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                <i class="fas fa-arrow-left mr-2"></i> Job suggestions
+            <a asp-controller="CVAnalysis" asp-action="JobPrediction" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
+                <i class="fas fa-arrow-right mr-2 transition-transform duration-300 group-hover:translate-x-1"></i> Job suggestions
             </a>
-            <button id="btnBackEditSuggestions" type="button" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                <i class="fas fa-edit mr-2"></i> Edit suggestions
-            </button>
         </div>
     </div>
 
-    <!-- Header Section -->
-    <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full mb-4 shadow-md">
-            <i class="fas fa-check-circle mr-2"></i>
-            <span>Analysis complete</span>
-        </div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">CV Analysis Results</h1>
-        <p class="text-lg text-gray-600 max-w-3xl mx-auto">The AI system has analyzed your CV and provided detailed evaluations</p>
+    <!-- Header Section with floating animation -->
+    <div class="text-center mb-8 animate-fade-in-up">
+        @if (Model != null && !string.IsNullOrEmpty(Model.Content))
+        {
+            <div class="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full mb-4 shadow-md float-animation animate-fade-in-up animation-delay-200">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span>Analysis complete</span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 animate-fade-in-up animation-delay-300">CV Analysis Results</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto animate-fade-in-up animation-delay-400">The AI system has analyzed your CV and provided detailed evaluations</p>
 
-        <!-- File info cards -->
-        <div class="flex flex-wrap justify-center gap-3 mt-6">
-            <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center">
-                <i class="fas fa-file-alt text-blue-500 mr-2"></i>
-                <span class="text-sm font-medium text-gray-700 truncate max-w-xs">@Model.FileName</span>
+            <!-- File info cards with enhanced hover -->
+            <div class="flex flex-wrap justify-center gap-3 mt-6 animate-fade-in-up animation-delay-500">
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
+                    <i class="fas fa-file-alt text-blue-500 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700 truncate max-w-xs">@Model.FileName</span>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
+                    <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700">@Model.AnalysisDate.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
+                    <i class="fas fa-robot text-blue-500 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700">AI Engine 2.0</span>
+                </div>
             </div>
-            <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center">
-                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
-                <span class="text-sm font-medium text-gray-700">@Model.AnalysisDate.ToString("dd/MM/yyyy HH:mm")</span>
+        }
+        else
+        {
+            <div class="inline-flex items-center justify-center bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-6 py-2 rounded-full mb-4 shadow-md pulse-animation">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span>No CV Analysis Available</span>
             </div>
-            <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center">
-                <i class="fas fa-robot text-blue-500 mr-2"></i>
-                <span class="text-sm font-medium text-gray-700">AI Engine 2.0</span>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">CV Analysis Results</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Please upload a CV to get started with the analysis</p>
+
+            <div class="mt-6">
+                <a asp-controller="CVAnalysis" asp-action="Index" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
+                    <i class="fas fa-upload mr-2 transition-transform duration-300 group-hover:translate-y-0.5"></i>
+                    Upload CV for Analysis
+                </a>
             </div>
-        </div>
+        }
     </div>
 
-    <!-- PHẦN GRID 3 CỘT -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
-        <!-- CỘT TRÁI: CV Scoring + Job Recommendation -->
-        <div class="space-y-6 order-1 md:order-1 md:col-span-3">
-            <!-- CV Scoring Block -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6" id="cv-score-block">
+    <!-- 3-COLUMN GRID LAYOUT -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 animate-fade-in-up animation-delay-600">
+        <!-- LEFT COLUMN: CV Scoring + Job Recommendation -->
+        <div class="space-y-6 order-1 md:order-1 md:col-span-3 animate-fade-in-left animation-delay-700">
+            <!-- CV Scoring Block with gradient border -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6 hover:shadow-md transition-all gradient-border animate-fade-in-up animation-delay-100" id="cv-score-block">
                 <div class="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b border-gray-100">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
                         <i class="fas fa-star text-yellow-500 mr-3"></i> CV Scoring (AI)
                     </h2>
                 </div>
                 <div class="p-6">
-                    <button id="btnScoreCV" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition" data-resumeid="@Model.ResumeId" @(hasScore ? "style='display:none'" : "")>
+                    <button id="btnScoreCV" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5 btn-hover-effect" data-resumeid="@Model.ResumeId" @(hasScore ? "style='display:none'" : "")>
                         <i class="fas fa-magic mr-2"></i> CV Scoring
                     </button>
                     <div id="cv-score-table" @(hasScore ? "" : "style='display:none'")>
                         <table class="min-w-full text-sm text-gray-700">
                             <tbody>
-                                <tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="font-medium py-2 pr-4">Layout and presentation</td>
                                     <td class="text-right py-2" id="score-layout">@layoutScore / 10</td>
                                 </tr>
-                                <tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="font-medium py-2 pr-4">Skill</td>
                                     <td class="text-right py-2" id="score-skill">@skillScore / 10</td>
                                 </tr>
-                                <tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="font-medium py-2 pr-4">Experience/Project</td>
                                     <td class="text-right py-2" id="score-experience">@experienceScore / 10</td>
                                 </tr>
-                                <tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="font-medium py-2 pr-4">Education</td>
                                     <td class="text-right py-2" id="score-education">@educationScore / 10</td>
                                 </tr>
-                                <tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="font-medium py-2 pr-4">Relevant Keywords</td>
                                     <td class="text-right py-2" id="score-keyword">@keywordScore / 10</td>
                                 </tr>
-                                <tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="font-medium py-2 pr-4">Form/Format</td>
                                     <td class="text-right py-2" id="score-format">@formatScore / 10</td>
                                 </tr>
-                                <tr class="border-t">
+                                <tr class="border-t hover:bg-blue-50 transition-colors">
                                     <td class="font-bold py-2 pr-4">Total score</td>
                                     <td class="text-right py-2 font-bold text-blue-600 text-lg" id="score-total">@totalScore / 60</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div id="score-loading" style="display:none" class="text-center text-blue-600 mt-2"><i class="fas fa-spinner fa-spin"></i> Scoring...</div>
+                    <div id="score-loading" style="display:none" class="text-center text-blue-600 mt-2">
+                        <div class="inline-flex items-center">
+                            <div class="w-5 h-5 mr-2 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            Scoring...
+                        </div>
+                    </div>
                     <div id="score-error" style="display:none" class="text-center text-red-600 mt-2"></div>
                 </div>
             </div>
-            <!-- Job Recommendation Block -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+
+            <!-- Job Recommendation Block with enhanced hover -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-200">
                 <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
                         <i class="fas fa-briefcase text-blue-500 mr-3"></i>Suitable Jobs
@@ -120,28 +142,29 @@
                     <input type="hidden" id="cvSkills" value="@Model.Skills" />
                     <input type="hidden" id="cvExperience" value="@Model.Experience" />
                     <input type="hidden" id="cvProject" value="@Model.Project" />
-                    
+
                     <div class="text-center py-6">
                         <div id="jobRecommendResult" class="mb-4"></div>
-                        <button id="btnJobRecommend" type="button" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                        <button id="btnJobRecommend" type="button" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5 btn-hover-effect">
                             <i class="fas fa-magic mr-2"></i> Job Recommendation
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- CỘT GIỮA: Nhận gợi ý chỉnh sửa + nội dung đề xuất chỉnh sửa -->
-        <div class="order-2 md:order-2 md:col-span-6 flex flex-col items-center">
+
+        <!-- MIDDLE COLUMN: Edit suggestions + content -->
+        <div class="order-2 md:order-2 md:col-span-6 flex flex-col items-center animate-fade-in-up animation-delay-800">
             <div class="w-full max-w-2xl mx-auto">
-                <!-- AI Recommendation -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <!-- AI Recommendation with pulse effect -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6 hover:shadow-md transition-all animate-fade-in-up animation-delay-300">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-robot text-blue-500 mr-3"></i> AI Recommendation
                         </h2>
                     </div>
                     <div class="p-6">
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6">
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6 hover:shadow-sm transition-all">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
@@ -152,20 +175,21 @@
                             </div>
                         </div>
 
-                        <!-- Nút nhận gợi ý chỉnh sửa -->
+                        <!-- Edit suggestions button with enhanced hover -->
                         <form id="editSuggestionsForm" method="post" asp-action="GetEditSuggestions" class="space-y-4 mb-6">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="Content" value="@(Model.Content ?? (ViewBag.CVContent ?? ""))" />
-                            <button type="submit" class="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                                <i class="fas fa-magic mr-2"></i> Nhận gợi ý chỉnh sửa CV từ AI
+                            <button type="submit" class="w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect pulse-animation">
+                                <i class="fas fa-magic mr-2"></i> Get CV Edit Suggestions from AI
                             </button>
                         </form>
                     </div>
                 </div>
-                <!-- Error Message -->
+
+                <!-- Error Message with animation -->
                 @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
                 {
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-8">
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-8 animate__animated animate__shakeX">
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <i class="fas fa-exclamation-triangle text-yellow-500"></i>
@@ -179,30 +203,31 @@
                     </div>
                 }
 
-                <!-- Suggestions Card -->
-                <div class="suggestion-card bg-white p-6 rounded-xl shadow-md">
-                    <div class="flex items-center mb-6">
-                        <div class="ai-icon bg-blue-50 text-blue-600 p-3 rounded-xl mr-4">
-                            <i class="fas fa-robot text-2xl"></i>
+                <!-- Suggestions Card with enhanced styling -->
+                <div class="suggestion-card bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all animate-fade-in-up animation-delay-400">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center">
+                            <div class="ai-icon bg-blue-50 text-blue-600 p-3 rounded-xl mr-4 hover:bg-blue-100 transition-all">
+                                <i class="fas fa-robot text-2xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">Edit suggestions from AI</h2>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Edit suggestions from AI</h2>
-                        <!-- Copy button phía trên nội dung gợi ý -->
-                        <div class="flex justify-end mb-4">
-                            <button id="copy-btn" class="copy-btn flex items-center">
+                        <!-- Copy button with hover effect -->
+                        @if (!string.IsNullOrEmpty(ViewBag.Suggestions))
+                        {
+                            <button id="copy-btn" class="copy-btn flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:-translate-y-0.5 btn-hover-effect">
                                 <i class="far fa-copy mr-2"></i> Copy
                             </button>
-                        </div>
+                        }
                     </div>
 
-                    <div class="suggestion-content bg-gray-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                    <div class="suggestion-content bg-gray-50 p-6 rounded-lg border-l-4 border-yellow-400 hover:border-blue-400 transition-all">
                         <!-- Format sections with proper spacing and styling -->
                         <div class="ai-suggestion-text space-y-6">
                             @if (!string.IsNullOrEmpty(ViewBag.Suggestions))
                             {
-                                @* <p class="text-green-600 mb-4">Debug: Suggestions found! Length: @ViewBag.Suggestions.ToString().Length</p> *@
                                 var suggestionsText = ViewBag.Suggestions?.ToString() ?? "";
                                 var sections = suggestionsText.Split(new[] { "##" }, StringSplitOptions.RemoveEmptyEntries);
-                                @* <p class="text-blue-600 mb-4">Debug: Number of sections: @sections.Length</p> *@
                                 foreach (var section in sections)
                                 {
                                     if (!string.IsNullOrWhiteSpace(section))
@@ -210,18 +235,54 @@
                                         var parts = section.Trim().Split(new[] { '\n' }, 2);
                                         if (parts.Length > 0)
                                         {
-                                            <div class="section-block">
+                                            <div class="section-block hover:bg-blue-50 p-2 rounded-lg transition-all">
                                                 @if (parts.Length > 1)
                                                 {
-                                                    <h3 class="text-xl font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">@(parts[0]?.Trim() ?? "")</h3>
+                                                    <h3 class="text-xl font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200 hover:text-blue-600 transition-colors">@(parts[0]?.Trim() ?? "")</h3>
                                                     <div class="section-content text-gray-700 leading-relaxed">
-                                                        @Html.Raw((parts[1]?.Trim() ?? "").Replace("\n", "<br>"))
+                                                        @{
+                                                            var content = parts[1]?.Trim() ?? "";
+                                                            var lines = content.Split('\n');
+                                                            var filteredLines = new List<string>();
+                                                            foreach (var line in lines)
+                                                            {
+                                                                var trimmedLine = line.Trim();
+                                                                if (!string.IsNullOrWhiteSpace(trimmedLine) &&
+                                                                trimmedLine != "---" &&
+                                                                trimmedLine != "--- " &&
+                                                                trimmedLine != " ---" &&
+                                                                trimmedLine != " --- ")
+                                                                {
+                                                                    filteredLines.Add(line);
+                                                                }
+                                                            }
+                                                            var filteredContent = string.Join("\n", filteredLines);
+                                                        }
+                                                        @Html.Raw(filteredContent.Replace("\n", "<br>"))
                                                     </div>
                                                 }
                                                 else
                                                 {
                                                     <div class="section-content text-gray-700 leading-relaxed">
-                                                        @Html.Raw((parts[0]?.Trim() ?? "").Replace("\n", "<br>"))
+                                                        @{
+                                                            var content = parts[0]?.Trim() ?? "";
+                                                            var lines = content.Split('\n');
+                                                            var filteredLines = new List<string>();
+                                                            foreach (var line in lines)
+                                                            {
+                                                                var trimmedLine = line.Trim();
+                                                                if (!string.IsNullOrWhiteSpace(trimmedLine) &&
+                                                                trimmedLine != "---" &&
+                                                                trimmedLine != "--- " &&
+                                                                trimmedLine != " ---" &&
+                                                                trimmedLine != " --- ")
+                                                                {
+                                                                    filteredLines.Add(line);
+                                                                }
+                                                            }
+                                                            var filteredContent = string.Join("\n", filteredLines);
+                                                        }
+                                                        @Html.Raw(filteredContent.Replace("\n", "<br>"))
                                                     </div>
                                                 }
                                             </div>
@@ -231,41 +292,46 @@
                             }
                             else
                             {
-                                <p class="text-red-600 mb-4">Debug: No suggestions found. ViewBag.Suggestions is null or empty.</p>
-                                <p class="text-gray-500">No suggestions found.</p>
+                                <div class="text-center py-8">
+                                    <i class="fas fa-info-circle text-blue-500 text-4xl mb-4 float-animation"></i>
+                                    <p class="text-gray-600 text-lg">No AI edit suggestions available</p>
+                                    <p class="text-gray-500 text-sm mt-2">Please use the "Get CV Edit Suggestions from AI" button above to receive suggestions</p>
+                                </div>
                             }
                         </div>
                     </div>
 
                     @if (ViewBag.Suggestions != null && ViewBag.CVContent != null)
                     {
-                        <form id="generateFinalCVForm" method="post" asp-action="GenerateFinalCV">
+                        <form id="generateFinalCVForm" method="post" asp-action="GenerateFinalCV" class="mt-6">
                             <input type="hidden" name="cvContent" value="@ViewBag.CVContent" />
                             <input type="hidden" name="suggestions" value="@ViewBag.Suggestions" />
-                            <button type="submit" class="btn btn-success mt-4">Tạo CV hoàn chỉnh theo đề xuất</button>
+                            <button type="submit" class="w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-lg font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
+                                <i class="fas fa-file-export mr-2"></i> Generate Complete CV Based on Suggestions
+                            </button>
                         </form>
                     }
 
                     <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
-                        <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-100 transition">
-                            <i class="fas fa-arrow-left mr-3"></i> Analysis Result
+                        <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-100 hover:shadow-sm transition-all transform hover:-translate-y-0.5">
+                            <i class="fas fa-arrow-left mr-3 transition-transform duration-300 group-hover:-translate-x-1"></i> Analysis Result
                         </a>
-                        <a href="@Url.Action("Index", "Home")" class="btn-primary bg-blue-600 text-white font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-blue-700 transition">
+                        <a href="@Url.Action("Index", "Home")" class="btn-primary bg-blue-600 text-white font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-blue-700 hover:shadow-lg transition-all transform hover:-translate-y-0.5 btn-hover-effect">
                             <i class="fas fa-home mr-3"></i> Home
                         </a>
                     </div>
                 </div>
-             </div>
+            </div>
         </div>
-        <!-- CỘT PHẢI -->
-        <div class="space-y-6 order-3 md:order-3 md:col-span-3">
+
+        <!-- RIGHT COLUMN -->
+        <div class="space-y-6 order-3 md:order-3 md:col-span-3 animate-fade-in-right animation-delay-900">
             @{
-                // Khai báo tất cả biến cần thiết ở đầu
                 var hasOverall = !string.IsNullOrEmpty(Model.OverallAnalysis);
                 var overviewText = hasOverall ? Model.OverallAnalysis.Replace("\n", " ").Replace("<br>", " ") : "";
                 var isLongOverview = hasOverall && overviewText.Length > 150;
                 var overviewSummary = isLongOverview ? overviewText.Substring(0, 150) + "..." : overviewText;
-                
+
                 var hasEducation = !string.IsNullOrEmpty(Model.Education) || !string.IsNullOrEmpty(Model.Course) || !string.IsNullOrEmpty(Model.Certificate);
                 var educationText = "";
                 if (hasEducation)
@@ -276,31 +342,31 @@
                 }
                 var isLongEducation = hasEducation && educationText.Length > 150;
                 var educationSummary = isLongEducation ? educationText.Substring(0, 150) + "..." : educationText;
-                
+
                 var hasAchievement = !string.IsNullOrEmpty(Model.Achievement);
                 var achievementText = hasAchievement ? Model.Achievement.Replace("\n", " ").Replace("\r\n", " ") : "";
                 var isLongAchievement = hasAchievement && achievementText.Length > 150;
                 var achievementSummary = isLongAchievement ? achievementText.Substring(0, 150) + "..." : achievementText;
-                
+
                 var hasExperience = !string.IsNullOrEmpty(Model.Experience);
                 var experienceText = hasExperience ? Model.Experience.Replace("\n", " ").Replace("\r\n", " ") : "";
                 var isLongExperience = hasExperience && experienceText.Length > 150;
                 var experienceSummary = isLongExperience ? experienceText.Substring(0, 150) + "..." : experienceText;
-                
+
                 var hasProject = !string.IsNullOrEmpty(Model.Project);
                 var projectText = hasProject ? Model.Project.Replace("\n", " ").Replace("<br>", " ") : "";
                 var isLongProject = hasProject && projectText.Length > 150;
                 var projectSummary = isLongProject ? projectText.Substring(0, 150) + "..." : projectText;
             }
-            
+
             @if (hasOverall)
             {
-                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
-                     data-full-content="@Html.Raw(Model.OverallAnalysis.Replace("\n", "<br>"))" 
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-100"
+                     data-full-content="@Html.Raw(Model.OverallAnalysis.Replace("\n", "<br>"))"
                      data-title="Profile Overview">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-chart-pie text-blue-500 mr-3"></i> Profile Overview
+                            <i class="fas fa-chart-pie text-blue-500 mr-3 hover:text-blue-600 transition-colors"></i> Profile Overview
                         </h2>
                     </div>
                     <div class="p-6">
@@ -309,124 +375,108 @@
                         </div>
                         @if (isLongOverview)
                         {
-                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
-                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm transition-colors hover:underline">
+                                <i class="fas fa-chevron-down mr-1 transition-transform duration-300 group-hover:translate-y-1"></i>View Details
                             </button>
                         }
                     </div>
                 </div>
             }
-            @if (!string.IsNullOrEmpty(Model.Name))
+
+            @if (!string.IsNullOrEmpty(Model.Name) || !string.IsNullOrEmpty(Model.Email))
             {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-200">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-user text-blue-500 mr-3"></i> Name
+                            <i class="fas fa-user text-blue-500 mr-3 hover:text-blue-600 transition-colors"></i> Personal Information
                         </h2>
                     </div>
-                    <div class="p-6">
-                        <div class="flex flex-wrap gap-3">
-                            @foreach (var skill in (Model.Name ?? "").Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
-                            {
-                                <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
-                                    @(skill?.Trim() ?? "")
-                                </span>
-                            }
-                        </div>
+                    <div class="p-6 space-y-4">
+                        @if (!string.IsNullOrEmpty(Model.Name))
+                        {
+                            <div class="hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2 hover:text-blue-600 transition-colors">Full Name</h3>
+                                <div class="text-gray-700">
+                                    @Model.Name
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <div class="hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2 hover:text-blue-600 transition-colors">Email</h3>
+                                <div class="text-gray-700">
+                                    @Model.Email
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             }
-            @if (!string.IsNullOrEmpty(Model.Email))
-            {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-envelope text-blue-500 mr-3"></i> Email
-                        </h2>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex flex-wrap gap-3">
-                            @foreach (var skill in (Model.Email ?? "").Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
-                            {
-                                <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
-                                    @(skill?.Trim() ?? "")
-                                </span>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
+
             @if (!string.IsNullOrEmpty(Model.Skills) || !string.IsNullOrEmpty(Model.LanguageProficiency))
             {
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-300">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-tools text-blue-500 mr-3"></i> Skills & Languages
+                            <i class="fas fa-tools text-blue-500 mr-3 hover:text-blue-600 transition-colors"></i> Skills & Languages
                         </h2>
                     </div>
                     <div class="p-6 space-y-6">
                         @if (!string.IsNullOrEmpty(Model.Skills))
                         {
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-700 mb-3">Technical Skills</h3>
-                                <div class="flex flex-wrap gap-3">
-                                    @foreach (var skill in (Model.Skills ?? "").Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
-                                    {
-                                        <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
-                                            @(skill?.Trim() ?? "")
-                                        </span>
-                                    }
+                            <div class="hover:bg-blue-50 p-3 rounded-lg transition-colors">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-3 hover:text-blue-600 transition-colors">Technical Skills</h3>
+                                <div class="text-gray-700">
+                                    @Model.Skills
                                 </div>
                             </div>
                         }
                         @if (!string.IsNullOrEmpty(Model.LanguageProficiency))
                         {
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-700 mb-3">Language</h3>
-                                <div class="space-y-3">
-                                    @foreach (var skill in (Model.LanguageProficiency ?? "").Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
-                                    {
-                                        <span class="skill-tag bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition">
-                                            @(skill?.Trim() ?? "")
-                                        </span>
-                                    }
+                            <div class="hover:bg-blue-50 p-3 rounded-lg transition-colors">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-3 hover:text-blue-600 transition-colors">Languages</h3>
+                                <div class="text-gray-700">
+                                    @Model.LanguageProficiency
                                 </div>
                             </div>
                         }
                     </div>
                 </div>
             }
+
             @if (hasEducation)
             {
-                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
-                     data-full-content="@educationText.Replace("\n", "<br>")" 
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-400"
+                     data-full-content="@Html.Raw(educationText.Replace("\n", "<br>"))"
                      data-title="Education & Qualifications">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-graduation-cap text-blue-500 mr-3"></i> Education & Qualifications
+                            <i class="fas fa-graduation-cap text-blue-500 mr-3 hover:text-blue-600 transition-colors"></i> Education & Qualifications
                         </h2>
                     </div>
                     <div class="p-6">
                         <div class="content-summary text-gray-700">
-                            @educationSummary.Replace("\n", "<br>")
+                            @Html.Raw(educationSummary.Replace("\n", "<br>"))
                         </div>
                         @if (isLongEducation)
                         {
-                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
-                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm transition-colors hover:underline">
+                                <i class="fas fa-chevron-down mr-1 transition-transform duration-300 group-hover:translate-y-1"></i>View Details
                             </button>
                         }
                     </div>
                 </div>
             }
+
             @if (hasAchievement)
             {
-                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
-                     data-full-content="@Model.Achievement.Replace("\n", "<br>")" 
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-500"
+                     data-full-content="@Html.Raw(Model.Achievement.Replace("\n", "<br>"))"
                      data-title="Achievements">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-trophy text-blue-500 mr-3"></i> Achievements
+                            <i class="fas fa-trophy text-blue-500 mr-3 hover:text-blue-600 transition-colors"></i> Achievements
                         </h2>
                     </div>
                     <div class="p-6">
@@ -435,21 +485,22 @@
                         </div>
                         @if (isLongAchievement)
                         {
-                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
-                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm transition-colors hover:underline">
+                                <i class="fas fa-chevron-down mr-1 transition-transform duration-300 group-hover:translate-y-1"></i>View Details
                             </button>
                         }
                     </div>
                 </div>
             }
+
             @if (hasExperience)
             {
-                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
-                     data-full-content="@Model.Experience.Replace("\n", "<br>")" 
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-600"
+                     data-full-content="@Html.Raw(Model.Experience.Replace("\n", "<br>"))"
                      data-title="Experience">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-briefcase text-blue-500 mr-3"></i> Experience
+                            <i class="fas fa-briefcase text-blue-500 mr-3 hover:text-blue-600 transition-colors"></i> Experience
                         </h2>
                     </div>
                     <div class="p-6">
@@ -458,21 +509,22 @@
                         </div>
                         @if (isLongExperience)
                         {
-                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
-                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm transition-colors hover:underline">
+                                <i class="fas fa-chevron-down mr-1 transition-transform duration-300 group-hover:translate-y-1"></i>View Details
                             </button>
                         }
                     </div>
                 </div>
             }
+
             @if (hasProject)
             {
-                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300" 
-                     data-full-content="@Html.Raw(Model.Project.Replace("\n", "<br>"))" 
+                <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-700"
+                     data-full-content="@Html.Raw(Model.Project.Replace("\n", "<br>"))"
                      data-title="Projects">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-briefcase text-blue-500 mr-3"></i> Projects
+                            <i class="fas fa-briefcase text-blue-500 mr-3 hover:text-blue-600 transition-colors"></i> Projects
                         </h2>
                     </div>
                     <div class="p-6">
@@ -481,8 +533,8 @@
                         </div>
                         @if (isLongProject)
                         {
-                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm">
-                                <i class="fas fa-chevron-down mr-1"></i>Xem chi tiết
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm transition-colors hover:underline">
+                                <i class="fas fa-chevron-down mr-1 transition-transform duration-300 group-hover:translate-y-1"></i>View Details
                             </button>
                         }
                     </div>
@@ -491,24 +543,23 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-        <a asp-action="Index" class="w-full sm:w-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-            <i class="fas fa-redo mr-2"></i> Analyze another CV
+    <!-- Action Buttons with enhanced effects -->
+    <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up animation-delay-1000">
+        <a asp-action="Index" class="w-full sm:w-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
+            <i class="fas fa-redo mr-2"></i> Analyze Another CV
         </a>
-        <button id="shareResultBtn" class="w-full sm:w-auto flex justify-center items-center px-6 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-            <i class="fas fa-share-alt mr-2"></i> Share your results
+        <button id="shareResultBtn" class="w-full sm:w-auto flex justify-center items-center px-6 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5">
+            <i class="fas fa-share-alt mr-2"></i> Share Your Results
         </button>
     </div>
 </div>
 
 <!-- Enhanced Loading Modal with Progress Animation -->
 <div id="loadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm hidden">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-fade-in-up w-80 max-w-[90vw]">
-        <!-- Animated spinner with gradient -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-fade-in-up w-80 max-w-[90vw] animate-fade-in-up">
+        <!-- Enhanced spinner with gradient -->
         <div id="loadingSpinner" class="mb-6 relative w-16 h-16">
-            <div class="absolute inset-0 rounded-full border-4 border-blue-200"></div>
-            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-blue-600 animate-spin"></div>
+            <div class="enhanced-spinner absolute inset-0 rounded-full"></div>
             <div class="absolute inset-1 rounded-full bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
                 <i class="fas fa-file-alt text-blue-500 text-xl"></i>
             </div>
@@ -520,9 +571,9 @@
             <div class="text-sm text-gray-500 mt-1 animate-pulse">This may take a few moments</div>
         </div>
 
-        <!-- Animated progress bar -->
+        <!-- Enhanced progress bar with gradient -->
         <div class="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
-            <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full animate-progress"></div>
+            <div id="progressBar" class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 h-full rounded-full animate-progress"></div>
         </div>
 
         <!-- Cancel button with enhanced styling -->
@@ -534,27 +585,30 @@
     </div>
 </div>
 
-<!-- Loading Modal for CV Scoring -->
-<div id="cvScoreLoadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 hidden">
-    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate__animated animate__fadeInDown w-80">
-        <div class="mb-4">
-            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-            </svg>
+<!-- Loading Modal for CV Scoring with enhanced animation -->
+<div id="cvScoreLoadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate-fade-in-up w-80 max-w-[90vw]">
+        <div class="mb-4 relative w-20 h-20">
+            <div class="enhanced-spinner absolute inset-0 rounded-full"></div>
+            <div class="absolute inset-1 rounded-full bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+                <i class="fas fa-star text-blue-500 text-2xl"></i>
+            </div>
         </div>
         <div class="font-semibold text-lg text-center">
             AI system is scoring your CV. Please wait a moment...
         </div>
+        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-6 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full animate-progress"></div>
+        </div>
     </div>
 </div>
 
-<!-- Share Modal -->
+<!-- Enhanced Share Modal -->
 <div id="shareModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4">
+    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4 animate-fade-in-up animation-delay-100">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-900">Share your results</h3>
-            <button id="closeShareModal" class="text-gray-400 hover:text-gray-500">
+            <h3 class="text-lg font-bold text-gray-900">Share Your Results</h3>
+            <button id="closeShareModal" class="text-gray-400 hover:text-gray-500 transition-colors transform hover:rotate-90">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -563,24 +617,27 @@
                 <label for="shareLink" class="block text-sm font-medium text-gray-700 mb-1">Link</label>
                 <div class="flex">
                     <input type="text" id="shareLink" readonly value="@Context.Request.Scheme://@Context.Request.Host@Context.Request.Path" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    <button id="copyShareLink" class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                    <button id="copyShareLink" class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                         <i class="fas fa-copy mr-1"></i>Copy
                     </button>
+                </div>
+                <div id="copySuccess" class="text-green-600 text-sm mt-1 hidden">
+                    <i class="fas fa-check mr-1"></i> Link copied to clipboard!
                 </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Share via</label>
                 <div class="flex space-x-3">
-                    <a href="#" class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition">
+                    <a href="#" class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-all transform hover:-translate-y-1 hover:shadow-md">
                         <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 transition">
+                    <a href="#" class="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 transition-all transform hover:-translate-y-1 hover:shadow-md">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition">
+                    <a href="#" class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-all transform hover:-translate-y-1 hover:shadow-md">
                         <i class="fab fa-google"></i>
                     </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-900 transition">
+                    <a href="#" class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-900 transition-all transform hover:-translate-y-1 hover:shadow-md">
                         <i class="fab fa-github"></i>
                     </a>
                 </div>
@@ -589,12 +646,12 @@
     </div>
 </div>
 
-<!-- Content Detail Modal -->
+<!-- Enhanced Content Detail Modal -->
 <div id="contentDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
+    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar animate-fade-in-up animation-delay-200">
+        <div class="flex justify-between items-center mb-4 sticky top-0 bg-white pb-4 pt-2">
             <h3 id="modalTitle" class="text-xl font-bold text-gray-900"></h3>
-            <button id="closeContentModal" class="text-gray-400 hover:text-gray-500">
+            <button id="closeContentModal" class="text-gray-400 hover:text-gray-500 transition-colors transform hover:rotate-90">
                 <i class="fas fa-times"></i>
             </button>
         </div>

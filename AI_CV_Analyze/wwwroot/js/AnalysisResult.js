@@ -1,4 +1,163 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
+    // ================ SCROLL ANIMATION SYSTEM ================
+    // Animate elements when they come into view (from Home.js)
+    const animateOnScroll = function () {
+        const elements = document.querySelectorAll('.animate-fade-in-up, .animate-fade-in-right, .animate-fade-in-left, .animate-fade-in');
+
+        elements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            if (elementPosition < windowHeight - 100) {
+                element.style.opacity = '1';
+                element.style.transform = 'translate(0)';
+            }
+        });
+    };
+
+    // Run once on load
+    animateOnScroll();
+
+    // Run on scroll
+    window.addEventListener('scroll', animateOnScroll);
+
+    // ================ ENHANCED HOVER EFFECTS ================
+    // Enhanced hover effects for all buttons
+    document.querySelectorAll('button, a').forEach(button => {
+        button.addEventListener('mouseenter', () => {
+            button.classList.add('hover:scale-105');
+        });
+        button.addEventListener('mouseleave', () => {
+            button.classList.remove('hover:scale-105');
+        });
+    });
+
+    // ================ ENHANCED COPY FUNCTIONALITY ================
+    // Enhanced copy functionality with animation
+    document.getElementById('copy-btn')?.addEventListener('click', function() {
+        const suggestionsText = document.querySelector('.ai-suggestion-text').innerText;
+        navigator.clipboard.writeText(suggestionsText).then(() => {
+            const copyBtn = document.getElementById('copy-btn');
+            copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
+            copyBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            copyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="far fa-copy mr-2"></i> Copy';
+                copyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                copyBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }, 2000);
+        });
+    });
+
+    // ================ ENHANCED SHARE MODAL ================
+    // Enhanced share modal functionality
+    document.getElementById('shareResultBtn')?.addEventListener('click', function() {
+        document.getElementById('shareModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closeShareModal')?.addEventListener('click', function() {
+        document.getElementById('shareModal').classList.add('hidden');
+    });
+
+    document.getElementById('copyShareLink')?.addEventListener('click', function() {
+        const shareLink = document.getElementById('shareLink');
+        shareLink.select();
+        document.execCommand('copy');
+        
+        const copySuccess = document.getElementById('copySuccess');
+        if (copySuccess) {
+            copySuccess.classList.remove('hidden');
+            
+            setTimeout(() => {
+                copySuccess.classList.add('hidden');
+            }, 2000);
+        }
+    });
+
+    // ================ ENHANCED CONTENT DETAIL MODAL ================
+    // Enhanced content detail modal
+    document.querySelectorAll('.show-more-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const card = this.closest('.content-card');
+            const title = card.getAttribute('data-title');
+            const content = card.getAttribute('data-full-content');
+            
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('contentDetailModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('closeContentModal')?.addEventListener('click', function() {
+        document.getElementById('contentDetailModal').classList.add('hidden');
+    });
+
+    // ================ ENHANCED CV SCORING ANIMATION ================
+    // Enhanced CV scoring animation
+    document.getElementById('btnScoreCV')?.addEventListener('click', function() {
+        const resumeId = this.getAttribute('data-resumeid');
+        document.getElementById('cvScoreLoadingModal').classList.remove('hidden');
+        
+        // Simulate API call with animation
+        setTimeout(() => {
+            document.getElementById('cvScoreLoadingModal').classList.add('hidden');
+            document.getElementById('btnScoreCV').style.display = 'none';
+            document.getElementById('cv-score-table').style.display = 'block';
+            
+            // Animate score updates - these will be set by the server-side values
+            const layoutScore = parseInt(document.getElementById('score-layout').textContent.split('/')[0].trim()) || 0;
+            const skillScore = parseInt(document.getElementById('score-skill').textContent.split('/')[0].trim()) || 0;
+            const experienceScore = parseInt(document.getElementById('score-experience').textContent.split('/')[0].trim()) || 0;
+            const educationScore = parseInt(document.getElementById('score-education').textContent.split('/')[0].trim()) || 0;
+            const keywordScore = parseInt(document.getElementById('score-keyword').textContent.split('/')[0].trim()) || 0;
+            const formatScore = parseInt(document.getElementById('score-format').textContent.split('/')[0].trim()) || 0;
+            const totalScore = parseInt(document.getElementById('score-total').textContent.split('/')[0].trim()) || 0;
+            
+            animateValue('score-layout', 0, layoutScore, 1000);
+            animateValue('score-skill', 0, skillScore, 1000);
+            animateValue('score-experience', 0, experienceScore, 1000);
+            animateValue('score-education', 0, educationScore, 1000);
+            animateValue('score-keyword', 0, keywordScore, 1000);
+            animateValue('score-format', 0, formatScore, 1000);
+            
+            setTimeout(() => {
+                animateValue('score-total', 0, totalScore, 1000);
+            }, 500);
+        }, 2000);
+    });
+
+    // Enhanced value animation function
+    function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        if (!obj) return;
+        
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            obj.innerHTML = value + ' / ' + (id === 'score-total' ? '60' : '10');
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // ================ ENHANCED FORM SUBMISSION ================
+    // Enhanced form submission
+    document.getElementById('editSuggestionsForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('loadingModal').classList.remove('hidden');
+        
+        // Simulate form submission with animation
+        setTimeout(() => {
+            document.getElementById('loadingModal').classList.add('hidden');
+            this.submit();
+        }, 1500);
+    });
+
     // ================ LOADING MODAL ================
     const loadingModal = {
         element: document.getElementById('loadingModal'),
