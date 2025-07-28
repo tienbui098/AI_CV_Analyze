@@ -1,5 +1,9 @@
 using AI_CV_Analyze.Data;
 using AI_CV_Analyze.Services;
+using AI_CV_Analyze.Services.Interfaces;
+using AI_CV_Analyze.Services.Implementation;
+using AI_CV_Analyze.Repositories.Interfaces;
+using AI_CV_Analyze.Repositories.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -24,8 +28,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddHttpClient();
 
+// Register Repositories
+builder.Services.AddScoped<IResumeRepository, ResumeRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IResumeAnalysisResultRepository, ResumeAnalysisResultRepository>();
+
+// Register Services
+builder.Services.AddScoped<IFileValidationService, FileValidationService>();
+builder.Services.AddScoped<IPdfProcessingService, PdfProcessingService>();
+builder.Services.AddScoped<IDocumentAnalysisService, DocumentAnalysisService>();
+builder.Services.AddScoped<IScoreAnalysisService, ScoreAnalysisService>();
+builder.Services.AddScoped<ICVEditService, CVEditService>();
+builder.Services.AddScoped<IJobRecommendationService, JobRecommendationService>();
 builder.Services.AddScoped<IResumeAnalysisService, ResumeAnalysisService>();
-builder.Services.AddScoped<AI_CV_Analyze.Services.Interfaces.IEmailSender, AI_CV_Analyze.Services.Implementation.EmailSender>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 // Load native libwkhtmltox.dll nếu chạy trên Windows
 var libPath = Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll");
 if (File.Exists(libPath))
