@@ -148,16 +148,16 @@
 
     // ================ ENHANCED FORM SUBMISSION ================
     // Enhanced form submission
-    document.getElementById('editSuggestionsForm')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        document.getElementById('loadingModal').classList.remove('hidden');
-        
-        // Simulate form submission with animation
-        setTimeout(() => {
-            document.getElementById('loadingModal').classList.add('hidden');
-            this.submit();
-        }, 1500);
-    });
+    // XÓA ĐOẠN SUBMIT TRUYỀN THỐNG GÂY RA SUBMIT FORM LẠI
+    // document.getElementById('editSuggestionsForm')?.addEventListener('submit', function(e) {
+    //     e.preventDefault();
+    //     document.getElementById('loadingModal').classList.remove('hidden');
+    //     // Simulate form submission with animation
+    //     setTimeout(() => {
+    //         document.getElementById('loadingModal').classList.add('hidden');
+    //         this.submit();
+    //     }, 1500);
+    // });
 
     // ================ LOADING MODAL ================
     const loadingModal = {
@@ -185,6 +185,11 @@
         hide: function () {
             if (!this.element) return;
 
+            // Hủy request nếu đang gửi
+            if (this.controller) {
+                this.controller.abort();
+            }
+
             this.element.classList.remove('show');
             if (this.modalContent) this.modalContent.classList.remove('show');
 
@@ -198,6 +203,7 @@
             const cancelBtn = document.getElementById('cancelAnalyzeBtn');
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', () => {
+                    // Hủy request khi ấn cancel
                     if (this.controller) this.controller.abort();
                     this.hide();
                 });
@@ -247,37 +253,57 @@
     // ================ FORM HANDLING ================
     const formHandler = {
         form: null,
+        controller: null,
+        submitting: false,
+        aborted: false,
 
         submit: async function (e) {
             e.preventDefault();
-            console.log('Form submit intercepted!');
+            if (this.submitting) return;
+            this.submitting = true;
+            this.aborted = false;
             loadingModal.show();
-            loadingModal.controller = new AbortController();
+            this.controller = new AbortController();
+            loadingModal.controller = this.controller;
 
             try {
                 const response = await fetch(this.form.action, {
                     method: 'POST',
                     body: new FormData(this.form),
-                    signal: loadingModal.controller.signal,
+                    signal: this.controller.signal,
                     headers: {
                         'X-RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                     }
                 });
 
+                if (this.aborted) return; // Nếu đã abort, không xử lý/log gì nữa
+
                 if (response.redirected) {
                     window.location.href = response.url;
                 } else if (response.ok) {
-                    // Nếu response thành công, reload trang để hiển thị suggestions
                     window.location.reload();
                 } else {
                     throw new Error('Network response was not ok');
                 }
             } catch (error) {
-                if (error.name !== 'AbortError') {
+                if (error.name === 'AbortError') {
+                    this.aborted = true;
+                    toast.show('Request has been cancelled.', 'warning');
+                    // Không reload, không xử lý gì thêm
+                    return;
+                } else {
                     toast.show('An error occurred while sending the request. Please try again.', 'error');
                 }
             } finally {
                 loadingModal.hide();
+                this.submitting = false;
+            }
+        },
+
+        abort: function () {
+            this.aborted = true;
+            if (this.controller) {
+                this.controller.abort();
             }
         },
 
@@ -287,6 +313,14 @@
                 this.form.addEventListener('submit', (e) => this.submit(e));
             } else {
                 console.error('Form #editSuggestionsForm not found!');
+            }
+            // Cancel button logic for edit suggestions
+            const cancelBtn = document.getElementById('cancelAnalyzeBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', (evt) => {
+                    evt.preventDefault();
+                    this.abort();
+                });
             }
         }
     };
@@ -486,9 +520,6 @@
                             <a href="/CVAnalysis/JobPrediction" class="group flex-1 flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
                                 <i class="fas fa-search mr-2 group-hover:animate-bounce"></i>View More Jobs
                             </a>
-                            <button onclick="jobRecommendHandler.showState('jobInitialState')" class="group flex-1 flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
-                                <i class="fas fa-redo mr-2 group-hover:animate-spin"></i>Try Again
-                            </button>
                         </div>
                     </div>
                 `;
@@ -577,9 +608,6 @@
                                 <a href="/CVAnalysis/JobPrediction" class="group flex-1 flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
                                     <i class="fas fa-search mr-2 group-hover:animate-bounce"></i>View More Jobs
                                 </a>
-                                <button onclick="jobRecommendHandler.showState('jobInitialState')" class="group flex-1 flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
-                                    <i class="fas fa-redo mr-2 group-hover:animate-spin"></i>Try Again
-                                </button>
                             </div>
                         </div>
                     `;
