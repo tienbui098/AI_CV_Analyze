@@ -1,4 +1,5 @@
 @model AI_CV_Analyze.Models.ResumeAnalysisResult
+@using System.Text.Json
 
 @{
     ViewData["Title"] = "Kết Quả Phân Tích CV";
@@ -132,82 +133,87 @@
 
             <!-- Advanced Job Recommendation Block -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 animate-fade-in-up animation-delay-200">
-                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-5 border-b border-blue-400">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div>
-                                <h2 class="text-xl font-bold text-white">Suitable Jobs</h2>
-                                <p class="text-blue-100 text-sm">AI-powered job matching based on your CV</p>
-                            </div>
-                        </div>
-                        <div class="hidden sm:block">
-                            <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                                <i class="fas fa-robot text-white text-sm"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @* ĐÃ DI CHUYỂN header và phần giới thiệu vào trong jobInitialState, nên xóa phần này ở ngoài *@
+                @* (KHÔNG render lại header/phần giới thiệu ở ngoài jobInitialState) *@
                 <div class="p-6">
                     <!-- Hidden fields to pass model data to JavaScript -->
                     <input type="hidden" id="cvSkills" value="@Model.Skills" />
                     <input type="hidden" id="cvExperience" value="@Model.Experience" />
                     <input type="hidden" id="cvProject" value="@Model.Project" />
+                    <!-- Hidden field for job recommendations from session -->
+                    @if (ViewBag.JobRecommendations != null)
+                    {
+                        <input type="hidden" id="jobRecommendationsFromSession" value="@Html.Raw(Json.Serialize(ViewBag.JobRecommendations))" />
+                        <!-- Debug info -->
+                        <div style="display: none;">
+                            <p>Debug: ViewBag.JobRecommendations exists</p>
+                            <p>Debug: @ViewBag.JobRecommendations.GetType().Name</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Debug info -->
+                        <div style="display: none;">
+                            <p>Debug: ViewBag.JobRecommendations is null</p>
+                        </div>
+                    }
                     
                     <!-- Initial State -->
-                    <div id="jobInitialState" class="text-center py-8">
-                        <div class="mb-8">
-                            <div class="relative w-20 h-20 mx-auto mb-6">
-                                <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full animate-pulse"></div>
-                                <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-                                    <i class="fas fa-search text-blue-600 text-2xl"></i>
+                    @if (ViewBag.JobRecommendations == null)
+                    {
+                        <div id="jobInitialState" class="text-center py-8">
+                            <div class="mb-8">
+                                <div class="relative w-20 h-20 mx-auto mb-6">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full animate-pulse"></div>
+                                    <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                                        <i class="fas fa-search text-blue-600 text-2xl"></i>
+                                    </div>
+                                    <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-sparkles text-white text-xs"></i>
+                                    </div>
                                 </div>
-                                <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-sparkles text-white text-xs"></i>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3">Discover Your Perfect Job Match</h3>
+                                <p class="text-gray-600 mb-6 max-w-sm mx-auto">Our AI will analyze your CV and find the best job opportunities that match your skills and experience</p>
+                                <!-- Feature highlights - Compact Vertical Version -->
+                                <div class="flex flex-col gap-3 mb-6">
+                                    <div class="feature-card flex items-start p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                            <i class="fas fa-chart-line text-white text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold text-gray-700">Smart Matching</p>
+                                            <p class="text-xs text-gray-500">AI-powered job matching</p>
+                                        </div>
+                                    </div>
+                                    <div class="feature-card flex items-start p-3 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                            <i class="fas fa-lightbulb text-white text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold text-gray-700">Skill Analysis</p>
+                                            <p class="text-xs text-gray-500">Deep skill assessment</p>
+                                        </div>
+                                    </div>
+                                    <div class="feature-card flex items-start p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                            <i class="fas fa-rocket text-white text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold text-gray-700">Career Growth</p>
+                                            <p class="text-xs text-gray-500">Path to success</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-3">Discover Your Perfect Job Match</h3>
-                            <p class="text-gray-600 mb-6 max-w-sm mx-auto">Our AI will analyze your CV and find the best job opportunities that match your skills and experience</p>
-                            
-                            <!-- Feature highlights - Compact Vertical Version -->
-                            <div class="flex flex-col gap-3 mb-6">
-                                <div class="feature-card flex items-start p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
-                                        <i class="fas fa-chart-line text-white text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-700">Smart Matching</p>
-                                        <p class="text-xs text-gray-500">AI-powered job matching</p>
-                                    </div>
-                                </div>
-                                <div class="feature-card flex items-start p-3 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
-                                        <i class="fas fa-lightbulb text-white text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-700">Skill Analysis</p>
-                                        <p class="text-xs text-gray-500">Deep skill assessment</p>
-                                    </div>
-                                </div>
-                                <div class="feature-card flex items-start p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
-                                        <i class="fas fa-rocket text-white text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-700">Career Growth</p>
-                                        <p class="text-xs text-gray-500">Path to success</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <button id="btnJobRecommend" type="button" class="group relative w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
+                                <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <span class="relative flex items-center">
+                                    <i class="fas fa-magic mr-2 text-sm group-hover:animate-spin"></i> 
+                                    Get Smart Recommendations
+                                </span>
+                            </button>
                         </div>
-                        
-                        <button id="btnJobRecommend" type="button" class="group relative w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
-                            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <span class="relative flex items-center">
-                                <i class="fas fa-magic mr-2 text-sm group-hover:animate-spin"></i> 
-                                Get Smart Recommendations
-                            </span>
-                        </button>
-                    </div>
+                    }
 
                     <!-- Loading State -->
                     <div id="jobLoadingState" class="text-center py-8" style="display: none;">
@@ -244,6 +250,101 @@
                         <!-- Results will be populated by JavaScript -->
                     </div>
 
+                    <!-- Results State from Session (when page loads with existing data) -->
+                    @if (ViewBag.JobRecommendations != null)
+                    {
+                        <div id="jobRecommendResultFromSession" class="space-y-6">
+                            <!-- Debug info -->
+                            <div style="display: none;">
+                                <p>Debug: Rendering job recommendations from session</p>
+                                <p>Debug: ViewBag.JobRecommendations type: @ViewBag.JobRecommendations.GetType().Name</p>
+                            </div>
+                            @{
+                                var jobResult = ViewBag.JobRecommendations as AI_CV_Analyze.Models.JobSuggestionResult;
+                                if (jobResult != null && !string.IsNullOrEmpty(jobResult.RecommendedJob))
+                                {
+                                    <div style="display: none;">
+                                        <p>Debug: jobResult.RecommendedJob: @jobResult.RecommendedJob</p>
+                                    </div>
+                                    <div class="space-y-6">
+                                        <div class="text-center mb-6">
+                                            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-check text-white text-2xl"></i>
+                                            </div>
+                                            <h3 class="text-xl font-bold text-gray-800 mb-2">Perfect Match Found!</h3>
+                                            <p class="text-gray-600">Based on your skills and experience, we recommend:</p>
+                                        </div>
+
+                                        <!-- Job Card -->
+                                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+                                            <div class="flex items-start mb-4">
+                                                <div class="flex items-center">
+                                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-4">
+                                                        <i class="fas fa-briefcase text-white text-lg"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="text-xl font-bold text-gray-900 mb-1">@jobResult.RecommendedJob</h4>
+                                                        <p class="text-sm text-gray-600">Recommended for you</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @if (jobResult.MissingSkills != null && jobResult.MissingSkills.Any())
+                                            {
+                                                <!-- Skills to Improve -->
+                                                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4">
+                                                    <div class="flex items-center mb-3">
+                                                        <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mr-3">
+                                                            <i class="fas fa-lightbulb text-white text-sm"></i>
+                                                        </div>
+                                                        <h5 class="text-sm font-semibold text-yellow-800">Skills to Improve</h5>
+                                                    </div>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach (var skill in jobResult.MissingSkills)
+                                                        {
+                                                            <span class="bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium border border-yellow-200 hover:from-yellow-200 hover:to-orange-200 transition-all duration-200">
+                                                                @skill
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex flex-col sm:flex-row gap-2">
+                                            <a href="/CVAnalysis/JobPrediction" class="group flex-1 flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
+                                                <i class="fas fa-search mr-2 group-hover:animate-bounce"></i>View More Jobs
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                                else if (jobResult != null && !string.IsNullOrEmpty(jobResult.ImprovementPlan))
+                                {
+                                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                        <div class="flex items-start">
+                                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                                            <div>
+                                                <h4 class="text-sm font-semibold text-yellow-800 mb-2">Improvement Needed</h4>
+                                                <p class="text-sm text-yellow-700">@jobResult.ImprovementPlan</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center py-8">
+                                        <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-info-circle text-gray-400 text-xl"></i>
+                                        </div>
+                                        <h4 class="text-lg font-semibold text-gray-800 mb-2">No Recommendations Found</h4>
+                                        <p class="text-sm text-gray-600">We couldn't find suitable job matches for your current profile.</p>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+
                     <!-- Error State -->
                     <div id="jobErrorState" class="text-center py-8" style="display: none;">
                         <div class="mb-6">
@@ -256,9 +357,7 @@
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Oops! Something went wrong</h3>
                             <p class="text-gray-600 mb-6">We couldn't generate recommendations right now. Please try again.</p>
                         </div>
-                        <button id="btnRetryJobRecommend" type="button" class="group w-auto max-w-sm mx-auto flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
-                            <i class="fas fa-redo mr-2 group-hover:animate-spin"></i> Try Again
-                        </button>
+                        
                     </div>
                 </div>
             </div>

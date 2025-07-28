@@ -38,15 +38,17 @@ namespace AI_CV_Analyze.Controllers
         [HttpPost]
         public async Task<IActionResult> AnalyzeCV(IFormFile cvFile)
         {
-            //// Xóa dữ liệu session liên quan đến CV cũ
-            //HttpContext.Session.Remove("ResumeAnalysisResult");
-            //HttpContext.Session.Remove("CVContent");
-            //HttpContext.Session.Remove("EditSuggestionsContent");
-            //HttpContext.Session.Remove("CVScoreResult");
-            //HttpContext.Session.Remove("JobRecommendations");
-            //HttpContext.Session.Remove("JobSuggestionResult");
-            //HttpContext.Session.Remove("JobSuggestionSkills");
-            //HttpContext.Session.Remove("FinalCVContent");
+            // Xóa toàn bộ thông tin cũ trong session trước khi phân tích CV mới
+            HttpContext.Session.Remove("ResumeAnalysisResult");
+            HttpContext.Session.Remove("CVContent");
+            HttpContext.Session.Remove("EditSuggestions");
+            HttpContext.Session.Remove("EditSuggestionsContent");
+            HttpContext.Session.Remove("CVScoreResult");
+            HttpContext.Session.Remove("JobRecommendations");
+            HttpContext.Session.Remove("JobSuggestionResult");
+            HttpContext.Session.Remove("JobSuggestionSkills");
+            HttpContext.Session.Remove("JobSuggestionWorkExperience");
+            HttpContext.Session.Remove("FinalCVContent");
 
             if (cvFile == null || cvFile.Length == 0)
             {
@@ -99,12 +101,49 @@ namespace AI_CV_Analyze.Controllers
                 // Lưu đề xuất chỉnh sửa vào Session (nếu cần dùng lại)
                 HttpContext.Session.SetString("EditSuggestions", JsonConvert.SerializeObject(suggestions));
                 HttpContext.Session.SetString("EditSuggestionsContent", Content);
+                
                 // Lấy lại result từ session (hoặc DB nếu cần)
                 var resultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
                 ResumeAnalysisResult result = null;
                 if (!string.IsNullOrEmpty(resultJson))
                 {
                     result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
+                }
+                
+                // Lấy lại kết quả job recommendation từ session để không bị mất
+                var jobSessionJson = HttpContext.Session.GetString("JobRecommendations");
+                if (!string.IsNullOrEmpty(jobSessionJson))
+                {
+                    try
+                    {
+                        var jobSuggestionResult = JsonConvert.DeserializeObject<JobSuggestionResult>(jobSessionJson);
+                        ViewBag.JobRecommendations = jobSuggestionResult;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error deserializing JobSuggestionResult in GetEditSuggestions: {ex.Message}");
+                    }
+                }
+                
+                // Lấy lại kết quả chấm điểm CV từ session để không bị mất
+                var scoreJson = HttpContext.Session.GetString("CVScoreResult");
+                if (!string.IsNullOrEmpty(scoreJson))
+                {
+                    try
+                    {
+                        dynamic score = JsonConvert.DeserializeObject(scoreJson);
+                        ViewBag.LayoutScore = (int?)score.layout ?? 0;
+                        ViewBag.SkillScore = (int?)score.skill ?? 0;
+                        ViewBag.ExperienceScore = (int?)score.experience ?? 0;
+                        ViewBag.EducationScore = (int?)score.education ?? 0;
+                        ViewBag.KeywordScore = (int?)score.keyword ?? 0;
+                        ViewBag.FormatScore = (int?)score.format ?? 0;
+                        ViewBag.TotalScore = (int?)score.total ?? 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error deserializing CVScoreResult in GetEditSuggestions: {ex.Message}");
+                    }
                 }
                 
                 // Debug: Kiểm tra xem suggestions có được lấy không
@@ -147,13 +186,39 @@ namespace AI_CV_Analyze.Controllers
                 if (!string.IsNullOrWhiteSpace(result.Project)) workList.Add(result.Project);
                 workExp = string.Join("\n", workList);
             }
+            
+            // Ưu tiên lấy kết quả job recommendation từ session trước
             JobSuggestionResult jobSuggestionResult = null;
-            if (!string.IsNullOrWhiteSpace(skills))
+            var jobSessionJson = HttpContext.Session.GetString("JobRecommendations");
+            System.Diagnostics.Debug.WriteLine($"JobRecommendations from session: {jobSessionJson}");
+            if (!string.IsNullOrEmpty(jobSessionJson))
             {
-                // Synchronously call the async method for job suggestions (since this is an action method)
-                jobSuggestionResult = _resumeAnalysisService.GetJobSuggestionsAsync(skills, workExp).GetAwaiter().GetResult();
+                try
+                {
+                    jobSuggestionResult = JsonConvert.DeserializeObject<JobSuggestionResult>(jobSessionJson);
+                    System.Diagnostics.Debug.WriteLine($"Successfully deserialized JobSuggestionResult from session");
+                }
+                catch (Exception ex)
+                {
+                    // Nếu deserialize lỗi, tiếp tục tạo mới
+                    System.Diagnostics.Debug.WriteLine($"Error deserializing JobSuggestionResult: {ex.Message}");
+                }
             }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("No JobRecommendations found in session");
+            }
+            
+            // KHÔNG tự động tạo job recommendation mới nếu không có trong session
+            // Chỉ tạo khi người dùng thực sự sử dụng chức năng gợi ý việc làm
+            //if (jobSuggestionResult == null && !string.IsNullOrWhiteSpace(skills))
+            //{
+            //    System.Diagnostics.Debug.WriteLine("Creating new job recommendation from skills");
+            //    jobSuggestionResult = _resumeAnalysisService.GetJobSuggestionsAsync(skills, workExp).GetAwaiter().GetResult();
+            //}
+            
             ViewBag.JobRecommendations = jobSuggestionResult;
+            System.Diagnostics.Debug.WriteLine($"ViewBag.JobRecommendations set to: {(jobSuggestionResult != null ? "not null" : "null")}");
 
             // Lấy điểm từng tiêu chí từ bảng ResumeAnalysis
             bool hasDbScore = false;
@@ -221,11 +286,11 @@ namespace AI_CV_Analyze.Controllers
             ViewBag.ErrorMessage = null;
             var skills = HttpContext.Session.GetString("JobSuggestionSkills");
             var workExp = HttpContext.Session.GetString("JobSuggestionWorkExperience");
-            var resultJson = HttpContext.Session.GetString("JobSuggestionResult");
+            var resultJson = HttpContext.Session.GetString("JobRecommendations");
             var model = new JobSuggestionRequest { Skills = skills, WorkExperience = workExp };
             if (!string.IsNullOrEmpty(resultJson))
             {
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<AI_CV_Analyze.Models.JobSuggestionResult>(resultJson);
+                var result = JsonConvert.DeserializeObject<AI_CV_Analyze.Models.JobSuggestionResult>(resultJson);
                 ViewBag.JobSuggestionResult = result;
             }
             return View(model);
@@ -237,6 +302,13 @@ namespace AI_CV_Analyze.Controllers
             if (string.IsNullOrWhiteSpace(model.Skills))
             {
                 ViewBag.ErrorMessage = "Please enter your skills.";
+                // Nếu có kết quả cũ trong session thì hiển thị lại
+                var resultJson = HttpContext.Session.GetString("JobRecommendations");
+                if (!string.IsNullOrEmpty(resultJson))
+                {
+                    var result = JsonConvert.DeserializeObject<AI_CV_Analyze.Models.JobSuggestionResult>(resultJson);
+                    ViewBag.JobSuggestionResult = result;
+                }
                 return View(model);
             }
 
@@ -244,8 +316,8 @@ namespace AI_CV_Analyze.Controllers
             {
                 var result = await _resumeAnalysisService.GetJobSuggestionsAsync(model.Skills, model.WorkExperience);
                 ViewBag.JobSuggestionResult = result;
-                // Save the full result for GET reload
-                HttpContext.Session.SetString("JobSuggestionResult", Newtonsoft.Json.JsonConvert.SerializeObject(result));
+                // Lưu kết quả gợi ý việc làm vào session với key "JobRecommendations"
+                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result));
                 HttpContext.Session.SetString("JobSuggestionSkills", model.Skills);
                 HttpContext.Session.SetString("JobSuggestionWorkExperience", model.WorkExperience);
                 return View(model);
@@ -253,6 +325,13 @@ namespace AI_CV_Analyze.Controllers
             catch (Exception ex)
             {
                 ViewBag.ErrorMessage = $"Error getting job suggestions: {ex.Message}";
+                // Nếu có kết quả cũ trong session thì hiển thị lại
+                var resultJson = HttpContext.Session.GetString("JobRecommendations");
+                if (!string.IsNullOrEmpty(resultJson))
+                {
+                    var result = JsonConvert.DeserializeObject<AI_CV_Analyze.Models.JobSuggestionResult>(resultJson);
+                    ViewBag.JobSuggestionResult = result;
+                }
                 return View(model);
             }
         }
@@ -412,6 +491,13 @@ namespace AI_CV_Analyze.Controllers
             }).GeneratePdf();
 
             return File(pdfBytes, "application/pdf", "CV_Hoan_Chinh.pdf");
+        }
+
+        [HttpPost]
+        public IActionResult ClearJobRecommendationSession()
+        {
+            HttpContext.Session.Remove("JobRecommendations");
+            return Ok();
         }
 
         //// Xóa hoặc chuyển hướng các action liên quan đến EditSuggestions

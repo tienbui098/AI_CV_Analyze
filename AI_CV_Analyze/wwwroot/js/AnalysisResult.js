@@ -1,4 +1,5 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
+    console.log('AnalysisResult.js loaded and DOM ready');
     // ================ SCROLL ANIMATION SYSTEM ================
     // Animate elements when they come into view (from Home.js)
     const animateOnScroll = function () {
@@ -394,7 +395,7 @@
         });
     }
 
-    // ================ ENHANCED JOB RECOMMENDATION HANDLER ================
+    // ================ JOB RECOMMENDATION HANDLER ================
     const jobRecommendHandler = {
         elements: {
             btnJobRecommend: document.getElementById('btnJobRecommend'),
@@ -402,25 +403,28 @@
             jobInitialState: document.getElementById('jobInitialState'),
             jobLoadingState: document.getElementById('jobLoadingState'),
             jobRecommendResult: document.getElementById('jobRecommendResult'),
+            jobRecommendResultFromSession: document.getElementById('jobRecommendResultFromSession'),
             jobErrorState: document.getElementById('jobErrorState')
         },
         abortController: null,
 
-        showState: function(state) {
+        showState: function(stateName) {
             // Hide all states
-            Object.values(this.elements).forEach(el => {
-                if (el && el.style) el.style.display = 'none';
+            Object.values(this.elements).forEach(element => {
+                if (element && element.style) {
+                    element.style.display = 'none';
+                }
             });
             
-            // Show specific state
-            if (this.elements[state]) {
-                this.elements[state].style.display = 'block';
+            // Show the requested state
+            if (this.elements[stateName]) {
+                this.elements[stateName].style.display = 'block';
             }
         },
 
         startLoading: function() {
-            this.showState('jobLoadingState');
             this.abortController = new AbortController();
+            this.showState('jobLoadingState');
         },
 
         showError: function(message) {
@@ -432,20 +436,12 @@
             this.showState('jobRecommendResult');
             
             let html = '';
-            
             if (data && data.recommendedJob) {
                 html = `
                     <div class="space-y-6">
-                        <!-- Success Header -->
                         <div class="text-center mb-6">
-                            <div class="relative w-16 h-16 mx-auto mb-4">
-                                <div class="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
-                                <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                                </div>
-                                <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-star text-white text-xs"></i>
-                                </div>
+                            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-2xl"></i>
                             </div>
                             <h3 class="text-xl font-bold text-gray-800 mb-2">Perfect Match Found!</h3>
                             <p class="text-gray-600">Based on your skills and experience, we recommend:</p>
@@ -523,6 +519,101 @@
             this.elements.jobRecommendResult.innerHTML = html;
         },
 
+        // New method to show results from session
+        showResultsFromSession: function(data) {
+            console.log('showResultsFromSession called with data:', data);
+            if (this.elements.jobRecommendResultFromSession) {
+                console.log('Found jobRecommendResultFromSession element, displaying results');
+                this.elements.jobRecommendResultFromSession.style.display = 'block';
+                
+                let html = '';
+                if (data && data.recommendedJob) {
+                    html = `
+                        <div class="space-y-6">
+                            <div class="text-center mb-6">
+                                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Perfect Match Found!</h3>
+                                <p class="text-gray-600">Based on your skills and experience, we recommend:</p>
+                            </div>
+
+                            <!-- Job Card -->
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+                                <div class="flex items-start mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-briefcase text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xl font-bold text-gray-900 mb-1">${data.recommendedJob}</h4>
+                                            <p class="text-sm text-gray-600">Recommended for you</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Skills to Improve -->
+                                ${data.missingSkills && data.missingSkills.length > 0 ? `
+                                    <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-lightbulb text-white text-sm"></i>
+                                            </div>
+                                            <h5 class="text-sm font-semibold text-yellow-800">Skills to Improve</h5>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${data.missingSkills.map(skill => `
+                                                <span class="bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium border border-yellow-200 hover:from-yellow-200 hover:to-orange-200 transition-all duration-200">
+                                                    ${skill}
+                                                </span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <a href="/CVAnalysis/JobPrediction" class="group flex-1 flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
+                                    <i class="fas fa-search mr-2 group-hover:animate-bounce"></i>View More Jobs
+                                </a>
+                                <button onclick="jobRecommendHandler.showState('jobInitialState')" class="group flex-1 flex justify-center items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
+                                    <i class="fas fa-redo mr-2 group-hover:animate-spin"></i>Try Again
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (data && data.improvementPlan) {
+                    html = `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-yellow-800 mb-2">Improvement Needed</h4>
+                                    <p class="text-sm text-yellow-700">${data.improvementPlan}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-info-circle text-gray-400 text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2">No Recommendations Found</h4>
+                            <p class="text-sm text-gray-600">We couldn't find suitable job matches for your current profile.</p>
+                        </div>
+                    `;
+                }
+                
+                console.log('Setting HTML content:', html);
+                this.elements.jobRecommendResultFromSession.innerHTML = html;
+            } else {
+                console.log('jobRecommendResultFromSession element not found');
+            }
+        },
+
         handleClick: function() {
             // Get skills and work experience from hidden fields
             const skills = document.getElementById('cvSkills').value || '';
@@ -574,6 +665,21 @@
             if (this.elements.btnRetryJobRecommend) {
                 this.elements.btnRetryJobRecommend.addEventListener('click', () => this.handleClick());
             }
+
+            // Check if there are job recommendations from session and display them
+            const jobRecommendationsFromSession = document.getElementById('jobRecommendationsFromSession');
+            console.log('Checking for job recommendations from session:', jobRecommendationsFromSession);
+            if (jobRecommendationsFromSession && jobRecommendationsFromSession.value) {
+                try {
+                    const sessionData = JSON.parse(jobRecommendationsFromSession.value);
+                    console.log('Found job recommendations from session:', sessionData);
+                    this.showResultsFromSession(sessionData);
+                } catch (error) {
+                    console.error('Error parsing job recommendations from session:', error);
+                }
+            } else {
+                console.log('No job recommendations found in session');
+            }
         }
     };
 
@@ -583,11 +689,11 @@
     const cancelBtn = document.getElementById('cancelAnalyzeBtn');
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function () {
-            if (abortController) abortController.abort();
+            if (jobRecommendHandler.abortController) jobRecommendHandler.abortController.abort();
             loadingModal.hide();
-            if (btnJobRecommend) {
-                btnJobRecommend.disabled = false;
-                btnJobRecommend.textContent = 'Job Recommend';
+            if (jobRecommendHandler.elements.btnJobRecommend) {
+                jobRecommendHandler.elements.btnJobRecommend.disabled = false;
+                jobRecommendHandler.elements.btnJobRecommend.textContent = 'Get Smart Recommendations';
             }
             if (loadingText) loadingText.textContent = 'The AI system is processing and generating edit suggestions. Please wait a moment...';
         });
@@ -758,4 +864,17 @@
             if (progressBar) progressBar.style.width = '0%';
         });
     }
+
+    // Xử lý nút Try Again cho gợi ý công việc bằng event delegation
+    // Đảm bảo luôn hoạt động kể cả khi nút được render lại động
+
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.id === 'btnJobTryAgain') {
+            const resultDiv = document.getElementById('jobRecommendResultFromSession');
+            const initialDiv = document.getElementById('jobInitialState');
+            if (resultDiv) resultDiv.style.display = 'none';
+            if (initialDiv) initialDiv.style.display = 'block';
+            fetch('/CVAnalysis/ClearJobRecommendationSession', { method: 'POST' });
+        }
+    });
 });
