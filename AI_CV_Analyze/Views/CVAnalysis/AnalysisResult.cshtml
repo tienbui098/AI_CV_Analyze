@@ -389,7 +389,7 @@
                         <form id="editSuggestionsForm" method="post" asp-action="GetEditSuggestions" class="space-y-4 mb-6">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="Content" value="@(Model.Content ?? (ViewBag.CVContent ?? ""))" />
-                            <button type="submit" class="w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect pulse-animation">
+                            <button type="submit" class="w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect pulse-animation" @(string.IsNullOrEmpty(ViewBag.Suggestions) ? "" : "disabled style='opacity:0.5;cursor:not-allowed;'")>
                                 <i class="fas fa-magic mr-2"></i> Get CV Edit Suggestions from AI
                             </button>
                         </form>
