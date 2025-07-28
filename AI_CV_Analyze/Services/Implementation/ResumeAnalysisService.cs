@@ -337,29 +337,6 @@ CV:
                 analysisResult.Content = result.Content;
                 ExtractCustomFields(result, analysisResult);
                 analysisResult.AnalysisStatus = string.IsNullOrEmpty(analysisResult.ErrorMessage) ? "Completed" : "Failed";
-
-                // --- Gọi AI chấm điểm từng tiêu chí ---
-                var (layout, skill, experience, education, keyword, format, rawJson) = await AnalyzeScoreWithOpenAI(analysisResult.Content);
-                if (!skipDb && resume != null)
-                {
-                    // Lưu vào bảng ResumeAnalysis
-                    var resumeAnalysis = new ResumeAnalysis
-                    {
-                        ResumeId = resume.ResumeId,
-                        Score = layout + skill + experience + education + keyword + format, // Tổng điểm
-                        LayoutScore = layout,
-                        SkillScore = skill,
-                        ExperienceScore = experience,
-                        EducationScore = education,
-                        KeywordScore = keyword,
-                        FormatScore = format,
-                        Suggestions = rawJson, // Có thể lưu lại JSON gốc để debug/hiển thị
-                        AnalysisDate = DateTime.UtcNow
-                    };
-                    _dbContext.ResumeAnalysis.Add(resumeAnalysis);
-                    await _dbContext.SaveChangesAsync();
-                }
-                // --- END ---
             }
             catch (RequestFailedException ex)
             {
