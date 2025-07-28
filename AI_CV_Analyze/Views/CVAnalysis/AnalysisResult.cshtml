@@ -31,27 +31,27 @@
         @if (Model != null && !string.IsNullOrEmpty(Model.Content))
         {
             <div class="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full mb-4 shadow-md float-animation animate-fade-in-up animation-delay-200">
-                <i class="fas fa-check-circle mr-2"></i>
-                <span>Analysis complete</span>
-            </div>
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>Analysis complete</span>
+        </div>
             <h1 class="text-3xl font-bold text-gray-900 mb-2 animate-fade-in-up animation-delay-300">CV Analysis Results</h1>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto animate-fade-in-up animation-delay-400">The AI system has analyzed your CV and provided detailed evaluations</p>
 
             <!-- File info cards with enhanced hover -->
             <div class="flex flex-wrap justify-center gap-3 mt-6 animate-fade-in-up animation-delay-500">
                 <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
-                    <i class="fas fa-file-alt text-blue-500 mr-2"></i>
-                    <span class="text-sm font-medium text-gray-700 truncate max-w-xs">@Model.FileName</span>
-                </div>
-                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
-                    <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
-                    <span class="text-sm font-medium text-gray-700">@Model.AnalysisDate.ToString("dd/MM/yyyy HH:mm")</span>
-                </div>
-                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
-                    <i class="fas fa-robot text-blue-500 mr-2"></i>
-                    <span class="text-sm font-medium text-gray-700">AI Engine 2.0</span>
-                </div>
+                <i class="fas fa-file-alt text-blue-500 mr-2"></i>
+                <span class="text-sm font-medium text-gray-700 truncate max-w-xs">@Model.FileName</span>
             </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
+                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
+                <span class="text-sm font-medium text-gray-700">@Model.AnalysisDate.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-blue-200 transition-all">
+                <i class="fas fa-robot text-blue-500 mr-2"></i>
+                <span class="text-sm font-medium text-gray-700">AI Engine 2.0</span>
+            </div>
+        </div>
         }
         else
         {
@@ -130,23 +130,134 @@
                 </div>
             </div>
 
-            <!-- Job Recommendation Block with enhanced hover -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-200">
-                <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
-                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-briefcase text-blue-500 mr-3"></i>Suitable Jobs
-                    </h2>
+            <!-- Advanced Job Recommendation Block -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 animate-fade-in-up animation-delay-200">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-5 border-b border-blue-400">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Suitable Jobs</h2>
+                                <p class="text-blue-100 text-sm">AI-powered job matching based on your CV</p>
+                            </div>
+                        </div>
+                        <div class="hidden sm:block">
+                            <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-white text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="p-6">
                     <!-- Hidden fields to pass model data to JavaScript -->
                     <input type="hidden" id="cvSkills" value="@Model.Skills" />
                     <input type="hidden" id="cvExperience" value="@Model.Experience" />
                     <input type="hidden" id="cvProject" value="@Model.Project" />
+                    
+                    <!-- Initial State -->
+                    <div id="jobInitialState" class="text-center py-8">
+                        <div class="mb-8">
+                            <div class="relative w-20 h-20 mx-auto mb-6">
+                                <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full animate-pulse"></div>
+                                <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                                    <i class="fas fa-search text-blue-600 text-2xl"></i>
+                                </div>
+                                <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-sparkles text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Discover Your Perfect Job Match</h3>
+                            <p class="text-gray-600 mb-6 max-w-sm mx-auto">Our AI will analyze your CV and find the best job opportunities that match your skills and experience</p>
+                            
+                            <!-- Feature highlights - Compact Vertical Version -->
+                            <div class="flex flex-col gap-3 mb-6">
+                                <div class="feature-card flex items-start p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-chart-line text-white text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-700">Smart Matching</p>
+                                        <p class="text-xs text-gray-500">AI-powered job matching</p>
+                                    </div>
+                                </div>
+                                <div class="feature-card flex items-start p-3 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-lightbulb text-white text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-700">Skill Analysis</p>
+                                        <p class="text-xs text-gray-500">Deep skill assessment</p>
+                                    </div>
+                                </div>
+                                <div class="feature-card flex items-start p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-rocket text-white text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-700">Career Growth</p>
+                                        <p class="text-xs text-gray-500">Path to success</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="btnJobRecommend" type="button" class="group relative w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <span class="relative flex items-center">
+                                <i class="fas fa-magic mr-2 text-sm group-hover:animate-spin"></i> 
+                                Get Smart Recommendations
+                            </span>
+                        </button>
+                    </div>
 
-                    <div class="text-center py-6">
-                        <div id="jobRecommendResult" class="mb-4"></div>
-                        <button id="btnJobRecommend" type="button" class="w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:-translate-y-0.5 btn-hover-effect">
-                            <i class="fas fa-magic mr-2"></i> Job Recommendation
+                    <!-- Loading State -->
+                    <div id="jobLoadingState" class="text-center py-8" style="display: none;">
+                        <div class="mb-6">
+                            <div class="relative w-16 h-16 mx-auto mb-4">
+                                <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full animate-pulse"></div>
+                                <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                                    <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Analyzing Your Profile</h3>
+                            <p class="text-gray-600 mb-4">Our AI is finding the perfect job matches for you...</p>
+                            
+                            <!-- Progress steps -->
+                            <div class="space-y-2 mb-6">
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                    <span>Analyzing skills and experience</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3 animate-pulse"></div>
+                                    <span>Matching with job market</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-400">
+                                    <div class="w-2 h-2 bg-gray-300 rounded-full mr-3"></div>
+                                    <span>Generating recommendations</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results State -->
+                    <div id="jobRecommendResult" class="space-y-6" style="display: none;">
+                        <!-- Results will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="jobErrorState" class="text-center py-8" style="display: none;">
+                        <div class="mb-6">
+                            <div class="relative w-16 h-16 mx-auto mb-4">
+                                <div class="absolute inset-0 bg-gradient-to-br from-red-400 to-pink-500 rounded-full animate-pulse"></div>
+                                <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Oops! Something went wrong</h3>
+                            <p class="text-gray-600 mb-6">We couldn't generate recommendations right now. Please try again.</p>
+                        </div>
+                        <button id="btnRetryJobRecommend" type="button" class="group w-auto max-w-sm mx-auto flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
+                            <i class="fas fa-redo mr-2 group-hover:animate-spin"></i> Try Again
                         </button>
                     </div>
                 </div>
@@ -208,9 +319,9 @@
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center">
                             <div class="ai-icon bg-blue-50 text-blue-600 p-3 rounded-xl mr-4 hover:bg-blue-100 transition-all">
-                                <i class="fas fa-robot text-2xl"></i>
-                            </div>
-                            <h2 class="text-2xl font-bold text-gray-800">Edit suggestions from AI</h2>
+                            <i class="fas fa-robot text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Edit suggestions from AI</h2>
                         </div>
                         <!-- Copy button with hover effect -->
                         @if (!string.IsNullOrEmpty(ViewBag.Suggestions))
@@ -313,15 +424,15 @@
                     }
 
                     <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
-                        <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-100 hover:shadow-sm transition-all transform hover:-translate-y-0.5">
+                        @* <a href="@Url.Action("AnalysisResult", "CVAnalysis")" class="btn-secondary text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-100 hover:shadow-sm transition-all transform hover:-translate-y-0.5">
                             <i class="fas fa-arrow-left mr-3 transition-transform duration-300 group-hover:-translate-x-1"></i> Analysis Result
-                        </a>
+                        </a> *@
                         <a href="@Url.Action("Index", "Home")" class="btn-primary bg-blue-600 text-white font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-blue-700 hover:shadow-lg transition-all transform hover:-translate-y-0.5 btn-hover-effect">
                             <i class="fas fa-home mr-3"></i> Home
                         </a>
                     </div>
                 </div>
-            </div>
+             </div>
         </div>
 
         <!-- RIGHT COLUMN -->
@@ -331,7 +442,7 @@
                 var overviewText = hasOverall ? Model.OverallAnalysis.Replace("\n", " ").Replace("<br>", " ") : "";
                 var isLongOverview = hasOverall && overviewText.Length > 150;
                 var overviewSummary = isLongOverview ? overviewText.Substring(0, 150) + "..." : overviewText;
-
+                
                 var hasEducation = !string.IsNullOrEmpty(Model.Education) || !string.IsNullOrEmpty(Model.Course) || !string.IsNullOrEmpty(Model.Certificate);
                 var educationText = "";
                 if (hasEducation)
@@ -342,27 +453,27 @@
                 }
                 var isLongEducation = hasEducation && educationText.Length > 150;
                 var educationSummary = isLongEducation ? educationText.Substring(0, 150) + "..." : educationText;
-
+                
                 var hasAchievement = !string.IsNullOrEmpty(Model.Achievement);
                 var achievementText = hasAchievement ? Model.Achievement.Replace("\n", " ").Replace("\r\n", " ") : "";
                 var isLongAchievement = hasAchievement && achievementText.Length > 150;
                 var achievementSummary = isLongAchievement ? achievementText.Substring(0, 150) + "..." : achievementText;
-
+                
                 var hasExperience = !string.IsNullOrEmpty(Model.Experience);
                 var experienceText = hasExperience ? Model.Experience.Replace("\n", " ").Replace("\r\n", " ") : "";
                 var isLongExperience = hasExperience && experienceText.Length > 150;
                 var experienceSummary = isLongExperience ? experienceText.Substring(0, 150) + "..." : experienceText;
-
+                
                 var hasProject = !string.IsNullOrEmpty(Model.Project);
                 var projectText = hasProject ? Model.Project.Replace("\n", " ").Replace("<br>", " ") : "";
                 var isLongProject = hasProject && projectText.Length > 150;
                 var projectSummary = isLongProject ? projectText.Substring(0, 150) + "..." : projectText;
             }
-
+            
             @if (hasOverall)
             {
                 <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-100"
-                     data-full-content="@Html.Raw(Model.OverallAnalysis.Replace("\n", "<br>"))"
+                     data-full-content="@Html.Raw(Model.OverallAnalysis.Replace("\n", "<br>"))" 
                      data-title="Profile Overview">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
@@ -398,17 +509,17 @@
                                 <h3 class="text-lg font-semibold text-gray-700 mb-2 hover:text-blue-600 transition-colors">Full Name</h3>
                                 <div class="text-gray-700">
                                     @Model.Name
-                                </div>
-                            </div>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.Email))
-                        {
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Email))
+            {
                             <div class="hover:bg-blue-50 p-2 rounded-lg transition-colors">
                                 <h3 class="text-lg font-semibold text-gray-700 mb-2 hover:text-blue-600 transition-colors">Email</h3>
                                 <div class="text-gray-700">
                                     @Model.Email
                                 </div>
-                            </div>
+                    </div>
                         }
                     </div>
                 </div>
@@ -520,7 +631,7 @@
             @if (hasProject)
             {
                 <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-700"
-                     data-full-content="@Html.Raw(Model.Project.Replace("\n", "<br>"))"
+                     data-full-content="@Html.Raw(Model.Project.Replace("\n", "<br>"))" 
                      data-title="Projects">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
