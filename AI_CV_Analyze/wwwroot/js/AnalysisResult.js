@@ -16,40 +16,8 @@
 let jobRecommendHandler;
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('AnalysisResult.js loaded and DOM ready');
     
-    // Debug: Check for job-related elements
-    console.log('=== DEBUG: Checking for job-related elements ===');
-    console.log('btnJobRecommend:', document.getElementById('btnJobRecommend'));
-    console.log('jobInitialState:', document.getElementById('jobInitialState'));
-    console.log('jobLoadingState:', document.getElementById('jobLoadingState'));
-    console.log('jobRecommendResult:', document.getElementById('jobRecommendResult'));
-    console.log('jobRecommendResultFromSession:', document.getElementById('jobRecommendResultFromSession'));
-    console.log('jobErrorState:', document.getElementById('jobErrorState'));
-    console.log('cvSkills:', document.getElementById('cvSkills'));
-    console.log('cvExperience:', document.getElementById('cvExperience'));
-    console.log('cvProject:', document.getElementById('cvProject'));
-    console.log('=== END DEBUG ===');
-    
-    // Debug: Check all buttons on the page
-    console.log('=== DEBUG: All buttons on the page ===');
-    const allButtons = document.querySelectorAll('button');
-    console.log('Total buttons found:', allButtons.length);
-    allButtons.forEach((button, index) => {
-        console.log(`Button ${index}: id="${button.id}", text="${button.textContent.trim()}"`);
-    });
-    console.log('=== END BUTTON DEBUG ===');
-    
-    // Test button event listener
-    const testButton = document.getElementById('testButton');
-    if (testButton) {
-        testButton.addEventListener('click', function() {
-            console.log('Test button clicked!');
-            alert('JavaScript is working! Test button clicked.');
-        });
-    } else {
-        console.log('Test button not found');
-    }
+
     
     // ================ XỬ LÝ GỢI Ý CÔNG VIỆC ================
     // Quản lý việc gợi ý công việc phù hợp dựa trên CV
@@ -282,8 +250,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 
                 this.elements.jobRecommendResultFromSession.innerHTML = html; // Cập nhật nội dung HTML cho element session
-            } else {
-                console.log('jobRecommendResultFromSession element not found'); // Log khi không tìm thấy element
             }
         },
 
@@ -1664,8 +1630,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 
                 this.elements.jobRecommendResultFromSession.innerHTML = html; // Cập nhật nội dung HTML cho element session
-            } else {
-                console.log('jobRecommendResultFromSession element not found'); // Log khi không tìm thấy element
             }
         },
 
@@ -2013,17 +1977,5 @@ document.addEventListener('DOMContentLoaded', function () {
         initializeCVScoringState();
     }
 
-    // Debug: Check if jobRecommendHandler is properly initialized
-    console.log('=== DEBUG: jobRecommendHandler status ===');
-    console.log('jobRecommendHandler object:', jobRecommendHandler);
-    console.log('jobRecommendHandler.handleClick exists:', typeof jobRecommendHandler.handleClick);
-    console.log('jobRecommendHandler.elements:', jobRecommendHandler.elements);
-    console.log('=== END jobRecommendHandler DEBUG ===');
-    
-    // Test the handler after initialization
-    if (jobRecommendHandler && jobRecommendHandler.handleClick) {
-        console.log('jobRecommendHandler is properly initialized and ready to use');
-    } else {
-        console.error('jobRecommendHandler is not properly initialized');
-    }
+
 });
