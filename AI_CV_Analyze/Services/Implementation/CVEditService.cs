@@ -128,7 +128,7 @@ namespace AI_CV_Analyze.Services.Implementation
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _openAIKey);
 
-            string prompt = $@"You are an HR expert. Please revise the following CV according to the suggestions to create a complete, professional, and optimized version. Only return the edited CV content without any additional explanations.Edit suggestions: {suggestions} Original CV: {cvContent}";
+            string prompt = $@"You are a human resources professional. Please edit the following CV according to the suggestions to create a complete, professional and optimized version. Only send back the edited CV content without further explanation, do not use punctuation or special characters to write the CV. Editing suggestions: {suggestions} Original CV: {cvContent}";
 
             var requestBody = new
             {
