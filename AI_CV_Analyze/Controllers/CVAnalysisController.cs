@@ -257,7 +257,6 @@ namespace AI_CV_Analyze.Controllers
             //}
             
             ViewBag.JobRecommendations = jobSuggestionResult;
-            System.Diagnostics.Debug.WriteLine($"ViewBag.JobRecommendations set to: {(jobSuggestionResult != null ? "not null" : "null")}");
 
             // Lấy điểm từng tiêu chí từ bảng ResumeAnalysis
             bool hasDbScore = false;
@@ -309,9 +308,7 @@ namespace AI_CV_Analyze.Controllers
                 }
                 ViewBag.CVContent = content;
                 
-                // Debug: Kiểm tra ViewBag
-                System.Diagnostics.Debug.WriteLine($"ViewBag.Suggestions: {ViewBag.Suggestions}");
-                System.Diagnostics.Debug.WriteLine($"ViewBag.CVContent: {ViewBag.CVContent}");
+
             }
             return View(result);
         }
