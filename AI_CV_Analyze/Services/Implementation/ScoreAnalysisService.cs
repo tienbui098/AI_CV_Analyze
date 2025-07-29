@@ -45,15 +45,15 @@ namespace AI_CV_Analyze.Services.Implementation
 
             string jsonExample = "{\"layout\": số, \"skill\": số, \"experience\": số, \"education\": số, \"keyword\": số, \"format\": số}";
             string prompt = @"Bạn là chuyên gia nhân sự. Hãy chấm điểm CV dưới đây theo các tiêu chí sau (0-10, số nguyên, càng cao càng tốt):
-- layout: Bố cục & trình bày
-- skill: Kỹ năng
-- experience: Kinh nghiệm (nếu không có thì là project)
-- education: Học vấn
-- keyword: Từ khóa phù hợp
-- format: Hình thức/định dạng
-Trả về kết quả đúng chuẩn JSON như sau: " + jsonExample + @"
-CV:
-" + cvContent;
+                                - layout: Bố cục & trình bày
+                                - skill: Kỹ năng
+                                - experience: Kinh nghiệm (nếu không có thì là project)
+                                - education: Học vấn
+                                - keyword: Từ khóa phù hợp
+                                - format: Hình thức/định dạng
+                                Trả về kết quả đúng chuẩn JSON như sau: " + jsonExample + @"
+                                CV:
+                                " + cvContent;
 
             var requestBody = new
             {
