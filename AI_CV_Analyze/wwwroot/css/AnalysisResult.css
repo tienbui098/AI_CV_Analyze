@@ -914,6 +914,742 @@ html {
     transform: translateY(-1px);
 }
 
+/* --- Enhanced CV Scoring Styles --- */
+.score-item {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.score-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.score-item:hover::before {
+    left: 100%;
+}
+
+.score-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress bar animations */
+.score-item .bg-gradient-to-r {
+    transition: width 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.score-item .bg-gradient-to-r::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Enhanced button hover effects */
+.btn-hover-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hover-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn-hover-effect:hover::after {
+    left: 100%;
+}
+
+/* Score level indicators */
+.score-level-excellent {
+    color: #059669;
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    border-color: #10b981;
+}
+
+.score-level-good {
+    color: #2563eb;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    border-color: #3b82f6;
+}
+
+.score-level-average {
+    color: #d97706;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-color: #f59e0b;
+}
+
+.score-level-needs-improvement {
+    color: #dc2626;
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    border-color: #ef4444;
+}
+
+/* Enhanced loading animations */
+@keyframes scorePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+.score-loading-animation {
+    animation: scorePulse 2s ease-in-out infinite;
+}
+
+/* Score reveal animation */
+@keyframes scoreReveal {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.score-reveal {
+    animation: scoreReveal 0.6s ease-out forwards;
+}
+
+/* Enhanced header animations */
+@keyframes headerGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+    }
+}
+
+.header-glow {
+    animation: headerGlow 3s ease-in-out infinite;
+}
+
+/* Additional enhanced effects for CV Scoring */
+.score-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.score-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.8s ease;
+}
+
+.score-item:hover::after {
+    left: 100%;
+}
+
+/* Enhanced progress bar with glow effect */
+.score-item .bg-gradient-to-r {
+    position: relative;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.score-item:hover .bg-gradient-to-r {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+/* Icon animations */
+.score-item .w-8 {
+    transition: all 0.3s ease;
+}
+
+.score-item:hover .w-8 {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Score text animations */
+.score-item .font-bold {
+    transition: all 0.3s ease;
+}
+
+.score-item:hover .font-bold {
+    transform: scale(1.05);
+}
+
+/* Enhanced button effects */
+#btnScoreCV {
+    position: relative;
+    overflow: hidden;
+}
+
+#btnScoreCV::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+#btnScoreCV:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Loading state enhancements */
+#score-loading {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+/* Error state enhancements */
+#score-error {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border-radius: 1rem;
+    border: 1px solid #fecaca;
+}
+
+/* Icon fallback and enhancements */
+.score-item .fas {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+/* Fallback for Font Awesome icons */
+.score-item .fas.fa-graduation-cap::before {
+    content: "🎓";
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+.score-item .fas.fa-file-alt::before {
+    content: "📄";
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+.score-item .fas.fa-palette::before {
+    content: "🎨";
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+.score-item .fas.fa-tools::before {
+    content: "🔧";
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+.score-item .fas.fa-briefcase::before {
+    content: "💼";
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+.score-item .fas.fa-key::before {
+    content: "🔑";
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+.score-item .fas.fa-trophy::before {
+    content: "🏆";
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+/* Ensure icon containers have proper dimensions */
+.score-item .w-6, .score-item .w-8 {
+    min-width: 2rem;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Enhanced icon styling */
+.score-item span[style*="font-size: 14px"] {
+    font-size: 14px !important;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Ensure gradient backgrounds are visible */
+.score-item .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+}
+
+/* Specific color overrides for better visibility */
+.score-item .from-blue-500.to-blue-600 {
+    background: linear-gradient(to bottom right, #3b82f6, #2563eb) !important;
+}
+
+.score-item .from-green-500.to-green-600 {
+    background: linear-gradient(to bottom right, #10b981, #059669) !important;
+}
+
+.score-item .from-purple-500.to-purple-600 {
+    background: linear-gradient(to bottom right, #8b5cf6, #7c3aed) !important;
+}
+
+.score-item .from-orange-500.to-orange-600 {
+    background: linear-gradient(to bottom right, #f97316, #ea580c) !important;
+}
+
+.score-item .from-pink-500.to-pink-600 {
+    background: linear-gradient(to bottom right, #ec4899, #db2777) !important;
+}
+
+.score-item .from-teal-500.to-teal-600 {
+    background: linear-gradient(to bottom right, #14b8a6, #0d9488) !important;
+}
+
+/* Emoji styling for better visibility */
+.score-item span:contains("🎨"),
+.score-item span:contains("🔧"),
+.score-item span:contains("💼"),
+.score-item span:contains("🎓"),
+.score-item span:contains("🔑"),
+.score-item span:contains("📄"),
+.score-item span:contains("🏆") {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Alternative approach for emoji styling */
+.score-item .text-white {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ================ ENHANCED CV SCORING ANIMATIONS ================ */
+
+/* Score item hover animations */
+.score-item {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.score-item:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: currentColor;
+}
+
+/* Shimmer effect on hover */
+.score-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.8s ease;
+    z-index: 1;
+}
+
+.score-item:hover::before {
+    left: 100%;
+}
+
+/* Icon container animations */
+.score-item .w-8 {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+}
+
+.score-item:hover .w-8 {
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Emoji animations */
+.score-item span[style*="font-size: 16px"] {
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.score-item:hover span[style*="font-size: 16px"] {
+    transform: scale(1.2);
+    animation: emojiBounce 0.6s ease;
+}
+
+@keyframes emojiBounce {
+    0%, 100% { transform: scale(1.2); }
+    50% { transform: scale(1.4); }
+}
+
+/* Score text animations */
+.score-item .font-bold {
+    transition: all 0.3s ease;
+}
+
+.score-item:hover .font-bold {
+    transform: scale(1.1);
+    color: currentColor;
+}
+
+/* Progress bar animations */
+.score-item .bg-gradient-to-r {
+    transition: width 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.score-item:hover .bg-gradient-to-r {
+    animation: progressPulse 2s infinite;
+}
+
+@keyframes progressPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Enhanced button hover effects */
+#btnScoreCV {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#btnScoreCV::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+#btnScoreCV:hover::before {
+    width: 400px;
+    height: 400px;
+}
+
+#btnScoreCV:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+}
+
+/* Button icon animation */
+#btnScoreCV i {
+    transition: all 0.3s ease;
+}
+
+#btnScoreCV:hover i {
+    transform: rotate(360deg) scale(1.2);
+}
+
+/* Score table reveal animation */
+#cv-score-table {
+    animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Individual score item entrance animation */
+.score-item {
+    animation: fadeInScale 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.score-item:nth-child(1) { animation-delay: 0.1s; }
+.score-item:nth-child(2) { animation-delay: 0.2s; }
+.score-item:nth-child(3) { animation-delay: 0.3s; }
+.score-item:nth-child(4) { animation-delay: 0.4s; }
+.score-item:nth-child(5) { animation-delay: 0.5s; }
+.score-item:nth-child(6) { animation-delay: 0.6s; }
+.score-item:nth-child(7) { animation-delay: 0.7s; }
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Loading state animations */
+#score-loading {
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+    }
+}
+
+/* Error state animations */
+#score-error {
+    animation: shakeError 0.5s ease-in-out;
+}
+
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Header glow effect */
+#cv-score-block .bg-gradient-to-br {
+    position: relative;
+    overflow: hidden;
+}
+
+#cv-score-block .bg-gradient-to-br::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: headerShimmer 3s infinite;
+}
+
+@keyframes headerShimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Score level indicator animations */
+.score-item:last-child .text-xs {
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.score-item:last-child:hover .text-xs {
+    transform: scale(1.1);
+    animation: levelPulse 1s ease-in-out;
+}
+
+@keyframes levelPulse {
+    0%, 100% { transform: scale(1.1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Ripple effect for button */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Floating animation for header */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Enhanced score reveal animation */
+.score-reveal {
+    animation: scoreReveal 0.8s ease-out;
+}
+
+@keyframes scoreReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateY(-5px) scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Score number counting animation */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.score-item .font-bold {
+    animation: countUp 0.5s ease-out;
+}
+
+/* Enhanced hover states for different score levels */
+.score-item:hover .bg-gradient-to-r.from-blue-500.to-blue-600 {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.score-item:hover .bg-gradient-to-r.from-green-500.to-green-600 {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.score-item:hover .bg-gradient-to-r.from-purple-500.to-purple-600 {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.score-item:hover .bg-gradient-to-r.from-orange-500.to-orange-600 {
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+}
+
+.score-item:hover .bg-gradient-to-r.from-pink-500.to-pink-600 {
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+}
+
+.score-item:hover .bg-gradient-to-r.from-teal-500.to-teal-600 {
+    box-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+}
+
+/* Success animation for high scores */
+.score-item.high-score {
+    animation: successGlow 2s ease-in-out;
+}
+
+@keyframes successGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+    }
+}
+
+/* Loading spinner enhancement */
+#score-loading .animate-spin {
+    animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
+}
+
+/* Enhanced error state */
+#score-error {
+    animation: shakeError 0.5s ease-in-out, pulseGlow 2s infinite;
+}
+
+/* Score level color transitions */
+.score-level-excellent {
+    transition: all 0.3s ease;
+}
+
+.score-level-excellent:hover {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+    transform: scale(1.05);
+}
+
+.score-level-good {
+    transition: all 0.3s ease;
+}
+
+.score-level-good:hover {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+    transform: scale(1.05);
+}
+
+.score-level-average {
+    transition: all 0.3s ease;
+}
+
+.score-level-average:hover {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    transform: scale(1.05);
+}
+
+.score-level-needs-improvement {
+    transition: all 0.3s ease;
+}
+
+.score-level-needs-improvement:hover {
+    background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
+    transform: scale(1.05);
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+    .score-item {
+        padding: 1rem;
+    }
+    
+    .score-item .w-8 {
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    #btnScoreCV {
+        padding: 1rem 1.5rem;
+        font-size: 0.875rem;
+    }
+}
+
 /* --- Content Detail Modal Styles --- */
 #contentDetailModal {
     opacity: 0;
