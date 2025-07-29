@@ -29,6 +29,6 @@ namespace AI_CV_Analyze.Models
 
         // Navigation property
         [ForeignKey("ResumeId")]
-        public virtual Resume Resume { get; set; }
+        public virtual Resume? Resume { get; set; }
     }
 } 

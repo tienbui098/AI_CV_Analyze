@@ -108,6 +108,20 @@ namespace AI_CV_Analyze.Services
                     ErrorMessage = $"Error processing file: {ex.Message}",
                     ResumeId = resumeId
                 };
+                
+                // Lưu error result vào database nếu không skip
+                if (!skipDb && resumeId > 0)
+                {
+                    try
+                    {
+                        errorResult = await _analysisResultRepository.CreateAsync(errorResult);
+                    }
+                    catch (Exception dbEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error saving error result: {dbEx.Message}");
+                    }
+                }
+                
                 return errorResult;
             }
 
@@ -129,6 +143,20 @@ namespace AI_CV_Analyze.Services
             {
                 analysisResult.AnalysisStatus = "Failed";
                 analysisResult.ErrorMessage = $"Analysis error: {ex.Message}";
+            }
+
+            // Lưu vào database nếu không skip
+            if (!skipDb && resumeId > 0)
+            {
+                try
+                {
+                    analysisResult = await _analysisResultRepository.CreateAsync(analysisResult);
+                }
+                catch (Exception ex)
+                {
+                    // Log error nhưng không throw để không ảnh hưởng đến flow chính
+                    System.Diagnostics.Debug.WriteLine($"Error saving ResumeAnalysisResult: {ex.Message}");
+                }
             }
 
             return analysisResult;

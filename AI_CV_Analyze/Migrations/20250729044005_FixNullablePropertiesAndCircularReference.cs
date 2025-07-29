@@ -5,7 +5,7 @@
 namespace AI_CV_Analyze.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate2 : Migration
+    public partial class FixNullablePropertiesAndCircularReference : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
