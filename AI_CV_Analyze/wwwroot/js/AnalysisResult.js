@@ -12,9 +12,388 @@
 // 7. Copy Functionality - Sao chép nội dung vào clipboard
 // 8. Enhanced UI Effects - Hiệu ứng hover, click, particle
 
+// Global jobRecommendHandler variable
+let jobRecommendHandler;
+
 document.addEventListener('DOMContentLoaded', function () {
     console.log('AnalysisResult.js loaded and DOM ready');
     
+    // Debug: Check for job-related elements
+    console.log('=== DEBUG: Checking for job-related elements ===');
+    console.log('btnJobRecommend:', document.getElementById('btnJobRecommend'));
+    console.log('jobInitialState:', document.getElementById('jobInitialState'));
+    console.log('jobLoadingState:', document.getElementById('jobLoadingState'));
+    console.log('jobRecommendResult:', document.getElementById('jobRecommendResult'));
+    console.log('jobRecommendResultFromSession:', document.getElementById('jobRecommendResultFromSession'));
+    console.log('jobErrorState:', document.getElementById('jobErrorState'));
+    console.log('cvSkills:', document.getElementById('cvSkills'));
+    console.log('cvExperience:', document.getElementById('cvExperience'));
+    console.log('cvProject:', document.getElementById('cvProject'));
+    console.log('=== END DEBUG ===');
+    
+    // Debug: Check all buttons on the page
+    console.log('=== DEBUG: All buttons on the page ===');
+    const allButtons = document.querySelectorAll('button');
+    console.log('Total buttons found:', allButtons.length);
+    allButtons.forEach((button, index) => {
+        console.log(`Button ${index}: id="${button.id}", text="${button.textContent.trim()}"`);
+    });
+    console.log('=== END BUTTON DEBUG ===');
+    
+    // Test button event listener
+    const testButton = document.getElementById('testButton');
+    if (testButton) {
+        testButton.addEventListener('click', function() {
+            console.log('Test button clicked!');
+            alert('JavaScript is working! Test button clicked.');
+        });
+    } else {
+        console.log('Test button not found');
+    }
+    
+    // ================ XỬ LÝ GỢI Ý CÔNG VIỆC ================
+    // Quản lý việc gợi ý công việc phù hợp dựa trên CV
+    // Mục đích: Sử dụng AI để phân tích kỹ năng và kinh nghiệm, sau đó gợi ý công việc phù hợp
+    jobRecommendHandler = {
+        // Các element cần thiết cho job recommendation
+        // Lưu trữ tất cả các element DOM cần thiết để tránh query nhiều lần
+        elements: {
+            btnJobRecommend: document.getElementById('btnJobRecommend'), // Nút gợi ý công việc (trạng thái ban đầu)
+            btnRetryJobRecommend: document.getElementById('btnRetryJobRecommend'), // Nút thử lại (khi có lỗi)
+            jobInitialState: document.getElementById('jobInitialState'), // Trạng thái ban đầu (hiển thị nút "Get Recommendations")
+            jobLoadingState: document.getElementById('jobLoadingState'), // Trạng thái loading (spinner + text)
+            jobRecommendResult: document.getElementById('jobRecommendResult'), // Kết quả gợi ý từ API
+            jobRecommendResultFromSession: document.getElementById('jobRecommendResultFromSession'), // Kết quả từ session (khi reload trang)
+            jobErrorState: document.getElementById('jobErrorState') // Trạng thái lỗi (thông báo lỗi)
+        },
+        abortController: null, // AbortController để hủy request khi cần
+
+        // Hiển thị trạng thái cụ thể và ẩn các trạng thái khác
+        // Mục đích: Quản lý việc chuyển đổi giữa các trạng thái UI (initial, loading, result, error)
+        showState: function(stateName) {
+            // Ẩn tất cả các trạng thái trước khi hiển thị trạng thái mới
+            Object.values(this.elements).forEach(element => {
+                if (element && element.style) {
+                    element.style.display = 'none'; // Ẩn tất cả element
+                }
+            });
+            
+            // Hiển thị trạng thái được yêu cầu
+            if (this.elements[stateName]) {
+                this.elements[stateName].style.display = 'block'; // Hiển thị element tương ứng
+            }
+        },
+
+        // Bắt đầu loading - tạo controller mới và hiển thị trạng thái loading
+        // Mục đích: Chuẩn bị cho việc gửi request và hiển thị loading state
+        startLoading: function() {
+            this.abortController = new AbortController(); // Tạo controller mới để có thể hủy request
+            this.showState('jobLoadingState'); // Hiển thị trạng thái loading (spinner + text)
+        },
+
+        // Hiển thị lỗi - hiển thị trạng thái lỗi và log lỗi
+        // Mục đích: Xử lý và hiển thị lỗi khi có vấn đề với request
+        showError: function(message) {
+            this.showState('jobErrorState'); // Hiển thị trạng thái lỗi cho người dùng
+            console.error('Job recommendation error:', message); // Log lỗi để debug
+        },
+
+        // Hiển thị kết quả gợi ý công việc từ API
+        // Mục đích: Render HTML cho kết quả gợi ý công việc với giao diện đẹp và thông tin chi tiết
+        showResults: function(data) {
+            this.showState('jobRecommendResult'); // Chuyển sang trạng thái hiển thị kết quả
+            
+            let html = ''; // Biến lưu HTML kết quả
+            
+            // Xử lý trường hợp có công việc được gợi ý (thành công)
+            if (data && data.recommendedJob) {
+                html = `
+                    <div class="space-y-6">
+                        <!-- Header với icon thành công -->
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Perfect Match Found!</h3>
+                            <p class="text-gray-600">Based on your skills and experience, we recommend:</p>
+                        </div>
+
+                        <!-- Job Card - Hiển thị công việc được gợi ý -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+                            <div class="flex items-start mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-briefcase text-white text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl font-bold text-gray-900 mb-1">${data.recommendedJob}</h4>
+                                        <p class="text-sm text-gray-600">Recommended for you</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Skills to Improve - Hiển thị kỹ năng cần cải thiện nếu có -->
+                            ${data.missingSkills && data.missingSkills.length > 0 ? `
+                                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mr-3">
+                                            <i class="fas fa-lightbulb text-white text-sm"></i>
+                                        </div>
+                                        <h5 class="text-sm font-semibold text-yellow-800">Skills to Improve</h5>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${data.missingSkills.map(skill => `
+                                            <span class="bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium border border-yellow-200 hover:from-yellow-200 hover:to-orange-200 transition-all duration-200">
+                                                ${skill}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Action Buttons - Nút hành động -->
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <a href="/CVAnalysis/JobPrediction" class="group flex-1 flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
+                                <i class="fas fa-search mr-2 group-hover:animate-bounce"></i>View More Jobs
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } 
+            // Xử lý trường hợp cần cải thiện (AI phát hiện cần bổ sung thêm thông tin)
+            else if (data && data.improvementPlan) {
+                html = `
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="text-sm font-semibold text-yellow-800 mb-2">Improvement Needed</h4>
+                                <p class="text-sm text-yellow-700">${data.improvementPlan}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } 
+            // Xử lý trường hợp không tìm thấy gợi ý (AI không thể tìm thấy công việc phù hợp)
+            else {
+                html = `
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-info-circle text-gray-400 text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">No Recommendations Found</h4>
+                        <p class="text-sm text-gray-600">We couldn't find suitable job matches for your current profile.</p>
+                    </div>
+                `;
+            }
+            
+            this.elements.jobRecommendResult.innerHTML = html; // Cập nhật nội dung HTML cho element kết quả
+        },
+
+        // Hiển thị kết quả từ session (khi trang load với dữ liệu có sẵn)
+        // Mục đích: Hiển thị lại kết quả gợi ý công việc khi người dùng reload trang hoặc quay lại
+        showResultsFromSession: function(data) {
+            if (this.elements.jobRecommendResultFromSession) {
+                this.elements.jobRecommendResultFromSession.style.display = 'block'; // Hiển thị element
+                
+                let html = ''; // Biến lưu HTML kết quả
+                
+                // Xử lý trường hợp có công việc được gợi ý (giống như showResults nhưng cho session)
+                if (data && data.recommendedJob) {
+                    html = `
+                        <div class="space-y-6">
+                            <div class="text-center mb-6">
+                                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Perfect Match Found!</h3>
+                                <p class="text-gray-600">Based on your skills and experience, we recommend:</p>
+                            </div>
+
+                            <!-- Job Card -->
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+                                <div class="flex items-start mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-briefcase text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xl font-bold text-gray-900 mb-1">${data.recommendedJob}</h4>
+                                            <p class="text-sm text-gray-600">Recommended for you</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Skills to Improve -->
+                                ${data.missingSkills && data.missingSkills.length > 0 ? `
+                                    <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-lightbulb text-white text-sm"></i>
+                                            </div>
+                                            <h5 class="text-sm font-semibold text-yellow-800">Skills to Improve</h5>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${data.missingSkills.map(skill => `
+                                                <span class="bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium border border-yellow-200 hover:from-yellow-200 hover:to-orange-200 transition-all duration-200">
+                                                    ${skill}
+                                                </span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <a href="/CVAnalysis/JobPrediction" class="group flex-1 flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md">
+                                    <i class="fas fa-search mr-2 group-hover:animate-bounce"></i>View More Jobs
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                } 
+                // Xử lý trường hợp cần cải thiện (AI phát hiện cần bổ sung thêm thông tin)
+                else if (data && data.improvementPlan) {
+                    html = `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-yellow-800 mb-2">Improvement Needed</h4>
+                                    <p class="text-sm text-yellow-700">${data.improvementPlan}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } 
+                // Xử lý trường hợp không tìm thấy gợi ý (AI không thể tìm thấy công việc phù hợp)
+                else {
+                    html = `
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-info-circle text-gray-400 text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-2">No Recommendations Found</h4>
+                            <p class="text-sm text-gray-600">We couldn't find suitable job matches for your current profile.</p>
+                        </div>
+                    `;
+                }
+                
+                this.elements.jobRecommendResultFromSession.innerHTML = html; // Cập nhật nội dung HTML cho element session
+            } else {
+                console.log('jobRecommendResultFromSession element not found'); // Log khi không tìm thấy element
+            }
+        },
+
+        // Xử lý click nút gợi ý công việc
+        // Mục đích: Thu thập dữ liệu CV và gửi lên server để AI phân tích và gợi ý công việc
+        handleClick: function() {
+            // Lấy kỹ năng và kinh nghiệm làm việc từ các trường ẩn trong form
+            // Các trường này được điền tự động từ kết quả phân tích CV trước đó
+            const skills = document.getElementById('cvSkills').value || ''; // Kỹ năng được trích xuất
+            const experience = document.getElementById('cvExperience').value || ''; // Kinh nghiệm làm việc
+            const project = document.getElementById('cvProject').value || ''; // Dự án đã thực hiện
+            
+            // Kết hợp kinh nghiệm và dự án thành một chuỗi duy nhất
+            // Để AI có thể phân tích toàn bộ thông tin làm việc
+            let workExperience = '';
+            if (experience && project) {
+                workExperience = experience + '\n\n' + project; // Kết hợp cả hai với dòng trống ở giữa
+            } else if (experience) {
+                workExperience = experience; // Chỉ có kinh nghiệm làm việc
+            } else if (project) {
+                workExperience = project; // Chỉ có dự án (có thể là sinh viên mới tốt nghiệp)
+            }
+            
+            this.startLoading(); // Bắt đầu loading state
+            
+            // Gửi request đến server để lấy gợi ý công việc từ AI
+            const csrfToken = document.querySelector('input[name=__RequestVerificationToken]')?.value || '';
+            
+            fetch('/CVAnalysis/RecommendJobs', {
+                method: 'POST', // Phương thức POST để gửi dữ liệu
+                headers: {
+                    'Content-Type': 'application/json', // Định dạng JSON
+                    'RequestVerificationToken': csrfToken // Token bảo mật chống CSRF
+                },
+                body: JSON.stringify({ 
+                    skills: skills, // Kỹ năng được trích xuất từ CV
+                    workExperience: workExperience // Kinh nghiệm làm việc và dự án
+                }),
+                signal: this.abortController.signal // Signal để có thể hủy request khi cần
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // Parse response thành JSON object
+            })
+            .then(data => {
+                this.showResults(data); // Hiển thị kết quả gợi ý công việc
+            })
+            .catch((err) => {
+                // Xử lý các loại lỗi khác nhau
+                if (err.name === 'AbortError') {
+                    this.showError('Request was cancelled'); // Thông báo đã hủy (người dùng ấn cancel)
+                } else {
+                    this.showError('Error fetching recommendations: ' + err.message); // Thông báo lỗi khác (mạng, server, v.v.)
+                }
+            });
+        },
+
+        // Khởi tạo job recommendation handler và gắn các event listener
+        init: function() {
+            // Gắn event listener cho nút gợi ý công việc (trạng thái ban đầu)
+            if (this.elements.btnJobRecommend) {
+                this.elements.btnJobRecommend.addEventListener('click', () => {
+                    this.handleClick();
+                });
+            } else {
+                // Try to find it again
+                const btn = document.getElementById('btnJobRecommend');
+                if (btn) {
+                    btn.addEventListener('click', () => {
+                        this.handleClick();
+                    });
+                }
+            }
+            
+            // Gắn event listener cho nút thử lại (khi có lỗi)
+            if (this.elements.btnRetryJobRecommend) {
+                this.elements.btnRetryJobRecommend.addEventListener('click', () => this.handleClick());
+            }
+
+            // Kiểm tra xem có gợi ý công việc từ session không và hiển thị chúng
+            // Để người dùng không mất kết quả khi reload trang
+            const jobRecommendationsFromSession = document.getElementById('jobRecommendationsFromSession');
+            if (jobRecommendationsFromSession && jobRecommendationsFromSession.value) {
+                try {
+                    const sessionData = JSON.parse(jobRecommendationsFromSession.value); // Parse JSON từ session
+                    this.showResultsFromSession(sessionData); // Hiển thị kết quả từ session
+                } catch (error) {
+                    console.error('Error parsing job recommendations from session:', error); // Log lỗi nếu parse thất bại
+                }
+            }
+        }
+    };
+    
+    // Initialize jobRecommendHandler immediately
+    jobRecommendHandler.init();
+
+    // Direct test for job recommendation button
+    const btnJobRecommendDirect = document.getElementById('btnJobRecommend');
+    if (btnJobRecommendDirect) {
+        btnJobRecommendDirect.addEventListener('click', function() {
+            setTimeout(() => {
+                if (typeof jobRecommendHandler !== 'undefined' && jobRecommendHandler && jobRecommendHandler.handleClick) {
+                    jobRecommendHandler.handleClick();
+                }
+            }, 100);
+        });
+    }
+
     // ================ HỆ THỐNG ANIMATION SCROLL ================
     // Hiệu ứng xuất hiện các phần tử khi cuộn trang (từ Home.js)
     // Mục đích: Tạo hiệu ứng fade-in cho các element khi chúng xuất hiện trong viewport
@@ -1057,7 +1436,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ================ XỬ LÝ GỢI Ý CÔNG VIỆC ================
     // Quản lý việc gợi ý công việc phù hợp dựa trên CV
     // Mục đích: Sử dụng AI để phân tích kỹ năng và kinh nghiệm, sau đó gợi ý công việc phù hợp
-    const jobRecommendHandler = {
+    jobRecommendHandler = {
         // Các element cần thiết cho job recommendation
         // Lưu trữ tất cả các element DOM cần thiết để tránh query nhiều lần
         elements: {
@@ -1197,9 +1576,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Hiển thị kết quả từ session (khi trang load với dữ liệu có sẵn)
         // Mục đích: Hiển thị lại kết quả gợi ý công việc khi người dùng reload trang hoặc quay lại
         showResultsFromSession: function(data) {
-            console.log('showResultsFromSession called with data:', data); // Log để debug
             if (this.elements.jobRecommendResultFromSession) {
-                console.log('Found jobRecommendResultFromSession element, displaying results'); // Log khi tìm thấy element
                 this.elements.jobRecommendResultFromSession.style.display = 'block'; // Hiển thị element
                 
                 let html = ''; // Biến lưu HTML kết quả
@@ -1286,7 +1663,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     `;
                 }
                 
-                console.log('Setting HTML content:', html); // Log nội dung HTML để debug
                 this.elements.jobRecommendResultFromSession.innerHTML = html; // Cập nhật nội dung HTML cho element session
             } else {
                 console.log('jobRecommendResultFromSession element not found'); // Log khi không tìm thấy element
@@ -1316,11 +1692,13 @@ document.addEventListener('DOMContentLoaded', function () {
             this.startLoading(); // Bắt đầu loading state
             
             // Gửi request đến server để lấy gợi ý công việc từ AI
+            const csrfToken = document.querySelector('input[name=__RequestVerificationToken]')?.value || '';
+            
             fetch('/CVAnalysis/RecommendJobs', {
                 method: 'POST', // Phương thức POST để gửi dữ liệu
                 headers: {
                     'Content-Type': 'application/json', // Định dạng JSON
-                    'RequestVerificationToken': document.querySelector('input[name=__RequestVerificationToken]')?.value || '' // Token bảo mật chống CSRF
+                    'RequestVerificationToken': csrfToken // Token bảo mật chống CSRF
                 },
                 body: JSON.stringify({ 
                     skills: skills, // Kỹ năng được trích xuất từ CV
@@ -1328,7 +1706,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }),
                 signal: this.abortController.signal // Signal để có thể hủy request khi cần
             })
-            .then(response => response.json()) // Parse response thành JSON object
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // Parse response thành JSON object
+            })
             .then(data => {
                 this.showResults(data); // Hiển thị kết quả gợi ý công việc
             })
@@ -1346,7 +1729,17 @@ document.addEventListener('DOMContentLoaded', function () {
         init: function() {
             // Gắn event listener cho nút gợi ý công việc (trạng thái ban đầu)
             if (this.elements.btnJobRecommend) {
-                this.elements.btnJobRecommend.addEventListener('click', () => this.handleClick());
+                this.elements.btnJobRecommend.addEventListener('click', () => {
+                    this.handleClick();
+                });
+            } else {
+                // Try to find it again
+                const btn = document.getElementById('btnJobRecommend');
+                if (btn) {
+                    btn.addEventListener('click', () => {
+                        this.handleClick();
+                    });
+                }
             }
             
             // Gắn event listener cho nút thử lại (khi có lỗi)
@@ -1357,23 +1750,16 @@ document.addEventListener('DOMContentLoaded', function () {
             // Kiểm tra xem có gợi ý công việc từ session không và hiển thị chúng
             // Để người dùng không mất kết quả khi reload trang
             const jobRecommendationsFromSession = document.getElementById('jobRecommendationsFromSession');
-            console.log('Checking for job recommendations from session:', jobRecommendationsFromSession);
             if (jobRecommendationsFromSession && jobRecommendationsFromSession.value) {
                 try {
                     const sessionData = JSON.parse(jobRecommendationsFromSession.value); // Parse JSON từ session
-                    console.log('Found job recommendations from session:', sessionData);
                     this.showResultsFromSession(sessionData); // Hiển thị kết quả từ session
                 } catch (error) {
                     console.error('Error parsing job recommendations from session:', error); // Log lỗi nếu parse thất bại
                 }
-            } else {
-                console.log('No job recommendations found in session'); // Log khi không có dữ liệu session
             }
         }
     };
-
-    // Khởi tạo job recommendation handler
-    jobRecommendHandler.init();
     
     // Nút Cancel cho job recommend loading
     // Cho phép người dùng hủy việc gợi ý công việc khi đang xử lý
@@ -1625,5 +2011,19 @@ document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('DOMContentLoaded', initializeCVScoringState);
     } else {
         initializeCVScoringState();
+    }
+
+    // Debug: Check if jobRecommendHandler is properly initialized
+    console.log('=== DEBUG: jobRecommendHandler status ===');
+    console.log('jobRecommendHandler object:', jobRecommendHandler);
+    console.log('jobRecommendHandler.handleClick exists:', typeof jobRecommendHandler.handleClick);
+    console.log('jobRecommendHandler.elements:', jobRecommendHandler.elements);
+    console.log('=== END jobRecommendHandler DEBUG ===');
+    
+    // Test the handler after initialization
+    if (jobRecommendHandler && jobRecommendHandler.handleClick) {
+        console.log('jobRecommendHandler is properly initialized and ready to use');
+    } else {
+        console.error('jobRecommendHandler is not properly initialized');
     }
 });

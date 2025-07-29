@@ -278,6 +278,12 @@
                 </div>
               
                 <div class="p-6">
+                    <!-- Debug output -->
+                    <div style="background: yellow; padding: 10px; margin-bottom: 10px; border: 1px solid red;">
+                        <p><strong>DEBUG:</strong> ViewBag.JobRecommendations = @(ViewBag.JobRecommendations?.ToString() ?? "null")</p>
+                        <p><strong>DEBUG:</strong> ViewBag.JobRecommendations type = @(ViewBag.JobRecommendations?.GetType().Name ?? "null")</p>
+                    </div>
+                    
                     <!-- Hidden fields to pass model data to JavaScript -->
                     <input type="hidden" id="cvSkills" value="@Model.Skills" />
                     <input type="hidden" id="cvExperience" value="@Model.Experience" />
@@ -304,6 +310,10 @@
                     @if (ViewBag.JobRecommendations == null)
                     {
                         <div id="jobInitialState" class="text-center py-8">
+                            <!-- Debug info -->
+                            <div style="display: none;">
+                                <p>Debug: ViewBag.JobRecommendations is null, showing button</p>
+                            </div>
                             <div class="mb-8">
                                 <div class="relative w-20 h-20 mx-auto mb-6">
                                     <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full animate-pulse"></div>
@@ -347,13 +357,26 @@
                                     </div>
                                 </div>
                             </div>
-                            <button id="btnJobRecommend" type="button" class="group relative w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
+                            <button id="btnJobRecommend" type="button" class="group relative w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect" onclick="console.log('Button clicked via onclick'); alert('Button clicked!');">
                                 <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 <span class="relative flex items-center">
                                     <i class="fas fa-magic mr-2 text-sm group-hover:animate-spin"></i> 
                                     Get Smart Recommendations
                                 </span>
                             </button>
+                            
+                            <!-- Test button to verify JavaScript is working -->
+                            <button id="testButton" type="button" class="mt-4 w-auto max-w-md mx-auto flex justify-center items-center px-6 py-3 border border-red-300 rounded-lg shadow-md text-base font-medium text-red-600 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all duration-300">
+                                Test Button (Click to verify JavaScript works)
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Debug info -->
+                        <div style="display: none;">
+                            <p>Debug: ViewBag.JobRecommendations is not null, not showing button</p>
+                            <p>Debug: ViewBag.JobRecommendations type: @ViewBag.JobRecommendations.GetType().Name</p>
                         </div>
                     }
 
