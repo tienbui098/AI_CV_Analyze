@@ -136,6 +136,17 @@ document.addEventListener('DOMContentLoaded', function () {
         if (formSubmitting) return;
         e.preventDefault();
 
+        // Xóa tất cả trạng thái chấm điểm CV cũ trong sessionStorage
+        // Khi user upload CV mới, reset toàn bộ trạng thái chấm điểm
+        const keysToRemove = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            if (key && key.startsWith('cv_scored_')) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(key => sessionStorage.removeItem(key));
+
         const loadingModal = document.getElementById('loadingModal');
         if (loadingModal) {
             loadingModal.classList.remove('hidden');
