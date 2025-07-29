@@ -102,6 +102,9 @@
                 </div>
 
                 <div class="p-6">
+                    <!-- Hidden input for CV content -->
+                    <input type="hidden" name="Content" value="@(Model.Content ?? (ViewBag.CVContent ?? ""))" />
+                    
                     <!-- Enhanced Scoring Button -->
                     <button id="btnScoreCV" class="group relative w-full flex justify-center items-center px-4 py-3 mb-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 hover:from-blue-600 hover:via-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect" data-resumeid="@Model.ResumeId" style="display: @(hasScore ? "none" : "block")">
                         <div class="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -940,23 +943,7 @@
     </div>
 </div>
 
-<!-- Loading Modal for CV Scoring with enhanced animation -->
-<div id="cvScoreLoadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">
-    <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center animate-fade-in-up w-80 max-w-[90vw]">
-        <div class="mb-4 relative w-20 h-20">
-            <div class="enhanced-spinner absolute inset-0 rounded-full"></div>
-            <div class="absolute inset-1 rounded-full bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
-                <i class="fas fa-star text-blue-500 text-2xl"></i>
-            </div>
-        </div>
-        <div class="font-semibold text-lg text-center">
-            AI system is scoring your CV. Please wait a moment...
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-6 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full animate-progress"></div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Loading Modal for Generate Complete CV with enhanced animation -->
 <div id="generateCVLoadingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm hidden">

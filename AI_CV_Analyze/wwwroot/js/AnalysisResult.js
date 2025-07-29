@@ -152,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const resumeId = this.getAttribute('data-resumeid');
         
         // Lấy các element cần thiết cho việc hiển thị trạng thái và kết quả
-        const loadingModal = document.getElementById('cvScoreLoadingModal'); // Modal loading toàn màn hình
         const scoreTable = document.getElementById('cv-score-table'); // Bảng hiển thị điểm số
         const scoreLoading = document.getElementById('score-loading'); // Trạng thái loading nhỏ
         const scoreError = document.getElementById('score-error'); // Thông báo lỗi nếu có
@@ -161,8 +160,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const cvContentInput = document.querySelector('input[name="Content"]');
         const cvContent = cvContentInput ? cvContentInput.value : '';
         
+
+        
         // KIỂM TRA VALIDATION: Kiểm tra xem có CV để chấm điểm không
-        if (!resumeId || resumeId.trim() === '') {
+        // Lưu ý: resumeId có thể = 0 cho guest users, nhưng vẫn có thể chấm điểm nếu có nội dung CV
+        // Chỉ kiểm tra resumeId nếu nó không phải là "0" (guest users)
+        if (resumeId !== '0' && (!resumeId || resumeId.trim() === '')) {
             // Hiển thị lỗi ngay lập tức nếu không có CV
             if (scoreError) {
                 scoreError.style.display = 'block';
@@ -248,11 +251,6 @@ document.addEventListener('DOMContentLoaded', function () {
         scoreError.style.display = 'none'; // Ẩn thông báo lỗi cũ nếu có
         scoreLoading.style.display = 'block'; // Hiển thị trạng thái loading (spinner + text)
         
-        // Hiển thị modal loading toàn màn hình nếu có để tạo trải nghiệm chuyên nghiệp
-        if (loadingModal) {
-            loadingModal.classList.remove('hidden'); // Hiển thị modal loading
-        }
-        
         // Sử dụng nội dung CV đã lấy ở trên để gửi lên server
         // Nội dung CV được lưu trong input ẩn để tránh hiển thị quá dài trên giao diện
         
@@ -268,11 +266,8 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(res => res.json()) // Chuyển response từ server thành JSON object
         .then(data => {
-            // Ẩn loading và modal sau khi nhận được kết quả từ server
+            // Ẩn loading sau khi nhận được kết quả từ server
             scoreLoading.style.display = 'none'; // Ẩn trạng thái loading nhỏ
-            if (loadingModal) {
-                loadingModal.classList.add('hidden'); // Ẩn modal loading toàn màn hình
-            }
             
             if (data.success) {
                 // Nếu server trả về thành công, hiển thị bảng điểm với animation mượt mà
@@ -322,9 +317,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // Xử lý lỗi khi chấm điểm CV (lỗi mạng, server down, v.v.)
             console.error('CV Scoring error:', error); // Log lỗi để debug
             scoreLoading.style.display = 'none'; // Ẩn trạng thái loading
-            if (loadingModal) {
-                loadingModal.classList.add('hidden'); // Ẩn modal loading toàn màn hình
-            }
             scoreError.style.display = 'block'; // Hiển thị thông báo lỗi cho người dùng
             this.style.display = 'block'; // Hiện lại nút chấm điểm để người dùng có thể thử lại
         });
@@ -1004,28 +996,6 @@ document.addEventListener('DOMContentLoaded', function () {
             'indigo': 'rgba(99, 102, 241, 0.6)' // Màu indigo với độ trong suốt
         };
         return colors[colorClass] || 'rgba(59, 130, 246, 0.6)'; // Trả về màu xanh dương mặc định
-    }
-
-    // Hiệu ứng âm thanh tick đơn giản
-    function playTickSound(audioContext, volume = 0.1) {
-        try {
-            const oscillator = audioContext.createOscillator(); // Tạo oscillator
-            const gainNode = audioContext.createGain(); // Tạo gain node để điều chỉnh volume
-            
-            oscillator.connect(gainNode); // Kết nối oscillator với gain
-            gainNode.connect(audioContext.destination); // Kết nối gain với output
-            
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // Tần số bắt đầu 800Hz
-            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1); // Giảm xuống 400Hz
-            
-            gainNode.gain.setValueAtTime(volume, audioContext.currentTime); // Volume bắt đầu
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1); // Giảm volume
-            
-            oscillator.start(audioContext.currentTime); // Bắt đầu phát
-            oscillator.stop(audioContext.currentTime + 0.1); // Dừng sau 0.1s
-        } catch (error) {
-            // Thất bại im lặng nếu audio không được hỗ trợ
-        }
     }
 
     // Thêm hiệu ứng particle cho button click
