@@ -192,94 +192,85 @@ namespace AI_CV_Analyze.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnalysisResultId"));
 
+                    b.Property<string>("Achievement")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AnalysisDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AnalysisStatus")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Certificate")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConfidenceScore")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Course")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DetectedText")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DocumentType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Education")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Entities")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ErrorMessage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Experience")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FormFields")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageAnalysis")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("KeyPhrases")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Language")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LanguageProficiency")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OverallAnalysis")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Project")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ResumeId")
                         .HasColumnType("int");
 
                     b.Property<string>("SentimentScore")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Skills")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SkillsAnalysis")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AnalysisResultId");
@@ -299,11 +290,9 @@ namespace AI_CV_Analyze.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResumeDataId"));
 
                     b.Property<string>("ExtractedData")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Language")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -320,12 +309,7 @@ namespace AI_CV_Analyze.Migrations
                     b.HasIndex("ResumeId")
                         .IsUnique();
 
-                    b.ToTable("ResumeData", t =>
-                        {
-                            t.HasCheckConstraint("CK_ResumeData_Language", "Language IN ('English', 'Vietnamese')");
-
-                            t.HasCheckConstraint("CK_ResumeData_Status", "Status IN ('Pending', 'Processing', 'Completed', 'Failed')");
-                        });
+                    b.ToTable("ResumeData");
                 });
 
             modelBuilder.Entity("AI_CV_Analyze.Models.ResumeHistory", b =>
@@ -361,10 +345,7 @@ namespace AI_CV_Analyze.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("ResumeHistory", t =>
-                        {
-                            t.HasCheckConstraint("CK_ResumeHistory_Score", "Score BETWEEN 0 AND 100");
-                        });
+                    b.ToTable("ResumeHistory");
                 });
 
             modelBuilder.Entity("AI_CV_Analyze.Models.User", b =>

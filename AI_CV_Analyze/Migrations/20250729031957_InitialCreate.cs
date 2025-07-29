@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AI_CV_Analyze.Migrations
 {
     /// <inheritdoc />
-    public partial class FixSeedData : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -105,7 +105,13 @@ namespace AI_CV_Analyze.Migrations
                     ResumeId = table.Column<int>(type: "int", nullable: false),
                     Score = table.Column<int>(type: "int", nullable: false),
                     Suggestions = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AnalysisDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    AnalysisDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LayoutScore = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    SkillScore = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ExperienceScore = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    EducationScore = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    KeywordScore = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    FormatScore = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -145,7 +151,12 @@ namespace AI_CV_Analyze.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SkillsAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Experience = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Project = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Education = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LanguageProficiency = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Certificate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Achievement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Course = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OverallAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

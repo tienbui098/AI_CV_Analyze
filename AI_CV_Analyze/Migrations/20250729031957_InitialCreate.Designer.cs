@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AI_CV_Analyze.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250716084743_add_tieu_chi_cham_diem_p2")]
-    partial class add_tieu_chi_cham_diem_p2
+    [Migration("20250729031957_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,10 +195,18 @@ namespace AI_CV_Analyze.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnalysisResultId"));
 
+                    b.Property<string>("Achievement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AnalysisDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AnalysisStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Certificate")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -207,6 +215,10 @@ namespace AI_CV_Analyze.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Course")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -255,6 +267,10 @@ namespace AI_CV_Analyze.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LanguageProficiency")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

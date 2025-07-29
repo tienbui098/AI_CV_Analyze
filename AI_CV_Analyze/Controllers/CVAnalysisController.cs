@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AI_CV_Analyze.Models;
 using AI_CV_Analyze.Services;
 using System;
+using System.Text;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq; // Added for .Select()
@@ -70,14 +71,29 @@ namespace AI_CV_Analyze.Controllers
                 {
                     // Đăng nhập: lưu vào DB
                     result = await _resumeAnalysisService.AnalyzeResume(cvFile, userId.Value);
+                    
+                    // Lưu thêm thông tin ResumeData nếu chưa có
+                    var existingResumeData = _dbContext.ResumeData.FirstOrDefault(rd => rd.ResumeId == result.ResumeId);
+                    if (existingResumeData == null)
+                    {
+                        var resumeData = new ResumeData
+                        {
+                            ResumeId = result.ResumeId,
+                            ExtractedData = result.Content,
+                            Language = "English", // Có thể detect language sau
+                            Status = "Completed"
+                        };
+                        _dbContext.ResumeData.Add(resumeData);
+                        await _dbContext.SaveChangesAsync();
+                    }
                 }
                 else
                 {
                     // Không đăng nhập: chỉ phân tích, không lưu DB
                     result = await _resumeAnalysisService.AnalyzeResume(cvFile, 0, true); // skipDb = true
                 }
-                HttpContext.Session.SetString("ResumeAnalysisResult", JsonConvert.SerializeObject(result));
-                HttpContext.Session.SetString("CVContent", result.Content);
+                HttpContext.Session.SetString("ResumeAnalysisResult", JsonConvert.SerializeObject(result, GetJsonSettings()));
+                HttpContext.Session.SetString("CVContent", result.Content ?? "");
                 return View("AnalysisResult", result);
             }
             catch (Exception ex)
@@ -99,15 +115,38 @@ namespace AI_CV_Analyze.Controllers
                 ViewBag.Suggestions = suggestions;
                 ViewBag.CVContent = Content;
                 // Lưu đề xuất chỉnh sửa vào Session (nếu cần dùng lại)
-                HttpContext.Session.SetString("EditSuggestions", JsonConvert.SerializeObject(suggestions));
+                HttpContext.Session.SetString("EditSuggestions", JsonConvert.SerializeObject(suggestions, GetJsonSettings()));
                 HttpContext.Session.SetString("EditSuggestionsContent", Content);
                 
-                // Lấy lại result từ session (hoặc DB nếu cần)
-                var resultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
-                ResumeAnalysisResult result = null;
-                if (!string.IsNullOrEmpty(resultJson))
+                // Lưu edit suggestions vào database nếu user đã đăng nhập
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
                 {
-                    result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
+                    // Lấy resumeId từ session
+                    var resultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
+                    if (!string.IsNullOrEmpty(resultJson))
+                    {
+                        var result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
+                        if (result != null && result.ResumeId > 0)
+                        {
+                            // Cập nhật ResumeAnalysis với suggestions
+                            var resumeAnalysis = _dbContext.ResumeAnalysis.FirstOrDefault(a => a.ResumeId == result.ResumeId);
+                            if (resumeAnalysis != null)
+                            {
+                                resumeAnalysis.Suggestions = suggestions;
+                                resumeAnalysis.AnalysisDate = DateTime.UtcNow;
+                                await _dbContext.SaveChangesAsync();
+                            }
+                        }
+                    }
+                }
+                
+                // Lấy lại result từ session (hoặc DB nếu cần)
+                var resultJson2 = HttpContext.Session.GetString("ResumeAnalysisResult");
+                ResumeAnalysisResult result2 = null;
+                if (!string.IsNullOrEmpty(resultJson2))
+                {
+                    result2 = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson2);
                 }
                 
                 // Lấy lại kết quả job recommendation từ session để không bị mất
@@ -150,7 +189,7 @@ namespace AI_CV_Analyze.Controllers
                 System.Diagnostics.Debug.WriteLine($"Suggestions: {suggestions}");
                 System.Diagnostics.Debug.WriteLine($"Content: {Content}");
                 
-                return View("AnalysisResult", result);
+                return View("AnalysisResult", result2);
             }
             catch (Exception ex)
             {
@@ -317,9 +356,42 @@ namespace AI_CV_Analyze.Controllers
                 var result = await _resumeAnalysisService.GetJobSuggestionsAsync(model.Skills, model.WorkExperience);
                 ViewBag.JobSuggestionResult = result;
                 // Lưu kết quả gợi ý việc làm vào session với key "JobRecommendations"
-                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result));
+                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result, GetJsonSettings()));
                 HttpContext.Session.SetString("JobSuggestionSkills", model.Skills);
                 HttpContext.Session.SetString("JobSuggestionWorkExperience", model.WorkExperience);
+                
+                // Lưu job recommendations vào database nếu user đã đăng nhập
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    // Lấy resumeId từ session hoặc tạo mới
+                    var resumeResultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
+                    int? resumeId = null;
+                    if (!string.IsNullOrEmpty(resumeResultJson))
+                    {
+                        var resumeResult = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resumeResultJson);
+                        resumeId = resumeResult.ResumeId;
+                    }
+                    
+                    if (resumeId.HasValue)
+                    {
+                        // Lưu cả RecommendedJob và Suggestions (nếu có)
+                        if (!string.IsNullOrEmpty(result.RecommendedJob))
+                        {
+                            await SaveJobRecommendation(resumeId.Value, result.RecommendedJob, result.MatchPercentage, result.ImprovementPlan);
+                        }
+                        
+                        // Lưu các suggestions từ Dictionary nếu có
+                        if (result.Suggestions != null && result.Suggestions.Count > 0)
+                        {
+                            foreach (var suggestion in result.Suggestions)
+                            {
+                                await SaveJobRecommendation(resumeId.Value, suggestion.Key, (int)(suggestion.Value * 100), suggestion.Key);
+                            }
+                        }
+                    }
+                }
+                
                 return View(model);
             }
             catch (Exception ex)
@@ -346,7 +418,40 @@ namespace AI_CV_Analyze.Controllers
             try
             {
                 var result = await _resumeAnalysisService.GetJobSuggestionsAsync(request.Skills, request.WorkExperience);
-                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result));
+                HttpContext.Session.SetString("JobRecommendations", JsonConvert.SerializeObject(result, GetJsonSettings()));
+                
+                // Lưu job recommendations vào database nếu user đã đăng nhập
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    // Lấy resumeId từ session
+                    var resumeResultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
+                    int? resumeId = null;
+                    if (!string.IsNullOrEmpty(resumeResultJson))
+                    {
+                        var resumeResult = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resumeResultJson);
+                        resumeId = resumeResult.ResumeId;
+                    }
+                    
+                    if (resumeId.HasValue)
+                    {
+                        // Lưu cả RecommendedJob và Suggestions (nếu có)
+                        if (!string.IsNullOrEmpty(result.RecommendedJob))
+                        {
+                            await SaveJobRecommendation(resumeId.Value, result.RecommendedJob, result.MatchPercentage, result.ImprovementPlan);
+                        }
+                        
+                        // Lưu các suggestions từ Dictionary nếu có
+                        if (result.Suggestions != null && result.Suggestions.Count > 0)
+                        {
+                            foreach (var suggestion in result.Suggestions)
+                            {
+                                await SaveJobRecommendation(resumeId.Value, suggestion.Key, (int)(suggestion.Value * 100), suggestion.Key);
+                            }
+                        }
+                    }
+                }
+                
                 return Json(result);
             }
             catch (Exception ex)
@@ -408,7 +513,7 @@ namespace AI_CV_Analyze.Controllers
                     format,
                     total = layout + skill + experience + education + keyword + format
                 };
-                HttpContext.Session.SetString("CVScoreResult", Newtonsoft.Json.JsonConvert.SerializeObject(scoreResult));
+                HttpContext.Session.SetString("CVScoreResult", JsonConvert.SerializeObject(scoreResult, GetJsonSettings()));
                 // Trả về kết quả (dù có lưu hay không)
                 return Json(new {
                     success = true,
@@ -438,6 +543,34 @@ namespace AI_CV_Analyze.Controllers
             {
                 var finalCV = await _resumeAnalysisService.GenerateFinalCV(cvContent, suggestions);
                 HttpContext.Session.SetString("FinalCVContent", finalCV);
+                
+                // Lưu final CV vào database nếu user đã đăng nhập
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    // Lấy resumeId từ session
+                    var resultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
+                    if (!string.IsNullOrEmpty(resultJson))
+                    {
+                        var result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
+                        if (result != null && result.ResumeId > 0)
+                        {
+                            // Lưu vào ResumeHistory
+                            var resumeHistory = new ResumeHistory
+                            {
+                                ResumeId = result.ResumeId,
+                                FileName = $"Final_CV_{DateTime.Now:yyyyMMdd_HHmmss}.txt",
+                                FileData = System.Text.Encoding.UTF8.GetBytes(finalCV),
+                                UploadDate = DateTime.UtcNow,
+                                Version = 1,
+                                Score = 100 // Final CV được coi như hoàn hảo
+                            };
+                            _dbContext.ResumeHistory.Add(resumeHistory);
+                            await _dbContext.SaveChangesAsync();
+                        }
+                    }
+                }
+                
                 return RedirectToAction("ShowFinalCV");
             }
             catch (Exception ex)
@@ -460,12 +593,47 @@ namespace AI_CV_Analyze.Controllers
         }
 
         [HttpPost]
-        public IActionResult PublishFinalCV()
+        public async Task<IActionResult> PublishFinalCV()
         {
             var finalCV = HttpContext.Session.GetString("FinalCVContent");
             if (string.IsNullOrEmpty(finalCV))
             {
                 return BadRequest("Không có CV để xuất bản.");
+            }
+
+            // Lưu thông tin publish vào database nếu user đã đăng nhập
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                // Lấy resumeId từ session
+                var resultJson = HttpContext.Session.GetString("ResumeAnalysisResult");
+                if (!string.IsNullOrEmpty(resultJson))
+                {
+                    var result = JsonConvert.DeserializeObject<ResumeAnalysisResult>(resultJson);
+                    if (result != null && result.ResumeId > 0)
+                    {
+                        // Cập nhật ResumeAnalysis với trạng thái published
+                        var resumeAnalysis = _dbContext.ResumeAnalysis.FirstOrDefault(a => a.ResumeId == result.ResumeId);
+                        if (resumeAnalysis != null)
+                        {
+                            resumeAnalysis.Suggestions = resumeAnalysis.Suggestions + "\n\n--- PUBLISHED ---\nPublished Date: " + DateTime.UtcNow.ToString();
+                            await _dbContext.SaveChangesAsync();
+                        }
+                        
+                        // Lưu thêm vào ResumeHistory với trạng thái published
+                        var publishedResume = new ResumeHistory
+                        {
+                            ResumeId = result.ResumeId,
+                            FileName = $"Published_CV_{DateTime.Now:yyyyMMdd_HHmmss}.txt",
+                            FileData = System.Text.Encoding.UTF8.GetBytes(finalCV),
+                            UploadDate = DateTime.UtcNow,
+                            Version = 2, // Version cao hơn để phân biệt với final CV
+                            Score = 100
+                        };
+                        _dbContext.ResumeHistory.Add(publishedResume);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                }
             }
 
             // Tạo PDF bằng QuestPDF
@@ -514,5 +682,67 @@ namespace AI_CV_Analyze.Controllers
         //    // Có thể bỏ hoặc trả về false luôn
         //    return Json(new { hasSuggestions = false });
         //}
+
+        /// <summary>
+        /// Helper method để lưu job recommendation vào database
+        /// </summary>
+        private JsonSerializerSettings GetJsonSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore
+            };
+        }
+
+        private async Task SaveJobRecommendation(int resumeId, string jobTitle, int matchPercentage, string description)
+        {
+            try
+            {
+                // Tìm hoặc tạo job category
+                var jobCategory = _dbContext.JobCategories.FirstOrDefault(c => c.Name == jobTitle);
+                if (jobCategory == null)
+                {
+                    jobCategory = new JobCategory
+                    {
+                        Name = jobTitle,
+                        Description = description ?? jobTitle
+                    };
+                    _dbContext.JobCategories.Add(jobCategory);
+                    await _dbContext.SaveChangesAsync();
+                }
+                
+                // Kiểm tra xem recommendation đã tồn tại chưa
+                var existingRecommendation = _dbContext.JobCategoryRecommendations
+                    .FirstOrDefault(r => r.ResumeId == resumeId && r.CategoryId == jobCategory.CategoryId);
+                
+                if (existingRecommendation == null)
+                {
+                    // Tạo job recommendation mới
+                    var recommendation = new JobCategoryRecommendation
+                    {
+                        ResumeId = resumeId,
+                        CategoryId = jobCategory.CategoryId,
+                        RelevanceScore = matchPercentage / 100.0m // Convert percentage to decimal
+                    };
+                    _dbContext.JobCategoryRecommendations.Add(recommendation);
+                    await _dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    // Cập nhật relevance score nếu cần
+                    if (existingRecommendation.RelevanceScore != matchPercentage / 100.0m)
+                    {
+                        existingRecommendation.RelevanceScore = matchPercentage / 100.0m;
+                        await _dbContext.SaveChangesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error nhưng không throw để không ảnh hưởng đến flow chính
+                System.Diagnostics.Debug.WriteLine($"Error saving job recommendation: {ex.Message}");
+            }
+        }
     }
 }

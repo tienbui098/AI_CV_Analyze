@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AI_CV_Analyze.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250712132046_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250729041244_AddTotalScoreAndRawSuggestionsToResumeAnalysis")]
+    partial class AddTotalScoreAndRawSuggestionsToResumeAnalysis
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,15 +136,52 @@ namespace AI_CV_Analyze.Migrations
                     b.Property<DateTime>("AnalysisDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EducationScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("ExperienceScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("FormatScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("KeywordScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("LayoutScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("RawSuggestions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ResumeId")
                         .HasColumnType("int");
 
                     b.Property<int>("Score")
                         .HasColumnType("int");
 
+                    b.Property<int>("SkillScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Suggestions")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TotalScore")
+                        .HasColumnType("int");
 
                     b.HasKey("AnalysisId");
 
@@ -165,10 +202,18 @@ namespace AI_CV_Analyze.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnalysisResultId"));
 
+                    b.Property<string>("Achievement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("AnalysisDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AnalysisStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Certificate")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -177,6 +222,10 @@ namespace AI_CV_Analyze.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Course")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -228,11 +277,19 @@ namespace AI_CV_Analyze.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("LanguageProficiency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OverallAnalysis")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Project")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -289,12 +346,7 @@ namespace AI_CV_Analyze.Migrations
                     b.HasIndex("ResumeId")
                         .IsUnique();
 
-                    b.ToTable("ResumeData", t =>
-                        {
-                            t.HasCheckConstraint("CK_ResumeData_Language", "Language IN ('English', 'Vietnamese')");
-
-                            t.HasCheckConstraint("CK_ResumeData_Status", "Status IN ('Pending', 'Processing', 'Completed', 'Failed')");
-                        });
+                    b.ToTable("ResumeData");
                 });
 
             modelBuilder.Entity("AI_CV_Analyze.Models.ResumeHistory", b =>
@@ -330,10 +382,7 @@ namespace AI_CV_Analyze.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("ResumeHistory", t =>
-                        {
-                            t.HasCheckConstraint("CK_ResumeHistory_Score", "Score BETWEEN 0 AND 100");
-                        });
+                    b.ToTable("ResumeHistory");
                 });
 
             modelBuilder.Entity("AI_CV_Analyze.Models.User", b =>
