@@ -1,15 +1,237 @@
 @{
-    ViewBag.Title = "CV hoàn chỉnh";
+    ViewData["Title"] = "CV Hoàn Chỉnh";
+    Layout = "~/Views/Shared/_LayoutAnalysisResult.cshtml";
 }
-<h2>CV đã chỉnh sửa hoàn thiện</h2>
-@if (ViewBag.FinalCV != null)
-{
-    <pre style="white-space: pre-wrap; background: #f8f8f8; padding: 1.5em; border-radius: 8px;">@ViewBag.FinalCV</pre>
-    <form method="post" asp-action="PublishFinalCV">
-        <button type="submit" class="btn btn-primary mt-3">Xuất bản CV này</button>
-    </form>
+
+@section Styles {
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/ShowFinalCV.css" />
 }
-else
-{
-    <p>@ViewBag.ErrorMessage</p>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb and navigation -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div class="flex items-center space-x-2 text-sm text-gray-600">
+            <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="hover:text-blue-600 transition-colors">
+                <i class="fas fa-arrow-left mr-1"></i>Back to Analysis
+            </a>
+            <span class="text-gray-400">/</span>
+            <span class="text-gray-800 font-medium">Final CV</span>
+        </div>
+        <div class="flex gap-3">
+            <a asp-controller="CVAnalysis" asp-action="JobPrediction" class="btn-secondary flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all duration-300 transform hover:-translate-y-0.5">
+                <i class="fas fa-briefcase mr-2"></i> Job suggestions
+            </a>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="text-center mb-8 animate-fade-in-up">
+        @if (ViewBag.FinalCV != null)
+        {
+            <div class="inline-flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full mb-4 shadow-md float-animation animate-fade-in-up animation-delay-200">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span>CV Generation Complete</span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 animate-fade-in-up animation-delay-300">Your Complete CV</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto animate-fade-in-up animation-delay-400">Your CV has been enhanced with AI suggestions and is ready for use</p>
+
+            <!-- Success info cards -->
+            <div class="flex flex-wrap justify-center gap-3 mt-6 animate-fade-in-up animation-delay-500">
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-green-200 transition-all">
+                    <i class="fas fa-robot text-green-500 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700">AI Enhanced</span>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-green-200 transition-all">
+                    <i class="fas fa-calendar-alt text-green-500 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md hover:border-green-200 transition-all">
+                    <i class="fas fa-star text-green-500 mr-2"></i>
+                    <span class="text-sm font-medium text-gray-700">Professional Quality</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="inline-flex items-center justify-center bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-full mb-4 shadow-md pulse-animation">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span>CV Generation Failed</span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">CV Generation Error</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">There was an issue generating your CV. Please try again.</p>
+
+            <div class="mt-6">
+                <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all transform hover:-translate-y-0.5 hover:shadow-lg btn-hover-effect">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Analysis
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (ViewBag.FinalCV != null)
+    {
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-in-up animation-delay-600">
+            <!-- CV Content -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-700">
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-file-alt text-green-500 mr-3"></i> Complete CV
+                            </h2>
+                            <div class="flex gap-2">
+                                <button id="copyCVBtn" class="flex items-center px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:-translate-y-0.5 text-sm">
+                                    <i class="far fa-copy mr-1"></i> Copy
+                                </button>
+                                <button id="downloadCVBtn" class="flex items-center px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all transform hover:-translate-y-0.5 text-sm">
+                                    <i class="fas fa-download mr-1"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="cvContent" class="cv-content bg-gray-50 p-6 rounded-lg border border-gray-200 text-gray-700 leading-relaxed whitespace-pre-wrap font-mono text-sm overflow-visible">
+                            @Html.Raw(ViewBag.FinalCV?.Replace("\n", "<br>"))
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Actions -->
+            <div class="lg:col-span-1">
+                <div class="space-y-6">
+                    <!-- Publish CV Card -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-800">
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-globe text-purple-500 mr-2"></i> Publish CV
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-sm text-gray-600 mb-4">Make your CV available for potential employers to discover</p>
+                            <form method="post" asp-action="PublishFinalCV" id="publishForm">
+                                <button type="submit" class="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all transform hover:-translate-y-0.5 btn-hover-effect">
+                                    <i class="fas fa-globe mr-2"></i> Publish CV
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-900">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-bolt text-blue-500 mr-2"></i> Quick Actions
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <button id="printCVBtn" class="w-full flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all transform hover:-translate-y-0.5">
+                                <i class="fas fa-print mr-2"></i> Print CV
+                            </button>
+                            <button id="shareCVBtn" class="w-full flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all transform hover:-translate-y-0.5">
+                                <i class="fas fa-share-alt mr-2"></i> Share CV
+                            </button>
+                            <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="w-full flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow-sm transition-all transform hover:-translate-y-0.5">
+                                <i class="fas fa-edit mr-2"></i> Edit Again
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tips Card -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all animate-fade-in-up animation-delay-1000">
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 px-6 py-4 border-b border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Tips
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                    <span>Review and customize before publishing</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                    <span>Keep your CV updated regularly</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                    <span>Use keywords relevant to your target jobs</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Error Message -->
+        <div class="bg-red-50 border-l-4 border-red-400 p-6 rounded-r-lg animate-fade-in-up animation-delay-700">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-red-800">CV Generation Failed</h3>
+                    <p class="text-red-700 mt-2">@ViewBag.ErrorMessage</p>
+                    <div class="mt-4">
+                        <a asp-controller="CVAnalysis" asp-action="AnalysisResult" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all transform hover:-translate-y-0.5">
+                            <i class="fas fa-arrow-left mr-2"></i> Try Again
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4 animate-fade-in-up">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900">Share Your CV</h3>
+            <button id="closeShareModal" class="text-gray-400 hover:text-gray-500 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Share via</label>
+                <div class="flex space-x-3">
+                    <button class="social-share-btn w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-all transform hover:-translate-y-1 hover:shadow-md" data-platform="linkedin">
+                        <i class="fab fa-linkedin-in"></i>
+                    </button>
+                    <button class="social-share-btn w-12 h-12 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 transition-all transform hover:-translate-y-1 hover:shadow-md" data-platform="facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </button>
+                    <button class="social-share-btn w-12 h-12 rounded-full bg-blue-300 text-white flex items-center justify-center hover:bg-blue-400 transition-all transform hover:-translate-y-1 hover:shadow-md" data-platform="twitter">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                    <button class="social-share-btn w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center hover:bg-green-700 transition-all transform hover:-translate-y-1 hover:shadow-md" data-platform="whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label for="shareLink" class="block text-sm font-medium text-gray-700 mb-1">Or copy link</label>
+                <div class="flex">
+                    <input type="text" id="shareLink" readonly value="@Context.Request.Scheme://@Context.Request.Host@Context.Request.Path" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <button id="copyShareLink" class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <i class="fas fa-copy mr-1"></i>Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/ShowFinalCV.js"></script>
 } 

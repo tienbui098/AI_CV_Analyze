@@ -325,6 +325,98 @@
         }
     };
 
+    // ================ GENERATE CV FORM HANDLING ================
+    const generateCVFormHandler = {
+        form: null,
+        controller: null,
+        submitting: false,
+        aborted: false,
+        loadingModal: null,
+
+        submit: async function (e) {
+            e.preventDefault();
+            if (this.submitting) return;
+            this.submitting = true;
+            this.aborted = false;
+            this.showLoadingModal();
+            this.controller = new AbortController();
+
+            try {
+                const response = await fetch(this.form.action, {
+                    method: 'POST',
+                    body: new FormData(this.form),
+                    signal: this.controller.signal,
+                    headers: {
+                        'X-RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                if (this.aborted) return; // Nếu đã abort, không xử lý/log gì nữa
+
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    window.location.reload();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    this.aborted = true;
+                    toast.show('CV generation has been cancelled.', 'warning');
+                    return;
+                } else {
+                    toast.show('An error occurred while generating your CV. Please try again.', 'error');
+                }
+            } finally {
+                this.hideLoadingModal();
+                this.submitting = false;
+            }
+        },
+
+        abort: function () {
+            this.aborted = true;
+            if (this.controller) {
+                this.controller.abort();
+            }
+        },
+
+        showLoadingModal: function () {
+            if (this.loadingModal) {
+                this.loadingModal.classList.remove('hidden');
+                this.loadingModal.style.display = 'flex';
+            }
+        },
+
+        hideLoadingModal: function () {
+            if (this.loadingModal) {
+                this.loadingModal.classList.add('hidden');
+                this.loadingModal.style.display = 'none';
+            }
+        },
+
+        init: function () {
+            this.form = document.getElementById('generateFinalCVForm');
+            this.loadingModal = document.getElementById('generateCVLoadingModal');
+            
+            if (this.form) {
+                this.form.addEventListener('submit', (e) => this.submit(e));
+            } else {
+                console.error('Form #generateFinalCVForm not found!');
+            }
+
+            // Cancel button logic for generate CV
+            const cancelBtn = document.getElementById('cancelGenerateCVBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', (evt) => {
+                    evt.preventDefault();
+                    this.abort();
+                    this.hideLoadingModal();
+                });
+            }
+        }
+    };
+
     // ================ TOAST NOTIFICATIONS ================
     const toast = {
         show: function (message, type = 'info') {
@@ -375,6 +467,7 @@
     loadingModal.init();
     stickySidebar.init();
     formHandler.init();
+    generateCVFormHandler.init();
 
     // ================ CV SCORING HANDLER ================
     const btnScoreCV = document.getElementById('btnScoreCV');

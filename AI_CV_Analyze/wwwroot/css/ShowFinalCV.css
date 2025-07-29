@@ -1,0 +1,561 @@
+/* ShowFinalCV.css - Custom styles for the Final CV page */
+
+/* CV Content Styling */
+.cv-content {
+    font-family: 'Inter', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.8;
+    min-height: 400px;
+    overflow: visible;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+    font-size: 14px;
+    color: #2d3748;
+    letter-spacing: 0.025em;
+    font-weight: 400;
+}
+
+.cv-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cv-content::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 4px;
+}
+
+.cv-content::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+.cv-content::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Enhanced CV content display */
+.cv-content {
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
+    padding: 2.5rem !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    font-weight: 400;
+}
+
+.cv-content br {
+    display: block;
+    margin: 0.75rem 0;
+}
+
+/* Enhanced text formatting for better readability */
+.cv-content p {
+    margin: 0.75rem 0;
+    line-height: 1.8;
+    font-size: 14px;
+    color: #374151;
+}
+
+.cv-content h1 {
+    margin: 1.5rem 0 1rem 0;
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 24px;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 0.5rem;
+    letter-spacing: -0.025em;
+}
+
+.cv-content h2 {
+    margin: 1.25rem 0 0.75rem 0;
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.25rem;
+}
+
+.cv-content h3 {
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+    color: #374151;
+    font-size: 18px;
+}
+
+.cv-content h4, .cv-content h5, .cv-content h6 {
+    margin: 0.75rem 0 0.5rem 0;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 16px;
+}
+
+.cv-content ul, .cv-content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.75rem;
+}
+
+.cv-content li {
+    margin: 0.5rem 0;
+    line-height: 1.7;
+    color: #374151;
+}
+
+.cv-content strong, .cv-content b {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.cv-content em, .cv-content i {
+    font-style: italic;
+    color: #6b7280;
+}
+
+/* Special styling for contact information */
+.cv-content .contact-info {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    margin: 1rem 0;
+}
+
+/* Styling for experience sections */
+.cv-content .experience-item {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-left: 3px solid #10b981;
+}
+
+/* Styling for skills section */
+.cv-content .skills-section {
+    background: #f0f9ff;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #0ea5e9;
+    margin: 1rem 0;
+}
+
+/* Styling for education section */
+.cv-content .education-item {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #fef3c7;
+    border-radius: 8px;
+    border-left: 3px solid #f59e0b;
+}
+
+/* Animation classes */
+.animate-fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animation-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animation-delay-300 {
+    animation-delay: 0.3s;
+}
+
+.animation-delay-400 {
+    animation-delay: 0.4s;
+}
+
+.animation-delay-500 {
+    animation-delay: 0.5s;
+}
+
+.animation-delay-600 {
+    animation-delay: 0.6s;
+}
+
+.animation-delay-700 {
+    animation-delay: 0.7s;
+}
+
+.animation-delay-800 {
+    animation-delay: 0.8s;
+}
+
+.animation-delay-900 {
+    animation-delay: 0.9s;
+}
+
+.animation-delay-1000 {
+    animation-delay: 1s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Float animation for success badge */
+.float-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Pulse animation for error badge */
+.pulse-animation {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Button hover effects */
+.btn-hover-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hover-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-hover-effect:hover::before {
+    left: 100%;
+}
+
+/* Enhanced spinner for loading states */
+.enhanced-spinner {
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Progress bar animation */
+.animate-progress {
+    animation: progress 2s ease-in-out infinite;
+}
+
+@keyframes progress {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Card hover effects */
+.hover-lift {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Gradient borders */
+.gradient-border {
+    position: relative;
+    background: white;
+    border-radius: 1rem;
+}
+
+.gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+    border-radius: 1rem;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+}
+
+/* Toast notifications */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+    max-width: 400px;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: white;
+    margin-left: 1rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+.toast-success .toast-content {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.toast-error .toast-content {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.toast-warning .toast-content {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.toast-info .toast-content {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+/* Custom scrollbar for modals */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .cv-content {
+        max-height: none;
+        overflow: visible;
+        background: white !important;
+        border: 1px solid #000 !important;
+        padding: 2rem !important;
+        font-size: 11pt !important;
+        line-height: 1.6 !important;
+        box-shadow: none !important;
+        font-family: 'Times New Roman', serif !important;
+        color: #000 !important;
+    }
+    
+    body {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .bg-white {
+        background: white !important;
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+    }
+    
+    /* Hide all buttons and navigation when printing */
+    button, .btn-secondary, .flex.gap-3 {
+        display: none !important;
+    }
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .cv-content {
+        font-size: 13px;
+        padding: 1.5rem;
+        line-height: 1.7;
+    }
+    
+    .cv-content h1 {
+        font-size: 20px;
+    }
+    
+    .cv-content h2 {
+        font-size: 18px;
+    }
+    
+    .cv-content h3 {
+        font-size: 16px;
+    }
+    
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .lg\:col-span-3,
+    .lg\:col-span-1 {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .cv-content {
+        font-size: 12px;
+        padding: 1rem;
+    }
+    
+    .cv-content h1 {
+        font-size: 18px;
+    }
+    
+    .cv-content h2 {
+        font-size: 16px;
+    }
+    
+    .cv-content h3 {
+        font-size: 14px;
+    }
+}
+
+/* Success state animations */
+.success-pulse {
+    animation: successPulse 2s ease-in-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Loading dots animation */
+.loading-dots::after {
+    content: '';
+    animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+    0%, 20% {
+        content: '';
+    }
+    40% {
+        content: '.';
+    }
+    60% {
+        content: '..';
+    }
+    80%, 100% {
+        content: '...';
+    }
+}
+
+/* Enhanced focus states */
+.focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, textarea, select {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Enhanced button states */
+.btn-secondary {
+    background: white;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+/* Modal backdrop blur */
+.backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+}
+
+/* Enhanced card shadows */
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Text selection styling */
+::selection {
+    background: #3b82f6;
+    color: white;
+}
+
+::-moz-selection {
+    background: #3b82f6;
+    color: white;
+} 
