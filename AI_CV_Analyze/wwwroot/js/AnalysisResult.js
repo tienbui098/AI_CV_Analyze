@@ -1785,12 +1785,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // Mục đích: Cho phép người dùng sao chép nhanh các gợi ý AI vào clipboard
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            const suggestionText = btn.closest('.suggestion-card').querySelector('.ai-suggestion-text'); // Tìm text gợi ý trong card
-            if (suggestionText) {
-                const text = suggestionText.innerText || suggestionText.textContent; // Lấy nội dung text
-                navigator.clipboard.writeText(text).then(() => {
-                    toast.show('Copied suggestions to clipboard', 'success'); // Thông báo copy thành công
+            const suggestionCard = btn.closest('.suggestion-card');
+            if (suggestionCard) {
+                // Lấy tất cả nội dung trong accordion (kể cả phần ẩn)
+                let text = '';
+                suggestionCard.querySelectorAll('.accordion-content').forEach(content => {
+                    text += (content.innerText || content.textContent) + '\n';
                 });
+                text = text.trim();
+                if (text) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        toast.show('Copied suggestions to clipboard', 'success'); // Thông báo copy thành công
+                    });
+                }
             }
         });
     });
