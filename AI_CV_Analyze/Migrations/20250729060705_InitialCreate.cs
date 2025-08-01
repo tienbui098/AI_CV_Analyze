@@ -132,32 +132,32 @@ namespace AI_CV_Analyze.Migrations
                     AnalysisResultId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ResumeId = table.Column<int>(type: "int", nullable: false),
-                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AnalysisDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AnalysisStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DetectedText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FormFields = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ConfidenceScore = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KeyPhrases = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Entities = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SentimentScore = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Language = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Skills = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SkillsAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Experience = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Project = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Education = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LanguageProficiency = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Certificate = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Achievement = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Course = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OverallAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AnalysisStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DetectedText = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FormFields = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConfidenceScore = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    KeyPhrases = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Entities = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SentimentScore = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Language = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Skills = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SkillsAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Experience = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Project = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Education = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LanguageProficiency = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Certificate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Achievement = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Course = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OverallAnalysis = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -177,15 +177,13 @@ namespace AI_CV_Analyze.Migrations
                     ResumeDataId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ResumeId = table.Column<int>(type: "int", nullable: false),
-                    ExtractedData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Language = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ExtractedData = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Language = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ResumeData", x => x.ResumeDataId);
-                    table.CheckConstraint("CK_ResumeData_Language", "Language IN ('English', 'Vietnamese')");
-                    table.CheckConstraint("CK_ResumeData_Status", "Status IN ('Pending', 'Processing', 'Completed', 'Failed')");
                     table.ForeignKey(
                         name: "FK_ResumeData_Resumes_ResumeId",
                         column: x => x.ResumeId,
@@ -210,7 +208,6 @@ namespace AI_CV_Analyze.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ResumeHistory", x => x.HistoryId);
-                    table.CheckConstraint("CK_ResumeHistory_Score", "Score BETWEEN 0 AND 100");
                     table.ForeignKey(
                         name: "FK_ResumeHistory_Resumes_ResumeId",
                         column: x => x.ResumeId,

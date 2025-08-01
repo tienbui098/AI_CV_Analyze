@@ -560,12 +560,13 @@
                     </div>
 
                     <div class="suggestion-content bg-gray-50 p-6 rounded-lg border-l-4 border-yellow-400 hover:border-blue-400 transition-all">
-                        <!-- Format sections with proper spacing and styling -->
-                        <div class="ai-suggestion-text space-y-6">
+                        <!-- Accordion suggestions -->
+                        <div class="ai-suggestion-text space-y-4" id="accordion-suggestions">
                             @if (!string.IsNullOrEmpty(ViewBag.Suggestions))
                             {
                                 var suggestionsText = ViewBag.Suggestions?.ToString() ?? "";
                                 var sections = suggestionsText.Split(new[] { "##" }, StringSplitOptions.RemoveEmptyEntries);
+                                int sectionIndex = 0;
                                 foreach (var section in sections)
                                 {
                                     if (!string.IsNullOrWhiteSpace(section))
@@ -573,57 +574,36 @@
                                         var parts = section.Trim().Split(new[] { '\n' }, 2);
                                         if (parts.Length > 0)
                                         {
-                                            <div class="section-block hover:bg-blue-50 p-2 rounded-lg transition-all">
-                                                @if (parts.Length > 1)
-                                                {
-                                                    <h3 class="text-xl font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200 hover:text-blue-600 transition-colors">@(parts[0]?.Trim() ?? "")</h3>
-                                                    <div class="section-content text-gray-700 leading-relaxed">
-                                                        @{
-                                                            var content = parts[1]?.Trim() ?? "";
-                                                            var lines = content.Split('\n');
-                                                            var filteredLines = new List<string>();
-                                                            foreach (var line in lines)
-                                                            {
-                                                                var trimmedLine = line.Trim();
-                                                                if (!string.IsNullOrWhiteSpace(trimmedLine) &&
+                                            var headerId = $"accordion-header-{sectionIndex}";
+                                            var contentId = $"accordion-content-{sectionIndex}";
+                                            <div class="accordion-item section-block hover:bg-blue-50 p-2 rounded-lg transition-all border border-gray-200 mb-2">
+                                                <button type="button" class="accordion-toggle flex items-center w-full text-left focus:outline-none" aria-expanded="false" aria-controls="@contentId" id="@headerId" data-target="@contentId">
+                                                    <span class="flex-1 text-xl font-semibold text-gray-800 mb-0 pb-2 border-b border-gray-200 hover:text-blue-600 transition-colors">@(parts[0]?.Trim() ?? "")</span>
+                                                    <span class="ml-2 transition-transform duration-200"><i class="fas fa-chevron-down"></i></span>
+                                                </button>
+                                                <div id="@contentId" class="accordion-content section-content text-gray-700 leading-relaxed mt-3 hidden" aria-labelledby="@headerId">
+                                                    @{
+                                                        var content = parts.Length > 1 ? (parts[1]?.Trim() ?? "") : (parts[0]?.Trim() ?? "");
+                                                        var lines = content.Split('\n');
+                                                        var filteredLines = new List<string>();
+                                                        foreach (var line in lines)
+                                                        {
+                                                            var trimmedLine = line.Trim();
+                                                            if (!string.IsNullOrWhiteSpace(trimmedLine) &&
                                                                 trimmedLine != "---" &&
                                                                 trimmedLine != "--- " &&
                                                                 trimmedLine != " ---" &&
                                                                 trimmedLine != " --- ")
-                                                                {
-                                                                    filteredLines.Add(line);
-                                                                }
-                                                            }
-                                                            var filteredContent = string.Join("\n", filteredLines);
-                                                        }
-                                                        @Html.Raw(filteredContent.Replace("\n", "<br>"))
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <div class="section-content text-gray-700 leading-relaxed">
-                                                        @{
-                                                            var content = parts[0]?.Trim() ?? "";
-                                                            var lines = content.Split('\n');
-                                                            var filteredLines = new List<string>();
-                                                            foreach (var line in lines)
                                                             {
-                                                                var trimmedLine = line.Trim();
-                                                                if (!string.IsNullOrWhiteSpace(trimmedLine) &&
-                                                                trimmedLine != "---" &&
-                                                                trimmedLine != "--- " &&
-                                                                trimmedLine != " ---" &&
-                                                                trimmedLine != " --- ")
-                                                                {
-                                                                    filteredLines.Add(line);
-                                                                }
+                                                                filteredLines.Add(line);
                                                             }
-                                                            var filteredContent = string.Join("\n", filteredLines);
                                                         }
-                                                        @Html.Raw(filteredContent.Replace("\n", "<br>"))
-                                                    </div>
-                                                }
+                                                        var filteredContent = string.Join("\n", filteredLines);
+                                                    }
+                                                    @Html.Raw(filteredContent.Replace("\n", "<br>"))
+                                                </div>
                                             </div>
+                                            sectionIndex++;
                                         }
                                     }
                                 }
@@ -633,7 +613,7 @@
                                 <div class="text-center py-8">
                                     <i class="fas fa-info-circle text-blue-500 text-4xl mb-4 float-animation"></i>
                                     <p class="text-gray-600 text-lg">No AI edit suggestions available</p>
-                                    <p class="text-gray-500 text-sm mt-2">Please use the "Get CV Edit Suggestions from AI" button above to receive suggestions</p>
+                                    <p class="text-gray-500 text-sm mt-2">Please use the \"Get CV Edit Suggestions from AI\" button above to receive suggestions</p>
                                 </div>
                             }
                         </div>

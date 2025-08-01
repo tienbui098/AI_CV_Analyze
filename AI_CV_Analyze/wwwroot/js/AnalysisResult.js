@@ -1979,3 +1979,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    var toggles = document.querySelectorAll('#accordion-suggestions .accordion-toggle');
+    toggles.forEach(function (toggle) {
+        toggle.addEventListener('click', function () {
+            var contentId = this.getAttribute('data-target');
+            var content = document.getElementById(contentId);
+            var expanded = this.getAttribute('aria-expanded') === 'true';
+            // Đóng tất cả các accordion khác
+            toggles.forEach(function (otherToggle) {
+                var otherContentId = otherToggle.getAttribute('data-target');
+                var otherContent = document.getElementById(otherContentId);
+                if (otherContent && otherContent !== content) {
+                    otherContent.classList.add('hidden');
+                    otherToggle.setAttribute('aria-expanded', 'false');
+                    var icon = otherToggle.querySelector('i');
+                    if (icon) icon.classList.remove('fa-chevron-up');
+                    if (icon) icon.classList.add('fa-chevron-down');
+                }
+            });
+            if (content) {
+                if (expanded) {
+                    content.classList.add('hidden');
+                    this.setAttribute('aria-expanded', 'false');
+                    var icon = this.querySelector('i');
+                    if (icon) icon.classList.remove('fa-chevron-up');
+                    if (icon) icon.classList.add('fa-chevron-down');
+                } else {
+                    content.classList.remove('hidden');
+                    this.setAttribute('aria-expanded', 'true');
+                    var icon = this.querySelector('i');
+                    if (icon) icon.classList.remove('fa-chevron-down');
+                    if (icon) icon.classList.add('fa-chevron-up');
+                }
+            }
+        });
+    });
+});
