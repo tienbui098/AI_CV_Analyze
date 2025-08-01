@@ -713,6 +713,27 @@ document.addEventListener('DOMContentLoaded', function () {
         requestAnimationFrame(animate); // Bắt đầu animation bằng cách gọi frame đầu tiên
     }
 
+    function updateClock() {
+        const now = new Date();
+        const clockElement = document.getElementById('realtime-clock');
+
+        // Định dạng: dd/MM/yyyy HH:mm
+        const formattedDate =
+            String(now.getDate()).padStart(2, '0') + '/' +
+            String(now.getMonth() + 1).padStart(2, '0') + '/' +
+            now.getFullYear() + ' ' +
+            String(now.getHours()).padStart(2, '0') + ':' +
+            String(now.getMinutes()).padStart(2, '0');
+
+        clockElement.textContent = formattedDate;
+    }
+
+    // Cập nhật ngay lần đầu
+    updateClock();
+
+    // Sau đó cập nhật mỗi phút (60000ms)
+    setInterval(updateClock, 60000);
+
     // ================ HÀM CẬP NHẬT MỨC ĐỘ ĐÁNH GIÁ ================
     // Hàm cập nhật mức độ đánh giá dựa trên tổng điểm
     // Mục đích: Hiển thị đánh giá tổng quan về chất lượng CV (Excellent/Good/Average/Needs Improvement)
