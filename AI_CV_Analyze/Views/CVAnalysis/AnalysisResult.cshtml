@@ -675,7 +675,24 @@
                 var experienceSummary = isLongExperience ? experienceText.Substring(0, 150) + "..." : experienceText;
                 
                 var hasProject = !string.IsNullOrEmpty(Model.Project);
-                var projectText = hasProject ? Model.Project.Replace("\n", " ").Replace("<br>", " ") : "";
+                // Cải thiện xử lý nội dung Project để tránh lỗi hiển thị
+                var projectText = "";
+                if (hasProject)
+                {
+                    // Loại bỏ các ký tự HTML entities và tags có thể gây lỗi
+                    projectText = Model.Project
+                        .Replace("&quot;", "\"")
+                        .Replace("&amp;", "&")
+                        .Replace("&lt;", "<")
+                        .Replace("&gt;", ">")
+                        .Replace("&apos;", "'")
+                        .Replace("data-title=\"Projects\">", "") // Loại bỏ chuỗi gây lỗi
+                        .Replace("\n", " ")
+                        .Replace("\r\n", " ")
+                        .Replace("<br>", " ")
+                        .Replace("<br/>", " ")
+                        .Replace("<br />", " ");
+                }
                 var isLongProject = hasProject && projectText.Length > 150;
                 var projectSummary = isLongProject ? projectText.Substring(0, 150) + "..." : projectText;
             }
@@ -841,7 +858,7 @@
             @if (hasProject)
             {
                 <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-700"
-                     data-full-content="@Html.Raw(Model.Project.Replace("\n", "<br>"))" 
+                     data-full-content="@Html.Raw(projectText.Replace("\n", "<br>"))" 
                      data-title="Projects">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
@@ -850,11 +867,11 @@
                     </div>
                     <div class="p-6">
                         <div class="content-summary text-gray-700">
-                            @projectSummary
+                            @Html.Raw(projectSummary.Replace("\n", "<br>"))
                         </div>
                         @if (isLongProject)
                         {
-                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm transition-colors hover:underline">
+                            <button class="show-more-btn text-blue-600 hover:text-blue-800 font-medium mt-3 text-sm transition-colors hover:underline" type="button">
                                 <i class="fas fa-chevron-down mr-1 transition-transform duration-300 group-hover:translate-y-1"></i>View Details
                             </button>
                         }
@@ -988,3 +1005,111 @@
         </div>
     </div>
 </div>
+
+<script src="~/js/test-view-details.js"></script>
+<script>
+// Enhanced test script để kiểm tra chức năng View Details
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('AnalysisResult page loaded - Enhanced test');
+    
+    // Kiểm tra xem có nút View Details không
+    const viewDetailsButtons = document.querySelectorAll('.show-more-btn');
+    console.log('Found', viewDetailsButtons.length, 'View Details buttons');
+    
+    // Kiểm tra xem có modal không
+    const modal = document.getElementById('contentDetailModal');
+    console.log('Modal found:', !!modal);
+    
+    // Kiểm tra xem có content cards không
+    const contentCards = document.querySelectorAll('.content-card');
+    console.log('Found', contentCards.length, 'content cards');
+    
+    // Enhanced test click vào nút View Details
+    viewDetailsButtons.forEach((btn, index) => {
+        console.log('Button', index, 'data-title:', btn.closest('.content-card')?.getAttribute('data-title'));
+        console.log('Button', index, 'has data-full-content:', !!btn.closest('.content-card')?.getAttribute('data-full-content'));
+        
+        // Thêm enhanced test click event
+        btn.addEventListener('click', function(e) {
+            console.log('Enhanced test click on button', index);
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const card = this.closest('.content-card');
+            const title = card?.getAttribute('data-title');
+            const content = card?.getAttribute('data-full-content');
+            
+            console.log('Enhanced Test - Title:', title);
+            console.log('Enhanced Test - Content length:', content?.length);
+            
+            if (title && content) {
+                // Enhanced test hiển thị modal
+                const modal = document.getElementById('contentDetailModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalContent = document.getElementById('modalContent');
+                
+                if (modal && modalTitle && modalContent) {
+                    modalTitle.textContent = title;
+                    modalContent.innerHTML = content;
+                    modal.classList.remove('hidden');
+                    modal.style.display = 'flex';
+                    console.log('Enhanced test modal shown successfully');
+                    
+                    // Thêm class show sau một chút để animation
+                    setTimeout(() => {
+                        modal.classList.add('show');
+                    }, 10);
+                } else {
+                    console.error('Modal elements not found in enhanced test');
+                }
+            } else {
+                console.error('Missing title or content in enhanced test');
+            }
+        });
+    });
+    
+    // Enhanced test đóng modal
+    const closeBtn = document.getElementById('closeContentModal');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            const modal = document.getElementById('contentDetailModal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                }, 300);
+                console.log('Enhanced test modal closed successfully');
+            }
+        });
+    }
+    
+    // Test click bên ngoài modal để đóng
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('contentDetailModal');
+        if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+            }, 300);
+            console.log('Modal closed by clicking outside');
+        }
+    });
+    
+    // Test phím Escape để đóng modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('contentDetailModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                }, 300);
+                console.log('Modal closed by Escape key');
+            }
+        }
+    });
+});
+</script>
