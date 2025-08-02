@@ -465,25 +465,134 @@ document.addEventListener('DOMContentLoaded', function () {
     // Xử lý modal hiển thị chi tiết nội dung CV
     // Mục đích: Cho phép người dùng xem nội dung đầy đủ của các phần CV khi nội dung bị cắt ngắn
     
-    // Xử lý click vào nút "View Details" để hiển thị modal chi tiết
-    // Khi nội dung CV quá dài, chỉ hiển thị một phần và có nút "View Details" để xem đầy đủ
-    document.querySelectorAll('.show-more-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const card = this.closest('.content-card'); // Tìm card chứa nút (tìm phần tử cha gần nhất có class content-card)
-            const title = card.getAttribute('data-title'); // Lấy tiêu đề từ data attribute (ví dụ: "Kinh nghiệm làm việc")
-            const content = card.getAttribute('data-full-content'); // Lấy nội dung đầy đủ từ data attribute
+    // Khởi tạo modal object
+    const contentDetailModal = {
+        element: null,
+        title: null,
+        content: null,
+        closeBtn: null,
+
+        // Khởi tạo modal
+        init: function() {
+            this.element = document.getElementById('contentDetailModal');
+            this.title = document.getElementById('modalTitle');
+            this.content = document.getElementById('modalContent');
+            this.closeBtn = document.getElementById('closeContentModal');
             
-            // Cập nhật nội dung modal với tiêu đề và nội dung đầy đủ
-            document.getElementById('modalTitle').textContent = title; // Cập nhật tiêu đề modal
-            document.getElementById('modalContent').innerHTML = content; // Cập nhật nội dung modal
-            document.getElementById('contentDetailModal').classList.remove('hidden'); // Hiển thị modal
-        });
+            if (!this.element || !this.title || !this.content) {
+                console.error('Modal elements not found');
+                return;
+            }
+
+            // Gắn event listener cho nút đóng
+            if (this.closeBtn) {
+                this.closeBtn.addEventListener('click', () => this.hide());
+            }
+
+            // Gắn event listener cho click bên ngoài modal
+            this.element.addEventListener('click', (e) => {
+                if (e.target === this.element) {
+                    this.hide();
+                }
+            });
+
+            // Gắn event listener cho phím Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !this.element.classList.contains('hidden')) {
+                    this.hide();
+                }
+            });
+        },
+
+        // Hiển thị modal
+        show: function(title, content) {
+            if (!this.element || !this.title || !this.content) {
+                console.error('Modal elements not found');
+                return;
+            }
+
+            // Cập nhật nội dung
+            this.title.textContent = title || 'Content Details';
+            
+            // Xử lý nội dung để loại bỏ HTML entities
+            let processedContent = content || '';
+            if (typeof processedContent === 'string') {
+                processedContent = processedContent
+                    .replace(/&quot;/g, '"')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&apos;/g, "'")
+                    .replace(/data-title="Projects">/g, '');
+            }
+            
+            this.content.innerHTML = processedContent;
+            
+            // Hiển thị modal
+            this.element.classList.remove('hidden');
+            this.element.style.display = 'flex';
+            
+            // Thêm animation
+            setTimeout(() => {
+                this.element.classList.add('show');
+            }, 10);
+        },
+
+        // Ẩn modal
+        hide: function() {
+            if (!this.element) return;
+            
+            this.element.classList.remove('show');
+            setTimeout(() => {
+                this.element.style.display = 'none';
+                this.element.classList.add('hidden');
+            }, 300);
+        }
+    };
+
+    // Khởi tạo modal
+    contentDetailModal.init();
+
+    // Xử lý click vào nút "View Details" - Sử dụng event delegation
+    document.addEventListener('click', function(e) {
+        // Kiểm tra nếu click vào nút show-more-btn
+        if (e.target && e.target.classList.contains('show-more-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Tìm card chứa nút
+            const card = e.target.closest('.content-card');
+            if (!card) {
+                console.error('Could not find content-card parent');
+                return;
+            }
+            
+            // Lấy dữ liệu từ card
+            const title = card.getAttribute('data-title');
+            const fullContent = card.getAttribute('data-full-content');
+            
+            if (!title || !fullContent) {
+                console.error('Missing data-title or data-full-content');
+                return;
+            }
+            
+            // Hiển thị modal
+            contentDetailModal.show(title, fullContent);
+        }
     });
 
-    // Ẩn modal khi click nút đóng (X) hoặc click bên ngoài modal
-    // Cho phép người dùng đóng modal để quay lại trang chính
-    document.getElementById('closeContentModal')?.addEventListener('click', function() {
-        document.getElementById('contentDetailModal').classList.add('hidden'); // Ẩn modal
+    // Xử lý click vào toàn bộ content card (nếu không click vào nút View Details)
+    document.addEventListener('click', function(e) {
+        // Kiểm tra nếu click vào content-card nhưng không phải nút show-more-btn
+        if (e.target && e.target.closest('.content-card') && !e.target.classList.contains('show-more-btn')) {
+            const card = e.target.closest('.content-card');
+            const title = card.getAttribute('data-title');
+            const fullContent = card.getAttribute('data-full-content');
+            
+            if (title && fullContent) {
+                contentDetailModal.show(title, fullContent);
+            }
+        }
     });
 
     // ================ ANIMATION CHẤM ĐIỂM CV NÂNG CAO ================
@@ -1802,89 +1911,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ================ CONTENT CARD MODAL HANDLING ================
-    // Quản lý modal hiển thị chi tiết nội dung CV
-    // Mục đích: Cho phép người dùng xem nội dung đầy đủ khi nội dung bị cắt ngắn
-    const contentDetailModal = {
-        element: document.getElementById('contentDetailModal'), // Element modal chính
-        title: document.getElementById('modalTitle'), // Element hiển thị tiêu đề
-        content: document.getElementById('modalContent'), // Element hiển thị nội dung
-        closeBtn: document.getElementById('closeContentModal'), // Nút đóng modal
 
-        // Hiển thị modal với animation
-        show: function (title, content) {
-            this.title.textContent = title; // Cập nhật tiêu đề
-            this.content.innerHTML = content; // Cập nhật nội dung
-            this.element.classList.remove('hidden'); // Hiển thị modal
-            this.element.style.display = 'flex'; // Sử dụng flexbox để căn giữa
-            setTimeout(() => this.element.classList.add('show'), 10); // Thêm animation sau 10ms
-        },
-
-        // Ẩn modal với animation
-        hide: function () {
-            this.element.classList.remove('show'); // Bắt đầu ẩn
-            setTimeout(() => {
-                this.element.style.display = 'none'; // Ẩn hoàn toàn
-                this.element.classList.add('hidden'); // Thêm class hidden
-            }, 300); // Sau 300ms (thời gian animation)
-        },
-
-        // Khởi tạo modal và gắn các event listener
-        init: function () {
-            if (this.closeBtn) {
-                this.closeBtn.addEventListener('click', () => this.hide()); // Đóng khi click nút X
-            }
-            
-            // Đóng modal khi click bên ngoài modal
-            this.element.addEventListener('click', (e) => {
-                if (e.target === this.element) {
-                    this.hide(); // Chỉ đóng khi click vào background, không phải content
-                }
-            });
-
-            // Đóng modal bằng phím Escape
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !this.element.classList.contains('hidden')) {
-                    this.hide(); // Đóng modal nếu đang hiển thị
-                }
-            });
-        }
-    };
-
-    // Khởi tạo content detail modal
-    contentDetailModal.init();
-
-    // Xử lý click vào content card (toàn bộ card)
-    document.querySelectorAll('.content-card').forEach(card => {
-        card.addEventListener('click', function (e) {
-            // Không trigger nếu click vào nút show-more (để tránh conflict)
-            if (e.target.closest('.show-more-btn')) {
-                e.stopPropagation(); // Dừng event bubbling
-                return;
-            }
-
-            const fullContent = this.getAttribute('data-full-content'); // Lấy nội dung đầy đủ
-            const title = this.getAttribute('data-title'); // Lấy tiêu đề
-            
-            if (fullContent && title) {
-                contentDetailModal.show(title, fullContent); // Hiển thị modal với nội dung đầy đủ
-            }
-        });
-    });
-
-    // Xử lý click vào nút "View Details" (show-more button)
-    document.querySelectorAll('.show-more-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation(); // Dừng event bubbling để không trigger card click
-            const card = this.closest('.content-card'); // Tìm card chứa nút
-            const fullContent = card.getAttribute('data-full-content'); // Lấy nội dung đầy đủ
-            const title = card.getAttribute('data-title'); // Lấy tiêu đề
-            
-            if (fullContent && title) {
-                contentDetailModal.show(title, fullContent); // Hiển thị modal với nội dung đầy đủ
-            }
-        });
-    });
 
     // ================ ENHANCED LOADING MODAL WITH PROGRESS ================
     // Nâng cấp modal loading với thanh tiến trình để tạo trải nghiệm tốt hơn
