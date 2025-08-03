@@ -46,13 +46,23 @@ namespace AI_CV_Analyze.Services.Implementation
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _openAIKey);
 
-            string prompt = $@"Given the following skills and work/project experience, recommend the most suitable job. Return only:
-- The recommended job title
+            string prompt = $@"Given the following skills and work/project experience, recommend the most suitable job with appropriate experience level. 
+
+Experience Level Guidelines:
+1. Intern/Trainee: 0-1 years (students or fresh graduates, short-term learning role)
+2. Junior: 1-2 years (entry-level, needs guidance, learning basics)
+3. Mid-Level (Associate/Regular/Level II): 2-5 years (can work independently on standard tasks)
+4. Senior: 5+ years (highly experienced, handles complex tasks, mentors others)
+
+Based on the work experience provided, recommend a job title that includes the appropriate experience level prefix.
+
+Return only:
+- The recommended job title (include experience level prefix like ""Junior"", ""Senior"", ""Associate"", etc.)
 - The match percentage (integer, 0-100)
-- The most important skill to improve for a better match (if any; if none, say 'None' and percentage is 100%)
+- The most important skill to improve for a better match (if any; if none, say 'None' and percentage is 100% also make sure to say it properly)
 
 Format:
-Recommended Job: <job title>
+Recommended Job: <experience level> <job title>
 Match Percentage: <number>%
 Skill to Improve: <skill or 'None'>
 
@@ -64,7 +74,7 @@ Work/Project Experience: {workExperience ?? "None"}";
                 model = _openAIDeploymentName,
                 messages = new[]
                 {
-                    new { role = "system", content = "You are an AI assistant specialized in resume analysis and job recommendation. Always provide structured, professional career advice with skill match percentage and improvement suggestions." },
+                    new { role = "system", content = "You are an AI assistant specialized in resume analysis and job recommendation. Always provide structured, professional career advice with skill match percentage and improvement suggestions. Include appropriate experience level prefixes in job titles based on the work experience provided." },
                     new { role = "user", content = prompt }
                 },
                 max_tokens = 1000,
@@ -135,7 +145,5 @@ Work/Project Experience: {workExperience ?? "None"}";
                 return new JobSuggestionResult { ImprovementPlan = $"Error getting job suggestions: {ex.Message}" };
             }
         }
-
-
     }
 } 
