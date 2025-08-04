@@ -514,7 +514,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Cập nhật nội dung
             this.title.textContent = title || 'Content Details';
             
-            // Xử lý nội dung để loại bỏ HTML entities
+            // Xử lý nội dung để loại bỏ HTML entities và tags có thể gây lỗi
             let processedContent = content || '';
             if (typeof processedContent === 'string') {
                 processedContent = processedContent
@@ -523,7 +523,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     .replace(/&lt;/g, '<')
                     .replace(/&gt;/g, '>')
                     .replace(/&apos;/g, "'")
-                    .replace(/data-title="Projects">/g, '');
+                    .replace(/data-title="Projects">/g, '')
+                    .replace(/data-title="Experience">/g, '') // Loại bỏ chuỗi gây lỗi cho Experience
+                    .replace(/data-title="Achievements">/g, '') // Loại bỏ chuỗi gây lỗi cho Achievements
+                    .replace(/data-title="Profile Overview">/g, '') // Loại bỏ chuỗi gây lỗi cho Profile Overview
+                    .replace(/data-title="Education & Qualifications">/g, ''); // Loại bỏ chuỗi gây lỗi cho Education
             }
             
             this.content.innerHTML = processedContent;
