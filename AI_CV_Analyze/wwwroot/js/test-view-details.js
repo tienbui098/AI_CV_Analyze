@@ -49,7 +49,24 @@ function testViewDetailsButtons() {
                 
                 if (modal && modalTitle && modalContent) {
                     modalTitle.textContent = title;
-                    modalContent.innerHTML = content;
+                    
+                    // Xử lý nội dung để loại bỏ HTML entities và tags có thể gây lỗi
+                    let processedContent = content || '';
+                    if (typeof processedContent === 'string') {
+                        processedContent = processedContent
+                            .replace(/&quot;/g, '"')
+                            .replace(/&amp;/g, '&')
+                            .replace(/&lt;/g, '<')
+                            .replace(/&gt;/g, '>')
+                            .replace(/&apos;/g, "'")
+                            .replace(/data-title="Projects">/g, '')
+                            .replace(/data-title="Experience">/g, '')
+                            .replace(/data-title="Achievements">/g, '')
+                            .replace(/data-title="Profile Overview">/g, '')
+                            .replace(/data-title="Education & Qualifications">/g, '');
+                    }
+                    
+                    modalContent.innerHTML = processedContent;
                     modal.classList.remove('hidden');
                     modal.style.display = 'flex';
                     console.log('Modal shown successfully');

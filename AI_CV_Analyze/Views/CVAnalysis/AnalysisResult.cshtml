@@ -649,28 +649,95 @@
         <div class="space-y-6 order-3 md:order-3 md:col-span-3 animate-fade-in-right animation-delay-900">
             @{
                 var hasOverall = !string.IsNullOrEmpty(Model.OverallAnalysis);
-                var overviewText = hasOverall ? Model.OverallAnalysis.Replace("\n", " ").Replace("<br>", " ") : "";
+                // Cải thiện xử lý nội dung Overall Analysis để tránh lỗi hiển thị
+                var overviewText = "";
+                if (hasOverall)
+                {
+                    // Loại bỏ các ký tự HTML entities và tags có thể gây lỗi
+                    overviewText = Model.OverallAnalysis
+                        .Replace("&quot;", "\"")
+                        .Replace("&amp;", "&")
+                        .Replace("&lt;", "<")
+                        .Replace("&gt;", ">")
+                        .Replace("&apos;", "'")
+                        .Replace("data-title=\"Profile Overview\">", "") // Loại bỏ chuỗi gây lỗi
+                        .Replace("\n", " ")
+                        .Replace("\r\n", " ")
+                        .Replace("<br>", " ")
+                        .Replace("<br/>", " ")
+                        .Replace("<br />", " ");
+                }
                 var isLongOverview = hasOverall && overviewText.Length > 150;
                 var overviewSummary = isLongOverview ? overviewText.Substring(0, 150) + "..." : overviewText;
                 
                 var hasEducation = !string.IsNullOrEmpty(Model.Education) || !string.IsNullOrEmpty(Model.Course) || !string.IsNullOrEmpty(Model.Certificate);
+                // Cải thiện xử lý nội dung Education để tránh lỗi hiển thị
                 var educationText = "";
                 if (hasEducation)
                 {
-                    if (!string.IsNullOrEmpty(Model.Education)) educationText += Model.Education + "\n";
-                    if (!string.IsNullOrEmpty(Model.Course)) educationText += Model.Course + "\n";
-                    if (!string.IsNullOrEmpty(Model.Certificate)) educationText += Model.Certificate;
+                    var tempText = "";
+                    if (!string.IsNullOrEmpty(Model.Education)) tempText += Model.Education + "\n";
+                    if (!string.IsNullOrEmpty(Model.Course)) tempText += Model.Course + "\n";
+                    if (!string.IsNullOrEmpty(Model.Certificate)) tempText += Model.Certificate;
+                    
+                    // Loại bỏ các ký tự HTML entities và tags có thể gây lỗi
+                    educationText = tempText
+                        .Replace("&quot;", "\"")
+                        .Replace("&amp;", "&")
+                        .Replace("&lt;", "<")
+                        .Replace("&gt;", ">")
+                        .Replace("&apos;", "'")
+                        .Replace("data-title=\"Education & Qualifications\">", "") // Loại bỏ chuỗi gây lỗi
+                        .Replace("\n", " ")
+                        .Replace("\r\n", " ")
+                        .Replace("<br>", " ")
+                        .Replace("<br/>", " ")
+                        .Replace("<br />", " ");
                 }
                 var isLongEducation = hasEducation && educationText.Length > 150;
                 var educationSummary = isLongEducation ? educationText.Substring(0, 150) + "..." : educationText;
                 
                 var hasAchievement = !string.IsNullOrEmpty(Model.Achievement);
-                var achievementText = hasAchievement ? Model.Achievement.Replace("\n", " ").Replace("\r\n", " ") : "";
+                // Cải thiện xử lý nội dung Achievement để tránh lỗi hiển thị
+                var achievementText = "";
+                if (hasAchievement)
+                {
+                    // Loại bỏ các ký tự HTML entities và tags có thể gây lỗi
+                    achievementText = Model.Achievement
+                        .Replace("&quot;", "\"")
+                        .Replace("&amp;", "&")
+                        .Replace("&lt;", "<")
+                        .Replace("&gt;", ">")
+                        .Replace("&apos;", "'")
+                        .Replace("data-title=\"Achievements\">", "") // Loại bỏ chuỗi gây lỗi
+                        .Replace("\n", " ")
+                        .Replace("\r\n", " ")
+                        .Replace("<br>", " ")
+                        .Replace("<br/>", " ")
+                        .Replace("<br />", " ");
+                }
                 var isLongAchievement = hasAchievement && achievementText.Length > 150;
                 var achievementSummary = isLongAchievement ? achievementText.Substring(0, 150) + "..." : achievementText;
                 
                 var hasExperience = !string.IsNullOrEmpty(Model.Experience);
-                var experienceText = hasExperience ? Model.Experience.Replace("\n", " ").Replace("\r\n", " ") : "";
+                // Cải thiện xử lý nội dung Experience để tránh lỗi hiển thị
+                var experienceText = "";
+                if (hasExperience)
+                {
+                    // Loại bỏ các ký tự HTML entities và tags có thể gây lỗi
+                    experienceText = Model.Experience
+                        .Replace("&quot;", "\"")
+                        .Replace("&amp;", "&")
+                        .Replace("&lt;", "<")
+                        .Replace("&gt;", ">")
+                        .Replace("&apos;", "'")
+                        .Replace("data-title=\"Experience\">", "") // Loại bỏ chuỗi gây lỗi
+                        .Replace("\n", " ")
+                        .Replace("\r\n", " ")
+                        .Replace("<br>", " ")
+                        .Replace("<br/>", " ")
+                        .Replace("<br />", " ");
+                }
                 var isLongExperience = hasExperience && experienceText.Length > 150;
                 var experienceSummary = isLongExperience ? experienceText.Substring(0, 150) + "..." : experienceText;
                 
@@ -700,7 +767,7 @@
             @if (hasOverall)
             {
                 <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-100"
-                     data-full-content="@Html.Raw(Model.OverallAnalysis.Replace("\n", "<br>"))" 
+                     data-full-content="@Html.Raw(overviewText.Replace("\n", "<br>"))" 
                      data-title="Profile Overview">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
@@ -709,7 +776,7 @@
                     </div>
                     <div class="p-6">
                         <div class="content-summary prose max-w-none text-gray-700">
-                            @Html.Raw(overviewSummary)
+                            @Html.Raw(overviewSummary.Replace("\n", "<br>"))
                         </div>
                         @if (isLongOverview)
                         {
@@ -810,7 +877,7 @@
             @if (hasAchievement)
             {
                 <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-500"
-                     data-full-content="@Html.Raw(Model.Achievement.Replace("\n", "<br>"))"
+                     data-full-content="@Html.Raw(achievementText.Replace("\n", "<br>"))"
                      data-title="Achievements">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
@@ -819,7 +886,7 @@
                     </div>
                     <div class="p-6">
                         <div class="content-summary text-gray-700">
-                            @achievementSummary
+                            @Html.Raw(achievementSummary.Replace("\n", "<br>"))
                         </div>
                         @if (isLongAchievement)
                         {
@@ -834,7 +901,7 @@
             @if (hasExperience)
             {
                 <div class="content-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in-up animation-delay-600"
-                     data-full-content="@Html.Raw(Model.Experience.Replace("\n", "<br>"))"
+                     data-full-content="@Html.Raw(experienceText.Replace("\n", "<br>"))"
                      data-title="Experience">
                     <div class="bg-gradient-to-r from-blue-50 to-gray-50 px-6 py-4 border-b border-gray-100">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
@@ -843,7 +910,7 @@
                     </div>
                     <div class="p-6">
                         <div class="content-summary text-gray-700">
-                            @experienceSummary
+                            @Html.Raw(experienceSummary.Replace("\n", "<br>"))
                         </div>
                         @if (isLongExperience)
                         {
